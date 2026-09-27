@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phoenix Site Personnel File</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#0a0f1e;--bg2:#0d1525;--bg3:#111c30;--border:#1e3a5a;--border2:#2a4a6a;--text:#c0d4e8;--text2:#7a9ab8;--text3:#4a6a8a;--acc:#3a7aa0;--acc2:#6aa8c8;--grn:#2a7a4a;--grn2:#4ab870;--amber2:#d0a040;--red2:#c04030;--statbg:#0b1828;--bodyBg:#0a0f1e;
+--mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Liberation Mono","Courier New",monospace;
+--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--side:370px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bodyBg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.4;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--border2);border-radius:3px;padding:5px 7px;width:100%;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--acc2)}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{opacity:.4}
+input[type=checkbox]{width:16px;height:16px;accent-color:var(--acc);cursor:pointer;flex-shrink:0}
+:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
+.hidden{display:none!important}
+.mono{font-family:var(--mono)}
+.lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:1.2px;color:var(--text2);text-transform:uppercase}
+.muted{color:var(--text3)}
+.clk{cursor:pointer}
+.clk:hover{color:var(--acc2)}
+
+/* Bracketed box: HUD corner marks are the sheet's signature detail */
+.box{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:3px}
+.box::before,.box::after{content:"";position:absolute;width:9px;height:9px;pointer-events:none}
+.box::before{top:-1px;left:-1px;border-top:2px solid var(--acc);border-left:2px solid var(--acc)}
+.box::after{bottom:-1px;right:-1px;border-bottom:2px solid var(--acc);border-right:2px solid var(--acc)}
+.boxtitle{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:var(--acc2);text-align:center;text-transform:uppercase;padding:6px 4px 7px;cursor:pointer}
+.boxtitle:hover{color:var(--text)}
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:var(--bodyBg);z-index:1000}
+.login-box{width:100%;max-width:330px;padding:26px 22px;display:flex;flex-direction:column;gap:10px}
+.login-logo{font-family:var(--mono);font-size:26px;letter-spacing:6px;color:var(--acc2);text-align:center}
+.login-msg{font-size:12.5px;color:var(--amber2);min-height:18px;text-align:center}
+.pickrow{display:flex;align-items:center;gap:10px;border:1px solid var(--border2);border-radius:4px;padding:9px 12px;cursor:pointer;background:var(--bg);text-align:left}
+.pickrow:hover{border-color:var(--acc2)}
+.pickrow .pn{flex:1;min-width:0}
+.pickrow .pn b{display:block;font-size:14px}
+.pickrow .pn small{color:var(--text3);font-size:11.5px}
+.gmtag{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;color:var(--amber2);border:1px solid var(--amber2);border-radius:3px;padding:1px 6px;margin-left:8px;vertical-align:middle}
+.btn{font-family:var(--mono);font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;border:1px solid var(--border2);background:var(--bg3);color:var(--acc2);padding:5px 9px;border-radius:3px;white-space:nowrap}
+.btn:hover{border-color:var(--acc2);color:var(--text)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.pri:hover{filter:brightness(1.15)}
+.btn.sm{padding:3px 7px;font-size:10px}
+.btn.danger{color:var(--red2);border-color:var(--red2)}
+.btn.on{background:var(--acc);border-color:var(--acc);color:#fff}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--bg2);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.who{display:flex;align-items:center;gap:11px;min-width:0;cursor:pointer}
+.portrait{width:52px;height:52px;border:1px solid var(--border2);border-radius:3px;background:var(--bg3) center/cover no-repeat;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:18px;color:var(--text3)}
+.cname{font-size:20px;font-weight:600;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+.csub{font-size:12.5px;color:var(--text2);margin-top:2px}
+.topbtns{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.seg{display:inline-flex;border:1px solid var(--border2);border-radius:3px;overflow:hidden}
+.seg button{font-family:var(--mono);font-size:10.5px;letter-spacing:.8px;padding:6px 8px;color:var(--text2);text-transform:uppercase}
+.seg button.on{background:var(--acc);color:#fff}
+.savestat{font-family:var(--mono);font-size:10.5px;color:var(--text3);min-width:58px;text-align:right;cursor:pointer}
+
+/* LAYOUT */
+.layout{display:flex;align-items:flex-start}
+.sheet{flex:1;min-width:0;padding:12px;display:flex;flex-direction:column;gap:12px}
+.side{width:var(--side);flex-shrink:0;position:sticky;top:0;height:100vh;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:50}
+.side.overlay{position:fixed;right:0;top:0;bottom:0;height:auto;box-shadow:-10px 0 30px rgba(0,0,0,.45);transform:translateX(100%);transition:transform .22s ease}
+.side.overlay.open{transform:none}
+.side-head{display:flex;align-items:center;gap:6px;padding:9px 10px;padding-top:calc(9px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--border)}
+.side-head .t{flex:1;font-family:var(--mono);font-size:11px;letter-spacing:1.4px;color:var(--text3);text-transform:uppercase}
+.side-body{flex:1;overflow-y:auto;padding:14px 16px calc(24px + env(safe-area-inset-bottom,0px))}
+.side-body h2{font-size:18px;font-weight:600;margin-bottom:8px;line-height:1.25}
+.side-body h3{font-family:var(--mono);font-size:11.5px;letter-spacing:1.3px;color:var(--acc2);text-transform:uppercase;margin:16px 0 7px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.side-body p{margin-bottom:9px;color:var(--text);max-width:62ch}
+.side-body .rule{color:var(--text2);font-size:13.5px}
+.side-body ul{margin:0 0 10px 18px}.side-body li{margin-bottom:5px}
+.tgl{position:relative;width:34px;height:19px;border-radius:10px;background:var(--bg);border:1px solid var(--border2);flex-shrink:0;transition:background .15s}
+.tgl::after{content:"";position:absolute;top:1px;left:1px;width:15px;height:15px;border-radius:50%;background:var(--text3);transition:transform .15s,background .15s}
+.tgl.on{background:var(--acc);border-color:var(--acc)}.tgl.on::after{transform:translateX(15px);background:#fff}
+.condrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bg3)}
+.condrow .condmain{display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0}
+.condrow .cname{font-size:13.5px}
+.chev{width:26px;height:26px;flex-shrink:0;color:var(--text3);font-size:11px;border-radius:3px}
+.chev:hover{color:var(--acc2);background:var(--bg3)}
+.condinfo{padding:0 0 10px 44px;margin-top:-4px;font-size:12.5px;color:var(--text2);border-bottom:1px solid var(--bg3)}
+.exhrow{display:flex;align-items:center;gap:8px;padding:8px 0}
+.exhlv{display:inline-flex;border:1px solid var(--border2);border-radius:3px;overflow:hidden}
+.exhlv button{font-family:var(--mono);font-size:11px;padding:5px 8px;color:var(--text2)}
+.exhlv button.on{background:var(--red2);color:#fff}
+.exhlv button:first-child.on{background:var(--acc)}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--bg3);font-size:13.5px}
+.kv b{font-family:var(--mono);font-weight:600;color:var(--acc2)}
+.frow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.frow label{font-size:12.5px;color:var(--text2);min-width:92px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.fgrid .lbl{margin-bottom:3px}
+.panel-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+
+/* ROW 1 */
+.row1{display:grid;grid-template-columns:repeat(6,minmax(70px,1fr)) repeat(3,minmax(74px,.9fr)) minmax(118px,1.3fr) minmax(260px,2.6fr);gap:8px}
+.abil .lbl{font-size:9.5px;letter-spacing:.6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.abil{min-width:0;text-align:center;padding:7px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.abil .lbl{cursor:pointer}
+.abil .modbtn{font-family:var(--mono);font-size:25px;font-weight:600;color:var(--text);border:1px solid var(--border2);border-radius:3px;min-width:58px;padding:1px 6px;background:var(--bg)}
+.abil .modbtn:hover{border-color:var(--acc2);color:var(--acc2)}
+.abil .score{font-family:var(--mono);font-size:13px;color:var(--text2);border:1px solid var(--border);border-radius:12px;padding:0 10px;cursor:pointer}
+.abil .score:hover{color:var(--acc2)}
+.stat{text-align:center;padding:7px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
+.stat:hover .big{color:var(--acc2)}
+.stat .big{font-family:var(--mono);font-size:25px;font-weight:600;line-height:1.15}
+.stat .big small{font-size:13px;color:var(--text2);font-weight:400}
+.tdsel{appearance:none;-webkit-appearance:none;background:none;border:none;color:var(--text);font-family:var(--mono);font-size:25px;font-weight:600;text-align:center;text-align-last:center;padding:0;margin:1px 0;cursor:pointer;width:100%}
+.tdsel:hover{color:var(--acc2)}
+.ctr{display:flex;align-items:center;gap:6px}
+.ctr button{width:24px;height:24px;border:1px solid var(--border2);border-radius:3px;font-family:var(--mono);font-size:15px;line-height:1;color:var(--acc2);background:var(--bg)}
+.ctr button:hover{border-color:var(--acc2)}
+
+/* HP box */
+.hp{display:flex;align-items:stretch;gap:10px;padding:8px 10px}
+.hp-io{display:flex;flex-direction:column;gap:4px;width:84px;flex-shrink:0}
+.hp-io button{font-family:var(--mono);font-size:10px;letter-spacing:1px;border:1px solid;border-radius:3px;padding:3px 0}
+.hp-io .heal{color:var(--grn2);border-color:var(--grn)}
+.hp-io .dmg{color:var(--red2);border-color:var(--red2)}
+.hp-io input{text-align:center;padding:3px;font-family:var(--mono)}
+.hp-nums{flex:1;display:grid;grid-template-columns:1fr auto 1fr 1fr;align-items:start;gap:4px;text-align:center;cursor:pointer}
+.hp-nums .n{font-family:var(--mono);font-size:26px;font-weight:600;line-height:1.1}
+.hp-nums .sl{font-size:22px;color:var(--text3);padding-bottom:2px}
+.hp-status{grid-column:1/-1;font-family:var(--mono);font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase}
+.st-healthy{color:var(--grn2)}.st-scuffed{color:var(--amber2)}.st-wounded,.st-down{color:var(--red2)}
+.ds{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer}
+.ds-row{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;letter-spacing:1px}
+.ds-row .dl{width:74px;text-align:right}
+.pip{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--border2);display:inline-block}
+.pip.s.on{background:var(--grn2);border-color:var(--grn2)}
+.pip.f.on{background:var(--red2);border-color:var(--red2)}
+
+/* BODY GRID */
+.body{display:grid;grid-template-columns:minmax(210px,.95fr) minmax(250px,1.05fr) minmax(0,2.6fr);gap:12px;align-items:start}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.saves{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 10px 0}
+.save{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:14px;padding:3px 4px 3px 8px;cursor:pointer;background:var(--bg)}
+.save:hover{border-color:var(--acc2)}
+.save .nm{flex:1;font-family:var(--mono);font-size:12px;letter-spacing:.8px}
+.save .v{font-family:var(--mono);font-size:13px;border:1px solid var(--border2);border-radius:10px;padding:0 7px;min-width:36px;text-align:center}
+.dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--text3);flex-shrink:0;display:inline-block}
+.dot.p{background:var(--acc2);border-color:var(--acc2)}
+.dot.e{background:var(--amber2);border-color:var(--amber2);box-shadow:0 0 0 2px var(--bg2),0 0 0 3.5px var(--amber2)}
+.dot.h{border-style:dashed;border-color:var(--acc2)}
+.note{font-size:11.5px;color:var(--text3);text-align:center;padding:6px 8px 0}
+.sense{display:flex;align-items:center;gap:8px;margin:6px 10px 0;border:1px solid var(--border);border-radius:3px;background:var(--bg);cursor:pointer}
+.sense:hover{border-color:var(--acc2)}
+.sense .v{font-family:var(--mono);font-size:16px;font-weight:600;width:40px;text-align:center;border-right:1px solid var(--border);padding:4px 0}
+.sense .nm{font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase}
+.profs{padding:10px 12px 0}
+.profs .grp{padding:6px 0 8px;border-bottom:1px solid var(--bg3);cursor:pointer}
+.profs .grp:last-child{border-bottom:none}
+.profs .grp:hover .val{color:var(--acc2)}
+.profs .val{font-size:13px;margin-top:2px}
+.skills{padding:6px 8px 0}
+.sk-head,.sk{display:grid;grid-template-columns:30px 38px 1fr 50px;align-items:center;gap:2px}
+.sk-head{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;color:var(--text3);padding:2px 0 5px;border-bottom:1px solid var(--border)}
+.sk{padding:4px 0;border-bottom:1px solid var(--bg3)}
+.sk .dotb{display:flex;justify-content:center;padding:4px 0}
+.sk .ab{font-family:var(--mono);font-size:10.5px;color:var(--text3)}
+.sk .nm{font-size:13.5px;cursor:pointer}
+.sk .nm:hover{color:var(--acc2)}
+.rollv{font-family:var(--mono);font-size:13.5px;border:1px solid var(--border2);border-radius:3px;padding:1px 0;text-align:center;background:var(--bg)}
+.rollv:hover{border-color:var(--acc2);color:var(--acc2)}
+
+/* combat row */
+.crow{display:grid;grid-template-columns:100px 100px 96px 1fr;gap:10px}
+.shield{text-align:center;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.shield .big{font-family:var(--mono);font-size:30px;font-weight:600;line-height:1}
+.shield:hover .big{color:var(--acc2)}
+.initbtn{font-family:var(--mono);font-size:22px;font-weight:600;border:1px solid var(--border2);border-radius:3px;padding:1px 12px;background:var(--bg)}
+.initbtn:hover{border-color:var(--acc2);color:var(--acc2)}
+.defcond{display:grid;grid-template-columns:1fr 1fr;padding:8px 0}
+.defcond>div{padding:0 12px;cursor:pointer;min-width:0}
+.defcond>div+div{border-left:1px solid var(--border)}
+.defcond>div:hover .lbl{color:var(--acc2)}
+.defcond .val{font-size:12.5px;color:var(--text2);margin-top:3px}
+.chip{display:inline-block;font-size:11.5px;border:1px solid var(--border2);border-radius:10px;padding:1px 8px;margin:2px 3px 0 0;color:var(--text)}
+.chip.bad{border-color:var(--red2);color:var(--red2)}
+
+/* TABS */
+.tabsbox{padding:0 0 10px;min-height:520px}
+.tabnav{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--border);padding:0 8px;scrollbar-width:none}
+.tabnav button{font-family:var(--mono);font-size:11.5px;letter-spacing:1.1px;text-transform:uppercase;padding:11px 9px 9px;color:var(--text2);border-bottom:2px solid transparent;white-space:nowrap}
+.tabnav button.on{color:var(--text);border-bottom-color:var(--acc2)}
+.tabnav button:hover{color:var(--acc2)}
+.tabbody{padding:10px 14px 4px}
+.filters{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.filters button{font-family:var(--mono);font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;padding:4px 9px;border-radius:3px;background:var(--bg3);color:var(--text2)}
+.filters button.on{background:var(--acc);color:#fff}
+.sec{font-family:var(--mono);font-size:11.5px;letter-spacing:1.3px;color:var(--acc2);text-transform:uppercase;margin:14px 0 6px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sec:first-child{margin-top:2px}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;color:var(--text3);text-align:left;padding:4px 6px;border-bottom:1px solid var(--border);font-weight:400;text-transform:uppercase}
+.tbl td{padding:7px 6px;border-bottom:1px solid var(--bg3);vertical-align:middle}
+.tbl tr.clkrow{cursor:pointer}
+.tbl tr.clkrow:hover td{background:var(--bg3)}
+.tbl .sub2{font-size:11px;color:var(--text3);margin-top:1px}
+.tblwrap{overflow-x:auto}
+.rbtn{font-family:var(--mono);font-size:13.5px;border:1px solid var(--border2);border-radius:3px;padding:3px 8px;background:var(--bg);white-space:nowrap}
+.rbtn:hover{border-color:var(--acc2);color:var(--acc2)}
+.plist{border:1px solid var(--bg3);border-radius:3px;padding:8px 10px;font-size:13px;color:var(--text2);line-height:1.6}
+.plist a{color:var(--text);cursor:pointer;text-decoration:none;border-bottom:1px dotted var(--text3)}
+.plist a:hover{color:var(--acc2)}
+.feat{padding:9px 0;border-bottom:1px solid var(--bg3);cursor:pointer}
+.feat:hover .fn{color:var(--acc2)}
+.feat .fn{font-weight:600;font-size:14px}
+.feat .fs{font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:.6px;text-transform:uppercase}
+.feat .fd{font-size:13px;color:var(--text2);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.res{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bg3)}
+.res .rn{flex:1;min-width:0;cursor:pointer}
+.res .rn:hover b{color:var(--acc2)}
+.res .rn small{display:block;font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:.5px}
+.boxes{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:200px}
+.ubox{width:17px;height:17px;border:1.5px solid var(--border2);border-radius:2px;background:var(--bg)}
+.ubox.used{background:var(--acc);border-color:var(--acc)}
+.bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--acc2)}
+.bar.over i{background:var(--red2)}
+.kitl{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:3px 14px;font-size:13px}
+.kitl label{display:flex;gap:7px;align-items:center;padding:3px 0;cursor:pointer}
+.empty{font-size:13px;color:var(--text3);padding:10px 0}
+
+/* LOG */
+.logentry{margin:0 0 12px}
+.logentry .who{font-size:11px;color:var(--text3);margin-bottom:3px;font-family:var(--mono)}
+.logcard{display:flex;align-items:center;gap:10px;border:1px solid var(--border2);border-radius:4px;background:var(--bg);padding:8px 12px}
+.logcard .lt{flex:1;font-family:var(--mono);font-size:12px;letter-spacing:.7px;text-transform:uppercase}
+.logcard .lt em{font-style:normal;color:var(--acc2)}
+.logcard .lt .brk{display:block;text-transform:none;letter-spacing:0;color:var(--text3);font-size:11.5px;margin-top:3px}
+.logcard .tot{font-family:var(--mono);font-size:26px;font-weight:600;border-left:1px solid var(--border2);padding-left:12px;min-width:48px;text-align:center}
+.logcard.crit{border-color:var(--grn2)}.logcard.crit .tot{color:var(--grn2)}
+.logcard.fumble{border-color:var(--red2)}.logcard.fumble .tot{color:var(--red2)}
+.logcard.info .tot{font-size:15px}
+
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:var(--bg3);border:1px solid var(--acc);color:var(--text);padding:9px 16px;border-radius:4px;font-family:var(--mono);font-size:13px;transition:all .2s;z-index:2000;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.fab{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;font-family:var(--mono);font-size:11px;letter-spacing:1px;background:var(--acc);color:#fff;border-radius:22px;padding:11px 16px;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:45}
+
+/* RESPONSIVE: the sheet responds to its own width (container), the chrome to the viewport */
+.sheet{container-type:inline-size;container-name:sheet}
+@container sheet (max-width:1250px){
+ .row1{grid-template-columns:repeat(6,minmax(0,1fr))}
+ .row1 .hpwrap{grid-column:span 2}
+ .crow{grid-template-columns:repeat(3,minmax(0,1fr))}.crow .defbox{grid-column:1/-1}}
+@container sheet (max-width:1020px){.body{grid-template-columns:1fr 1fr}.body .colc{grid-column:1/-1}}
+@container sheet (max-width:640px){
+ .row1{grid-template-columns:repeat(3,minmax(0,1fr))}.row1 .hpwrap{grid-column:1/-1}.row1 .dpbox{grid-column:span 3}
+ .body{grid-template-columns:1fr}
+ .hidem{display:none}.tbl td,.tbl th{padding:6px 4px}}
+@media (max-width:760px){
+ .topbar{gap:8px}.topbtns{margin-left:0;width:100%}
+ .cname{max-width:60vw}
+ .sheet{padding:8px}
+ .side{width:100%}
+ .fgrid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="login-screen" class="login-screen">
+  <div class="login-box box">
+    <div class="login-logo">SGC</div>
+    <div class="lbl" style="text-align:center;margin-bottom:4px">Phoenix Site access terminal</div>
+    <div id="login-msg" class="login-msg"></div>
+    <input type="email" id="login-email" placeholder="Email" autocomplete="email">
+    <input type="password" id="login-pass" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleLogin()">
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <button class="btn pri" style="flex:1" onclick="handleLogin()">Log in</button>
+      <button class="btn" style="flex:1" onclick="handleSignup()">Create account</button>
+    </div>
+  </div>
+</div>
+
+<div id="picker-screen" class="login-screen hidden">
+  <div class="login-box box" style="max-width:480px">
+    <div class="login-logo" style="font-size:17px;letter-spacing:2px">Gatemaster Access</div>
+    <div class="lbl" style="text-align:center;margin-bottom:2px">Select a character to open</div>
+    <div id="picker-msg" class="login-msg"></div>
+    <div id="picker-list" style="display:flex;flex-direction:column;gap:6px;max-height:52vh;overflow-y:auto;margin:4px 0 8px"></div>
+    <button class="btn" onclick="handleLogout()">Log out</button>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <header class="topbar">
+    <div class="who" onclick="openPanel('manage')" title="Manage character">
+      <div class="portrait" id="h-portrait"></div>
+      <div style="min-width:0">
+        <div class="cname" id="h-name"></div>
+        <div class="csub" id="h-sub"></div>
+      </div>
+    </div>
+    <div class="topbtns">
+      <div class="seg" id="rollmode" title="Applies to your next roll only"></div>
+      <button class="btn" onclick="openPanel('shortrest')">Short rest</button>
+      <button class="btn" onclick="openPanel('longrest')">Long rest</button>
+      <button class="btn" onclick="openPanel('log')">Game log</button>
+      <span class="savestat" id="savestat" onclick="saveNow()" title="Click to save now"></span>
+      <button class="btn sm hidden" id="charsbtn" onclick="showPicker()">Characters</button>
+      <button class="btn sm" onclick="handleLogout()">Log out</button>
+    </div>
+  </header>
+  <div class="layout">
+    <main class="sheet">
+      <section class="row1" id="row1"></section>
+      <section class="body">
+        <div class="col" id="col-a"></div>
+        <div class="col" id="col-b"></div>
+        <div class="col colc">
+          <div class="crow" id="crow"></div>
+          <div class="box tabsbox">
+            <nav class="tabnav" id="tabnav"></nav>
+            <div class="tabbody" id="tabbody"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <aside class="side" id="side">
+      <div class="side-head">
+        <button class="btn sm" id="pinbtn" onclick="togglePin()"></button>
+        <span class="t" id="side-t"></span>
+        <button class="btn sm" onclick="openPanel('log')">Log</button>
+        <button class="btn sm" onclick="closeSide()" aria-label="Close panel">&#x2715;</button>
+      </div>
+      <div class="side-body" id="side-body"></div>
+    </aside>
+  </div>
+  <div class="scrim hidden" id="scrim" onclick="closeSide()"></div>
+  <button class="fab hidden" id="fab" onclick="openPanel('log')">GAME LOG</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const THEMES={
+  sgc_dark:{bg:'#0a0f1e',bg2:'#0d1525',bg3:'#111c30',border:'#1e3a5a',border2:'#2a4a6a',text:'#c0d4e8',text2:'#7a9ab8',text3:'#4a6a8a',acc:'#3a7aa0',acc2:'#6aa8c8',grn:'#2a7a4a',grn2:'#4ab870',amber2:'#d0a040',red2:'#c04030',statbg:'#0b1828',bodyBg:'#0a0f1e'},
+  tokra_dark:{bg:'#0e0818',bg2:'#140a22',bg3:'#1a102e',border:'#3a1a5a',border2:'#5a2a8a',text:'#d4b8f0',text2:'#a070d0',text3:'#6a40a0',acc:'#7a40b0',acc2:'#b070e0',grn:'#3a6a8a',grn2:'#60a8c0',amber2:'#c080e0',red2:'#a030c0',statbg:'#0e0818',bodyBg:'#0a0612'},
+  goauld_dark:{bg:'#120800',bg2:'#1c1000',bg3:'#281800',border:'#5a3000',border2:'#8a5000',text:'#f0d090',text2:'#c0a050',text3:'#806020',acc:'#b07000',acc2:'#e0a030',grn:'#8a2020',grn2:'#c04030',amber2:'#e0c060',red2:'#ff2020',statbg:'#120800',bodyBg:'#0c0600'},
+  nox_dark:{bg:'#081408',bg2:'#0c1c0c',bg3:'#102410',border:'#1a4a1a',border2:'#2a7a2a',text:'#c0e8c0',text2:'#80c080',text3:'#408040',acc:'#3a8a3a',acc2:'#70c870',grn:'#2a6a5a',grn2:'#50b890',amber2:'#a0d080',red2:'#c04040',statbg:'#081408',bodyBg:'#060e06'},
+  ancient_dark:{bg:'#081418',bg2:'#0c1c22',bg3:'#10242e',border:'#1a4a5a',border2:'#2a7a8a',text:'#c8e8e0',text2:'#80c0b8',text3:'#408078',acc:'#2a8090',acc2:'#50b8c8',grn:'#4a8040',grn2:'#80c060',amber2:'#d0c060',red2:'#c06040',statbg:'#081418',bodyBg:'#060e10'},
+  asgard_dark:{bg:'#080c14',bg2:'#0c1020',bg3:'#10182c',border:'#203060',border2:'#304880',text:'#b8d8f8',text2:'#6090d0',text3:'#3060a0',acc:'#4080c0',acc2:'#70b8f0',grn:'#306080',grn2:'#5090c0',amber2:'#80c8f0',red2:'#c04060',statbg:'#080c14',bodyBg:'#060810'},
+  kethalis_dark:{bg:'#0c0808',bg2:'#120a0a',bg3:'#1a1010',border:'#4a1010',border2:'#6a1818',text:'#e0c0b0',text2:'#c08070',text3:'#804040',acc:'#a02020',acc2:'#e04040',grn:'#406020',grn2:'#608030',amber2:'#c04030',red2:'#ff2020',statbg:'#0c0808',bodyBg:'#080606'},
+  furling_dark:{bg:'#100c06',bg2:'#181208',bg3:'#221a0e',border:'#4a3818',border2:'#6a5228',text:'#f0e0c0',text2:'#c0a870',text3:'#806838',acc:'#8a6030',acc2:'#c09050',grn:'#4a6830',grn2:'#78a050',amber2:'#d0a840',red2:'#c06030',statbg:'#100c06',bodyBg:'#0c0a04'},
+  sgc_light:{bg:'#e8f0f8',bg2:'#ffffff',bg3:'#d0e0f0',border:'#90b8d8',border2:'#6090b8',text:'#102030',text2:'#204060',text3:'#508090',acc:'#1a60a0',acc2:'#1a4880',grn:'#1a6a3a',grn2:'#1a8040',amber2:'#806010',red2:'#a02020',statbg:'#c8ddf0',bodyBg:'#d0e4f4'},
+  tokra_light:{bg:'#f0eaf8',bg2:'#ffffff',bg3:'#e0d0f0',border:'#b090d8',border2:'#9060c0',text:'#180828',text2:'#401868',text3:'#704090',acc:'#6030a0',acc2:'#482080',grn:'#306080',grn2:'#2050a0',amber2:'#8040b0',red2:'#a020a0',statbg:'#ddd0f0',bodyBg:'#e8dff5'},
+  goauld_light:{bg:'#fdf5e0',bg2:'#ffffff',bg3:'#f5e8c0',border:'#d0a840',border2:'#b08020',text:'#201000',text2:'#504010',text3:'#806830',acc:'#906010',acc2:'#704800',grn:'#802020',grn2:'#a03030',amber2:'#c09020',red2:'#d02020',statbg:'#f0e0a0',bodyBg:'#f8f0d0'},
+  nox_light:{bg:'#eaf4ea',bg2:'#ffffff',bg3:'#d0ecd0',border:'#80c080',border2:'#50a050',text:'#081808',text2:'#184818',text3:'#407840',acc:'#287828',acc2:'#1a601a',grn:'#207060',grn2:'#309070',amber2:'#608030',red2:'#a04030',statbg:'#c8e8c8',bodyBg:'#d8f0d8'},
+  ancient_light:{bg:'#e8f4f4',bg2:'#ffffff',bg3:'#d0eaec',border:'#70b8c0',border2:'#4090a0',text:'#081820',text2:'#184858',text3:'#407880',acc:'#207888',acc2:'#106070',grn:'#407830',grn2:'#608040',amber2:'#807830',red2:'#a05030',statbg:'#c8e4e8',bodyBg:'#d5ecee'},
+  asgard_light:{bg:'#e8eef8',bg2:'#ffffff',bg3:'#d0dcf0',border:'#8090c8',border2:'#5060a8',text:'#080c20',text2:'#182048',text3:'#405080',acc:'#304898',acc2:'#203080',grn:'#204870',grn2:'#305890',amber2:'#5080c0',red2:'#a03060',statbg:'#c8d4ec',bodyBg:'#d5dff5'},
+  kethalis_light:{bg:'#f4ecea',bg2:'#ffffff',bg3:'#ecddd8',border:'#d09080',border2:'#c06050',text:'#200808',text2:'#501818',text3:'#804040',acc:'#902020',acc2:'#701010',grn:'#506020',grn2:'#708030',amber2:'#c04020',red2:'#e01010',statbg:'#ecd5d0',bodyBg:'#f2e4e0'},
+  furling_light:{bg:'#f8f0e4',bg2:'#ffffff',bg3:'#f0e4c8',border:'#c8a060',border2:'#a87840',text:'#180c00',text2:'#402808',text3:'#705028',acc:'#785020',acc2:'#583810',grn:'#486020',grn2:'#608030',amber2:'#a07820',red2:'#a04820',statbg:'#ecdaaa',bodyBg:'#f5ecd8'},
+};
+// ============================================================
+// RULES DATA (Stargate SG-1 RPG Core Rulebook)
+// ============================================================
+const ABILS=[
+ {k:'str',n:'Strength',d:'Physical power and athletic training. Used for melee attacks and damage, Athletics, lifting and carrying. Carrying capacity is STR x 10 kg, and you can push, drag or lift twice that.'},
+ {k:'dex',n:'Dexterity',d:'Agility, reflexes and balance. Used for ranged attacks and damage, finesse weapons, light armour AC, Initiative (or WIS), Acrobatics, Pilot, Sleight of Hand and Stealth.'},
+ {k:'con',n:'Constitution',d:'Health, stamina and vital force. Adds to your hit points every level and to the HP you recover when resting. Used to resist exhaustion, poison, disease and forced marches.'},
+ {k:'int',n:'Intelligence',d:'Reasoning and memory. Used for Moxie (or CHA), Engineering, Investigation, Nature and Science.'},
+ {k:'wis',n:'Wisdom',d:'Perceptiveness and intuition. Used for Initiative (or DEX), Animal Handling, Culture, Insight, Medicine, Perception and Survival.'},
+ {k:'cha',n:'Charisma',d:'Force of personality. Used for Moxie (or INT), Deception, Intimidation, Performance and Persuasion.'}];
+const SKILLS=[
+ {n:'Acrobatics',k:'dex',d:'Staying on your feet in tricky situations: ice, tightropes, rocking decks, dives, rolls and flips.'},
+ {n:'Animal Handling',k:'wis',d:'Calming domesticated animals, keeping mounts from spooking, intuiting an animal\'s intentions, and risky manoeuvres on a living mount.'},
+ {n:'Athletics',k:'str',d:'Climbing, jumping and swimming in difficult conditions. Also used for grapples, disarms and shoves in combat.'},
+ {n:'Culture',k:'wis',d:'Identifying elements of a society from its people or artefacts, and recalling lore about history, legends, ancient kingdoms, wars and lost civilisations.'},
+ {n:'Deception',k:'cha',d:'Convincingly hiding the truth: fast-talking a guard, conning a merchant, holding a disguise, or keeping a straight face while lying.'},
+ {n:'Engineering',k:'int',d:'Repairing or altering mechanical and electronic devices, including hacking computers and fixing vehicles.'},
+ {n:'Insight',k:'wis',d:'Determining the true intentions of a creature: judging a lie or predicting a next move from speech and body language.'},
+ {n:'Intimidation',k:'cha',d:'Influencing through icy glares, commanding presence, threats, hostile actions or violence.'},
+ {n:'Investigation',k:'int',d:'Looking for clues and making deductions: finding hidden objects, reading a wound, spotting a tunnel\'s weak point, or searching ancient texts.'},
+ {n:'Medicine',k:'wis',d:'Stabilising a dying companion, diagnosing illness, and activating some healing technology.'},
+ {n:'Nature',k:'int',d:'Knowledge of terrain, plants and animals, weather and natural cycles.'},
+ {n:'Perception',k:'wis',d:'Detecting people or objects with your senses: overhearing conversations, spotting hidden enemies or things easy to miss.'},
+ {n:'Performance',k:'cha',d:'Delighting an audience with music, dance, acting, storytelling or other entertainment.'},
+ {n:'Persuasion',k:'cha',d:'Influencing people in good faith with tact and social grace: cordial requests, negotiating peace, inspiring others.'},
+ {n:'Pilot',k:'dex',d:'Controlling a vehicle under stress: tight corners, drifts, ramp jumps, and stunts. Stunt DC equals the vehicle\'s handling.'},
+ {n:'Science',k:'int',d:'Recalling scientific knowledge or conducting experiments. Fields include astronomy, biology, chemistry, geology and physics.'},
+ {n:'Sleight of Hand',k:'dex',d:'Legerdemain and manual trickery: palming objects, planting notes, concealing a weapon, lifting a sidearm from a holster.'},
+ {n:'Stealth',k:'dex',d:'Concealing yourself, slinking past guards, and moving without being seen or heard.'},
+ {n:'Survival',k:'wis',d:'Following tracks, hunting, navigating wilderness, identifying signs of predators, predicting weather and avoiding natural hazards.'}];
+
+const TENSION={d4:{n:'Comedic',t:'Very little threat. Attacks are non-lethal by default. Character banter and development take the forefront.',dc:5},
+ d6:{n:'Standard',t:'The typical episode. Combat is uncommon and assumed non-lethal to the PCs.',dc:10},
+ d8:{n:'Growing',t:'Danger is rising. Combat is a reasonable outcome but still non-lethal by default.',dc:15},
+ d10:{n:'Dire',t:'Real danger. Enemy attacks are lethal. Serious injury and PC death are real possibilities.',dc:20},
+ d12:{n:'All is Lost',t:'Reserved for the most dangerous scenes or a series finale. Enemies are out for blood.',dc:25}};
+
+const EXH=['None','Disadvantage on skill checks','Speed halved','Disadvantage on attack rolls and saving throws','Hit point maximum halved (round up)','Speed reduced to 0m','Death'];
+
+const CONDITIONS={
+ 'Blinded':'Can\'t see and automatically fails any ability check that requires sight.',
+ 'Charmed':'Can\'t attack the charmer or target them with harmful effects. The charmer has advantage on social ability checks against you.',
+ 'Deafened':'Can\'t hear and automatically fails any ability check that requires hearing.',
+ 'Diseased':'Can\'t heal any ability score damage until the condition is removed. HP healing is unaffected.',
+ 'Distracted':'The next attack against you has advantage, and you have disadvantage on STR, DEX and CON saves. Ends after one attack or save.',
+ 'Entangled':'Speed halved, and disadvantage on Dexterity saving throws.',
+ 'Frightened':'Disadvantage on ability checks and attack rolls while the source of fear is in sight. Can\'t willingly move closer to it.',
+ 'Grappled':'Speed becomes 0. Attacks against you have advantage and your attacks have disadvantage. Ends if the grappler is incapacitated or you are moved out of reach.',
+ 'Incapacitated':'Can\'t take actions or reactions.',
+ 'Invisible':'Impossible to see without special senses. Attacks against you have disadvantage and your attacks have advantage.',
+ 'Paralyzed':'Incapacitated, can\'t move or speak. Automatically fails STR and DEX saves. Attacks against you have advantage, and hits within 1m are critical hits.',
+ 'Poisoned':'Disadvantage on attack rolls and ability checks.',
+ 'Possessed':'Under the control of another entity. You are aware of your surroundings but can\'t control your physical actions.',
+ 'Prone':'Can only crawl unless you stand up. Disadvantage on attack rolls. Attacks against you have advantage within 1m, disadvantage otherwise.',
+ 'Restrained':'Speed becomes 0. Attacks against you have advantage and your attacks have disadvantage. Disadvantage on Dexterity saves.',
+ 'Stunned':'Incapacitated, can\'t move, speaks only falteringly. Automatically fails STR and DEX saves. Attacks against you have advantage, and hits within 1m are critical hits.',
+ 'Suffocating':'Must make Constitution saves at set intervals while unable to breathe. Each failure is a level of exhaustion.',
+ 'Unconscious':'Incapacitated, can\'t move or speak, unaware of surroundings. Drops what it holds and falls prone. Automatically fails STR and DEX saves. Attacks have advantage, and hits within 1m are critical hits.',
+ 'Weightless':'Fly speed of 6m, but can\'t turn, accelerate or stop without something to push off from.'};
+
+const ACTIONS=[
+ {n:'Attack',g:'action',d:'Make one melee or ranged attack. Roll d20 + attack bonus against the target\'s AC.'},
+ {n:'Dash',g:'action',d:'Gain extra movement equal to your speed for this turn.'},
+ {n:'Disengage',g:'action',d:'Your movement doesn\'t provoke opportunity attacks for the rest of the turn.'},
+ {n:'Dodge',g:'action',d:'Until your next turn, attacks against you have disadvantage if you can see the attacker, and you make DEX saves with advantage.'},
+ {n:'Help',g:'action',d:'An ally gains advantage on their next ability check for the task you help with. Or, help an ally attack a target within 1m of you: their next attack on it has advantage.'},
+ {n:'Hide',g:'action',d:'Make a Stealth check to hide, contested by the Perception of anyone searching for you.'},
+ {n:'Ready',g:'action',d:'Choose a trigger and a response. When the trigger happens before your next turn, you can react with that action or move up to your speed.'},
+ {n:'Search',g:'action',d:'Devote your attention to finding something, usually an Investigation or Perception check.'},
+ {n:'Take Cover',g:'action',d:'If adjacent to cover, improve it one step until your next turn: half becomes three-quarters, three-quarters becomes total.'},
+ {n:'Use an Object',g:'action',d:'Interact with an object that needs your full attention, such as keying a passcode, or a second object in one turn.'},
+ {n:'Use Tech',g:'action',d:'Activate technology that needs an action, as described in the device\'s rules.'},
+ {n:'Grapple',g:'contest',d:'Special melee attack. Athletics vs target\'s Athletics or Acrobatics. Success applies Grappled. Target must be no more than one size larger and within reach.'},
+ {n:'Defend',g:'contest',d:'Insight (sentient) or Animal Handling (beast) vs the target\'s Athletics or Deception. Success gives you resistance to that target\'s melee damage.'},
+ {n:'Distract',g:'contest',d:'Deception or Persuasion vs the target\'s Insight or Wisdom save. Success applies the Distracted condition to the target.'},
+ {n:'Disarm',g:'contest',d:'Special melee attack. Athletics vs target\'s Athletics or Acrobatics. Success knocks the item within 1m of them, or you take it if you have a free hand.'},
+ {n:'Trip / Shove',g:'contest',d:'Special melee attack. Athletics vs target\'s Athletics or Acrobatics. Success knocks the target prone or pushes it 1m away.'},
+ {n:'Taunt',g:'contest',d:'Make an attack for half damage. On a hit, Deception, Insight or Intimidation (Animal Handling for beasts) vs the target\'s INT or WIS save. A taunted target has disadvantage on attacks that don\'t include you. Once per target per encounter if it resists.'},
+ {n:'Opportunity Attack',g:'reaction',d:'When an enemy you can see moves out of your reach, use your reaction to make one melee attack against it.'}];
+
+const RACES={
+ human_tauri:{n:"Human (Tau'ri)",hp:10,asi:'Intelligence or Charisma +2',prof:'Any two skill proficiencies',tr:[
+  ['Recovery','When you recover HP from a short rest, you regain an additional +TD HP.'],
+  ['Galactic Seeds','Advantage on Deception and Persuasion checks made during first contact with any group that has not yet met visitors from another world.']]},
+ human_abydonian:{n:'Human (Abydonian)',hp:10,asi:'Constitution or Charisma +2',prof:'One skill and one weapon proficiency',tr:[
+  ['Recovery','When you recover HP from a short rest, you regain an additional +TD HP.'],
+  ['Free From Ra','Advantage on all saves against Goa\'uld technology.']]},
+ human_tollan:{n:'Human (Tollan)',hp:8,asi:'Intelligence or Wisdom +2',prof:'Science plus one additional skill',tr:[
+  ['Phase-Shift','You add a phase device to your base kit.'],
+  ['Advanced Technology','When you make an Engineering check to discern the function of technology of Tech Level 4 or higher, add +TD.']]},
+ aturen:{n:'Aturen',hp:10,asi:'Wisdom or Charisma +2',prof:'Any two skill proficiencies',tr:[
+  ['Natural Resilience','Advantage on saves against disease or poison.'],
+  ['Naturalist','Add +TD to Science checks involving an ecosystem and the creatures within it.']]},
+ aturen_pacifist:{n:'Aturen (Noxian Pacifist)',hp:8,asi:'Constitution or Charisma +2',prof:'Any two skill proficiencies',tr:[
+  ['Invisibility','As an action, gain the Invisible condition for one minute (10 rounds). Uses per long rest equal to your proficiency bonus. Ends if you take an action affecting a non-friendly target.'],
+  ['Pacifist','You may not willingly harm another living being: no HP damage, exhaustion or attribute damage, including tranquilisers. You have disadvantage on all attack rolls.']]},
+ jaffa:{n:'Jaffa (Symbiote)',hp:12,asi:'Strength or Dexterity +2',prof:'Jaffa weapons, plus one skill',tr:[
+  ['Symbiote','Gain advantage on any physical save (STR, DEX, CON). Uses equal to your proficiency bonus, regained on a long rest. Without a symbiote: DC 10 CON save each hour or 1d4 CON damage.'],
+  ["Kelno'reem",'On a long rest you heal as if your hit dice rolled their maximum. You do not heal naturally during a short rest.']]},
+ jaffa_free:{n:'Free Jaffa (Tretonin)',hp:10,asi:'Dexterity or Wisdom +2',prof:'Jaffa weapons, plus one skill or equipment proficiency',tr:[
+  ['Tretonin Prescription','Advantage on saves against disease. Deprived of Tretonin for a week or more: 1d4 CON damage each day.'],
+  ['Resistance Training','Add half your proficiency bonus to attack rolls with weapons you aren\'t proficient in.']]},
+ tokra:{n:"Tok'ra",hp:10,asi:'Intelligence or Wisdom +2',prof:'Any two skill proficiencies',tr:[
+  ['Synergistic Symbiote','Gain advantage on any mental save (INT, WIS, CHA). Uses equal to your Wisdom modifier (minimum 1), regained on a long rest. Lost if deprived of your symbiote.'],
+  ['Regeneration','You are healed to full HP during a long rest. Lost if deprived of your symbiote.']]},
+ tokra_pangaran:{n:"Tok'ra (Pangaran)",hp:10,asi:'Charisma or Wisdom +2',prof:'Any two skill proficiencies',tr:[
+  ['Shrewd Diplomats','You may use Intelligence or Wisdom instead of Charisma for Persuasion checks.'],
+  ['Regeneration','You are healed to full HP during a long rest. Lost if deprived of your symbiote.']]},
+ unas:{n:'Unas',hp:14,asi:'Strength or Constitution +2',prof:'Any two skill proficiencies',tr:[
+  ['Impressive Resilience','When targeted by an attack, use your reaction to gain resistance to damage for rounds equal to a roll of the TD. Can\'t be reduced below 1 HP while active. Once per long rest.'],
+  ['Robust','Add +4 to Strength when working out what you can lift or carry. Advantage on Strength checks to lift, carry or push.'],
+  ['Claws','Natural melee weapon dealing 1d6 damage.']]},
+ unas_unchained:{n:'Unas (Unchained)',hp:14,asi:'Strength or Constitution +2',prof:'Any two skill proficiencies',tr:[
+  ['Underestimated','Advantage on checks to conceal the truth or lie to non-Unas.'],
+  ['Impressive Resilience','When targeted by an attack, use your reaction to gain resistance to damage for rounds equal to a roll of the TD. Can\'t be reduced below 1 HP while active. Once per long rest.'],
+  ['Claws','Natural melee weapon dealing 1d6 damage.']]}};
+
+const ORIGINS={
+ // Biome
+ 'Arboreal':{c:'Biome',a:'STR +1',ab:'Natural Climber',t:'You have a climb speed of 6m.'},
+ 'Artificial':{c:'Biome',a:'WIS +1',ab:'Life or Death Repairs',t:'Advantage on Engineering checks made when failure would deal damage or endanger your life.'},
+ 'Desert':{c:'Biome',a:'CHA +1',ab:'Heat Acclimated',t:'You have resistance against fire damage.',res:'Fire'},
+ 'Grasslands':{c:'Biome',a:'CON +1',ab:'Natural Sprinter',t:'Your movement speed increases by 1m.',spd:1},
+ 'Lunar':{c:'Biome',a:'DEX +1',ab:'Eager Astronomer',t:'Advantage on Science checks that pertain to astronomy.'},
+ 'Mountainous':{c:'Biome',a:'STR +1',ab:'Vertical Drop',t:'Halve the distance you fall when working out falling damage.'},
+ 'Oceanic':{c:'Biome',a:'WIS +1',ab:'Gifted Swimmer',t:'You gain a swim speed of 6m.'},
+ 'Rainforest':{c:'Biome',a:'CHA +1',ab:'Tropics Adept',t:'You don\'t suffer disadvantage on ability checks caused by rain or fog.'},
+ 'Starship':{c:'Biome',a:'DEX +1',ab:'Void Adept',t:'You may use your Wisdom modifier instead of Intelligence for Science checks.',sw:['Science','wis']},
+ 'Subterranean':{c:'Biome',a:'DEX +1',ab:'Improved Vision',t:'You treat dim light as bright light, including discerning colour.'},
+ 'Swamp':{c:'Biome',a:'WIS +1',ab:'Patient Hunter',t:'You may use your Wisdom modifier instead of Dexterity for Stealth checks.',sw:['Stealth','wis']},
+ 'Terraformed':{c:'Biome',a:'INT +1',ab:'Strange World',t:'Once per day, use your reaction to gain advantage on a saving throw.',use:{n:'Strange World',max:1,r:'long'}},
+ 'Toxic':{c:'Biome',a:'CON +1',ab:'Toxic Resistance',t:'You gain resistance to either poison or necrotic damage (choose one).',res:'Poison or necrotic (choose)'},
+ 'Tundra':{c:'Biome',a:'CON +1',ab:'Cold Acclimated',t:'You have resistance against cold damage.',res:'Cold'},
+ 'Urban':{c:'Biome',a:'INT +1',ab:'Melting Pot',t:'You may use your Charisma modifier instead of Wisdom for Culture checks.',sw:['Culture','cha']},
+ 'Volcanic':{c:'Biome',a:'STR +1',ab:'Heat Acclimated',t:'You have resistance against fire damage.',res:'Fire'},
+ // Background
+ 'Aviator':{c:'Background',a:'Proficiency: Pilot',ab:'Crash Landing',t:'Resistance to all damage suffered when a vehicle you pilot or ride in crashes or is destroyed.',sk:'Pilot'},
+ 'Driver':{c:'Background',a:'Proficiency: Animal Handling',ab:'Speedster',t:'Vehicles you pilot and animals you ride or drive gain +1 AC.',sk:'Animal Handling'},
+ 'Enforcement':{c:'Background',a:'Proficiency: Intimidation',ab:'Air of Authority',t:'Characters have disadvantage on Intimidation checks that target only you.',sk:'Intimidation'},
+ 'Enslaved':{c:'Background',a:'Proficiency: any one tool',ab:'Friend to Toil',t:'When you would suffer exhaustion, suffer 1 less level (minimum 1).'},
+ 'Entertainer':{c:'Background',a:'Proficiency: Performance',ab:'Zeitgeist',t:'Use Charisma instead of Wisdom for Culture or Insight checks to understand the meaning of art or performance.',sk:'Performance'},
+ 'Former Host':{c:'Background',a:'No proficiency',ab:'Naquadah Blooded / Symbiote Familiarity',t:'Naquadah in your blood lets you activate some technology, such as Goa\'uld devices. Advantage on Insight checks against characters with symbiotes.'},
+ 'Freedom Fighter':{c:'Background',a:'Proficiency: Stealth',ab:'Last Resorts',t:'Disadvantage on all Moxie checks, but advantage on all Initiative checks.',sk:'Stealth'},
+ 'Healer':{c:'Background',a:'Proficiency: Medicine',ab:'Soothe',t:'During a short rest, you and your team heal additional HP equal to your proficiency bonus.',sk:'Medicine'},
+ 'Herdsman':{c:'Background',a:'Proficiency: Animal Handling',ab:'Beastfriend',t:'You may use Charisma instead of Wisdom for Animal Handling checks.',sk:'Animal Handling',sw:['Animal Handling','cha']},
+ 'Hunter/Gatherer':{c:'Background',a:'Proficiency: Survival',ab:'Irongut',t:'Advantage on saves against poison or other ingested substances.',sk:'Survival'},
+ 'Liaison':{c:'Background',a:'Proficiency: Culture',ab:'Stranger to the Land',t:'Advantage on Charisma checks to hide your foreign nature.',sk:'Culture'},
+ 'Merchant':{c:'Background',a:'Proficiency: Insight',ab:'Efficient Logistics',t:'+1 to the total bulk of equipment you can carry.',sk:'Insight',bulk:1},
+ 'Military':{c:'Background',a:'Proficiency: any one armour or weapon',ab:'Drills',t:'You gain +1 HP per level.',hpl:1},
+ 'Politician':{c:'Background',a:'Proficiency: Persuasion',ab:'Two Faces',t:'You may use Intelligence instead of Charisma for Deception checks.',sk:'Persuasion',sw:['Deception','int']},
+ 'Preservationist':{c:'Background',a:'Proficiency: Nature',ab:'An Eye for Nature',t:'Advantage on Intelligence and Wisdom checks to identify the properties of plants.',sk:'Nature'},
+ 'Refugee':{c:'Background',a:'Proficiency: Athletics',ab:'New Environments',t:'Advantage on Athletics checks to navigate an unknown wilderness environment.',sk:'Athletics'},
+ 'Sailor':{c:'Background',a:'Proficiency: Acrobatics',ab:'Sea Legs',t:'Advantage on Acrobatics checks to keep your balance or stay standing.',sk:'Acrobatics'},
+ 'Scholar':{c:'Background',a:'Proficiency: Science',ab:'Preserve Knowledge',t:'Advantage on Persuasion checks with scholars, learned people, or those who wish to preserve knowledge.',sk:'Science'},
+ 'Sentry':{c:'Background',a:'Proficiency: Perception',ab:'Long Night',t:'You ignore the first night without rest, only suffering ill effects on the second night as if it were the first.',sk:'Perception'},
+ 'Sleuth':{c:'Background',a:'Proficiency: Investigation',ab:'The Reveal',t:'Advantage on Persuasion checks to accuse someone of a crime or wrongdoing.',sk:'Investigation'},
+ 'Student':{c:'Background',a:'Proficiency: Perception',ab:'Quick Study',t:'Once per mission, make an Intelligence save instead of another save.',sk:'Perception',use:{n:'Quick Study',max:1,r:'mission'}},
+ 'Swindler':{c:'Background',a:'Proficiency: Deception',ab:'Low Profile',t:'Use Deception in place of Stealth to pass unnoticed through a populated area.',sk:'Deception'},
+ 'Teacher':{c:'Background',a:'Proficiency: Insight',ab:'Patient Approach',t:'Once per mission, make a Wisdom save instead of another save.',sk:'Insight',use:{n:'Patient Approach',max:1,r:'mission'}},
+ 'Underworld':{c:'Background',a:'Proficiency: Sleight of Hand',ab:'Black Market',t:'Advantage on ability checks to make peaceful contact with members of the underworld.',sk:'Sleight of Hand'},
+ 'Wright':{c:'Background',a:'Proficiency: Engineering',ab:'Measure Twice',t:'Add half your proficiency bonus to ability checks with tools you aren\'t proficient in.',sk:'Engineering'},
+ // Racial
+ 'Aturen Spiritualist':{c:'Racial',req:['aturen_pacifist'],a:'Requires Aturen (Noxian Pacifist)',ab:'Ritual of Life',t:'Lead a ritual during a short rest with two others in a natural environment. DC 20 Culture check: a character dead less than a day returns with 1 HP. On failure they can\'t be saved. Can\'t be used while suffering negative emotions.'},
+ 'Jaffa Renegade':{c:'Racial',req:['jaffa','jaffa_free'],a:'Requires Jaffa. WIS +1',ab:'Rebel',t:'Advantage on saves caused by Goa\'uld and other Jaffa.'},
+ 'Student of Bra\'tac':{c:'Racial',req:['jaffa','jaffa_free'],a:'Requires Jaffa. DEX +1',ab:'Ma\'tok Mastery',t:'You treat any Ma\'tok you wield as if it had the finesse weapon quality.'},
+ 'Tau\'ri Military':{c:'Racial',req:['human_tauri'],a:'Requires Human from Earth',ab:'Basic Training',t:'You are proficient in martial arts, longarms, or heavy armour (pick one).'},
+ 'Tok\'ra Spy':{c:'Racial',req:['tokra'],a:'Requires Tok\'ra (not Pangaran). CHA +1',ab:'Passing',t:'Advantage on Deception checks to make targets believe you are a Human, Goa\'uld or Jaffa.'},
+ 'Unas Alpha':{c:'Racial',req:['unas','unas_unchained'],a:'Requires Unas. CHA +1',ab:'Clan Leader',t:'Once per mission, other friendly Unas may call on your presence for advantage on a save or attack roll.',use:{n:'Clan Leader',max:1,r:'mission'}}};
+
+const CLASSES={
+ diplomat:{n:'Diplomat',hdie:8,lvlhp:4,det:2,saves:['wis','cha'],skills:['Culture','Deception','Insight','Persuasion'],armor:'Light',weapons:'Common weapons, Sidearms',tools:'Med Kit, Translator, Pan-Cultural Wardrobe',kit:'Translator',feat:'Inspiration',
+  f:[[1,'Inspire','action','Once per long rest, as an action, grant all team members temporary HP equal to a roll of your Inspire die (1d6). They last until your next long rest or until removed by damage. While a team member has them they are Inspired and gain the benefits of your Inspiration feats. A character can only be Inspired by one source at a time.'],
+   [1,'Inspirations','other','Choose one Inspiration feat at 1st level, and another at 3rd and 5th level.'],
+   [2,'Pep Talk','action','Once per mission, as an action, restore 1d4 Determination points to each member of your team (including yourself).'],
+   [2,'Word In An Ear','action','As an action, inspire a single team member within 1m, rolling your Inspire die for their Inspire HP. Characters who already have Inspire HP are immune. A character can only be targeted by your Word In An Ear once per long rest.'],
+   [3,'Force of Will','other','You may use Inspire when you take a short or long rest. Characters already benefiting from your Inspire are immune to a second application.'],
+   [4,'Diplomatic Expertise','other','Choose Culture, Insight or Persuasion. Your proficiency bonus is doubled for checks using it. (Set that skill to Expertise by clicking its proficiency dot twice.)'],
+   [4,'Ability Score Improvement','other','Increase Wisdom or Charisma by +2, or two ability scores by +1 each (maximum 20).'],
+   [5,'Strong Personality','other','Your Inspire die increases from 1d6 to 1d8.']]},
+ engineer:{n:'Engineer',hdie:8,lvlhp:4,det:2,saves:['dex','int'],skills:['Engineering','Pilot','Perception'],armor:'Light',weapons:'Common weapons, Sidearms, Longarms',tools:'Engineering Kit, Explosives, Fabrication Kit',kit:'Engineering Kit',feat:'Modification',
+  f:[[1,'Jury Rig','action','When you use an Engineering Kit to repair a machine you heal 2d8 instead of 2d6. You may repair an adjacent machine as an action rather than during a short rest.'],
+   [1,'Modifications','other','Choose one Modification feat at 1st level, and another at 3rd and 5th level.'],
+   [2,'Hold Together','other','When you benefit from cover, you gain resistance to the damage of attacks hindered by that cover.'],
+   [2,'Whack-It','bonus','As a bonus action, give one adjacent machine +1d6 temporary HP. If this brings it above half its normal HP it begins to function immediately. Only one machine at a time.'],
+   [3,'Tune-Up','other','Add your Intelligence modifier to the amount repaired whenever you repair a machine or grant a machine temporary HP.'],
+   [4,'Broad Spectrum Scanners','other','You can use Intelligence instead of Wisdom when making Perception checks. (Applied automatically if higher.)'],
+   [4,'Ability Score Improvement','other','Increase Dexterity or Intelligence by +2, or two ability scores by +1 each (maximum 20).'],
+   [5,'Xeno-Tech Specialist','other','During an episode R&D encounter, reduce the time required by one stage. Advantage on checks to understand the function and design of unfamiliar technology.']]},
+ medic:{n:'Medic',hdie:8,lvlhp:4,det:2,saves:['dex','wis'],skills:['Athletics','Insight','Medicine','Science'],armor:'Light',weapons:'Common weapons, Sidearms, Shotguns',tools:'Med Kit, Outbreak Kit',kit:'Med Kit',feat:'Procedure',
+  f:[[1,'First Aid','action','Add your proficiency bonus to healing with a Med Kit. You may use a Med Kit to heal a wounded team member as an action rather than during a short rest. Med Kits can\'t heal the same target again until after a short rest.'],
+   [1,'Procedures','other','Choose one Procedure feat at 1st level, and another at 3rd and 5th level.'],
+   [2,'Triage','bonus','As a bonus action with a DC 20 Medicine check, learn a character\'s current and total HP and total hit dice. Disadvantage if you\'re unfamiliar with its biology.'],
+   [2,'Unnoticed Field Medic','other','When you heal a team member using First Aid, attacks against you have disadvantage until your next turn.'],
+   [3,'Man Down','other','While you are conscious and within 1m of a dying team member, they need one fewer death save to stabilise.'],
+   [4,'Physician Heal Thyself','bonus','You may use a Med Kit on yourself as a bonus action.'],
+   [4,'Ability Score Improvement','other','Increase Intelligence or Wisdom by +2, or two ability scores by +1 each (maximum 20).'],
+   [5,'First Response','other','Add your Wisdom modifier to the damage you heal with a Med Kit.']]},
+ scientist:{n:'Scientist',hdie:8,lvlhp:4,det:2,saves:['int','wis'],skills:['Culture','Investigation','Nature','Science'],armor:'Light',weapons:'Common weapons, Sidearms',tools:'Explosives, Research Kit, Translator',kit:'Research Kit',feat:'Discovery',
+  f:[[1,'Eureka','other','Whenever you fail an Intelligence or Wisdom check during a mission, gain one Eureka point (maximum equal to your INT or WIS modifier, whichever is higher). Spend one when making an INT or WIS check to gain advantage. Unspent points are lost at the end of each mission.'],
+   [1,'Discoveries','other','Choose one Discovery feat at 1st level, and another at 3rd and 5th level.'],
+   [2,'Apt Analogy','other','Once per short rest, grant a friendly character a +TD bonus on an Intelligence or Wisdom skill check.'],
+   [2,'Great Mind','other','You are immune to the Charmed condition, and have advantage on Insight checks to discern lies.'],
+   [3,'Cross-Discipline Studies','other','Add half your proficiency bonus (rounded down) to any INT, WIS or CHA skill check that doesn\'t already include it. (Applied automatically.)'],
+   [4,'Resilient Mind','other','When you suffer INT, WIS or CHA damage, reduce it by 1 (minimum 1).'],
+   [4,'Ability Score Improvement','other','Increase Intelligence or Wisdom by +2, or two ability scores by +1 each (maximum 20).'],
+   [5,'Casual Genius','other','Begin each mission with Eureka points equal to half your proficiency bonus (rounded down).'],
+   [5,'For Science!','other','You may spend a Eureka point to gain advantage on Charisma checks, as well as INT and WIS checks.']]},
+ scout:{n:'Scout',hdie:10,lvlhp:5,det:1,saves:['con','dex'],skills:['Perception','Stealth','Survival'],armor:'Light',weapons:'Common weapons, Martial Arts, Bows, Sidearms, Shotguns',tools:'Camo Kit, Explosives',kit:'Camo Kit',feat:'Field Hack',
+  f:[[1,'Survivalist','other','You have resistance to damage from your environment, including non-natural environmental dangers like traps.'],
+   [1,'Field Hacks','other','Choose one Field Hack feat at 1st level and another at 4th level.'],
+   [2,'Vanguard','other','You deal +1d6 damage with ranged attacks against any target within 5m.'],
+   [2,'Trap Rigging','action','As an action, booby trap a 1m area. You can scavenge parts for traps equal to your proficiency bonus, refilled on a long rest. Spot DC = 8 + proficiency + WIS. Hidden Spikes: DC 20 DEX save or 2d6 damage. Snare: DC 20 DEX save or Entangled. Grenade: attach a grenade you carry.'],
+   [3,'Uncanny Dodge','reaction','When an attacker you can see hits you, use your reaction to gain resistance to the damage. Doesn\'t work against area or cone attacks, but does against lines.'],
+   [3,'Scout\'s Cunning','bonus','Take a bonus action on each of your turns in combat, used only to Dash, Disengage or Hide.'],
+   [4,'Ability Score Improvement','other','Increase Dexterity or Wisdom by +2, or two ability scores by +1 each (maximum 20).'],
+   [5,'Evasion','other','When an effect allows a DEX save for half damage, you take no damage on a success and half on a failure.']]},
+ soldier:{n:'Soldier',hdie:10,lvlhp:5,det:1,saves:['str','con'],skills:['Athletics','Intimidation','Pilot'],armor:'Light and Heavy',weapons:'Common weapons, Martial Arts, Sidearms, Longarms',tools:'Camo Kit, Explosives',kit:'Longarm upgrade',feat:'Tactic',
+  f:[[1,'Tactical Flexibility','action','As an action, activate a Tactic feat you don\'t know for rounds equal to your CHA modifier (minimum 1). When it ends, you may re-activate a tactic you know. Once per long rest.'],
+   [1,'Tactics','other','Your team benefits from one tactic at a time; change it with an action. Choose one Tactic feat at 1st level and another at 4th.'],
+   [2,'Surge','bonus','Take an additional action on your turn (even an attack) as a bonus action. Once per short or long rest.'],
+   [2,'Rally','other','If you are wounded when initiative is rolled, immediately heal TD hit points. Once per long rest.'],
+   [3,'Martial Training','other','Your minimum damage die for melee weapons or martial arts is 1d8.'],
+   [3,'Improved Critical','other','Choose a weapon type you are proficient with. With it, you score a critical hit on a 19 or 20.'],
+   [4,'Ability Score Improvement','other','Increase Strength or Constitution by +2, or two ability scores by +1 each (maximum 20).'],
+   [5,'Tactical Superiority','other','You may have two tactics in effect at the same time. Tactical Flexibility overwrites one of them.']]}};
+
+const FEAT_CATS=['General','Combat (General)','Combat (Melee)','Combat (Ranged)','Downtime','Inspiration','Modification','Procedure','Discovery','Field Hack','Tactic','Bonus (level)'];
+
+const BASE_KIT=['3 Uniforms','MREs (mission duration)','Personal Tactical Radio','Flashlight','Water Purifier Canteen','Filtration / Radiation Mask','Multi-tool','Personal Med Kit','Extended Climate Protection Clothing','Combat Tent'];
+
+const FACILITIES={
+ 'Armory':'Add the facility bonus to your ranged weapon damage rolls.',
+ 'ASH Archive':'Choose an Intelligence skill. Add the facility bonus to it.',
+ 'Firing Range':'Add the facility bonus to your ranged weapon attack rolls.',
+ 'Gym':'Add the facility bonus to your melee damage rolls.',
+ 'Medical Bay':'Add the facility bonus to HP healed when you use a Med Kit.',
+ 'Mess Hall':'Add the facility bonus to your Constitution and Wisdom saves.',
+ 'Motorpool':'Add the facility bonus to the AC of any vehicle you pilot.',
+ 'Rec Hall':'Choose a Charisma skill. Add the facility bonus to it.',
+ 'Honing abilities':'Describe how you hone your abilities. With GM approval, add your proficiency bonus to one ability score (max 20) for the next mission, or split it across several (at least +2 to each).'};
+
+// ---- EQUIPMENT CATALOGUE ----
+// w: weapon {modes:[[name,'melee'|'ranged',dmg,type,range,finesse]],cap,reload,pc (proficiency group),sp}
+// a: armour {kind:'light'|'heavy'|'addon',ac,str,stealth,load}
+const CAT=[
+ // Common weapons (TL1)
+ {n:'Blade',t:'weapon',src:'Common',tl:1,b:1,w:{modes:[['Strike','melee','1d6','Slashing & Piercing','',1]],pc:'common',sp:'Finesse'},d:'One-handed blades: arming sword, battle axe, sickle.'},
+ {n:'Bludgeon',t:'weapon',src:'Common',tl:1,b:1,w:{modes:[['Strike','melee','1d4','Bludgeoning','',0]],pc:'common'},d:'Clubs, maces and warhammers.'},
+ {n:'Bow',t:'weapon',src:'Common',tl:1,b:1,w:{modes:[['Shoot','ranged','1d6','Piercing','50m/200m',0]],pc:'bows'},d:'An early ranged weapon that uses tension to launch an arrow.'},
+ {n:'Crossbow',t:'weapon',src:'Common',tl:1,b:2,w:{modes:[['Shoot','ranged','1d8','Piercing','40m/150m',0]],pc:'bows'},d:'A bow design that lays the string horizontal to the user.'},
+ {n:'Greatblade',t:'weapon',src:'Common',tl:1,b:2,w:{modes:[['Strike','melee','1d8','Slashing','',0]],pc:'common'},d:'Two-handed swords and axes.'},
+ {n:'Greathammer',t:'weapon',src:'Common',tl:1,b:2,w:{modes:[['Strike','melee','1d6','Bludgeoning','',0]],pc:'common',sp:'Knockdown (crits knock the target prone)'},d:'A heavy weight on a shaft that can knock a foe off their feet.'},
+ {n:'Javelin / Spear',t:'weapon',src:'Common',tl:1,b:1,w:{modes:[['Thrust','melee','1d6','Piercing','',0],['Throw','ranged','1d6','Piercing','10m/40m',0]],pc:'common'},d:'A polearm suitable for throwing.'},
+ {n:'Polearm',t:'weapon',src:'Common',tl:1,b:2,w:{modes:[['Strike','melee','1d8','Piercing','Reach 2m',0]],pc:'common'},d:'Spears and poleaxes.'},
+ {n:'Sling',t:'weapon',src:'Common',tl:1,b:1,w:{modes:[['Sling','ranged','1d4','Bludgeoning','30m/150m',0]],pc:'bows'},d:'A strap of leather for hurling small stones.'},
+ {n:'Combat Knife',t:'weapon',src:'Common',tl:2,b:1,w:{modes:[['Stab','melee','1d4','Piercing','',1]],pc:'common',sp:'Finesse'},d:'Shortblade. Standard issue in the base kit.'},
+ {n:'Thrown Blade',t:'weapon',src:'Common',tl:1,b:1,w:{modes:[['Throw','ranged','1d6','Piercing','5m/30m',0]],pc:'common'},d:'Shuriken, throwing knives, hurling axes. Bulk 1 per 5.'},
+ {n:'Whip',t:'weapon',src:'Common',tl:1,b:1,w:{modes:[['Lash','melee','1d4','Slashing','Reach 2m',1]],pc:'common',sp:'Finesse, Flexible (disarm/trip with an attack roll)'},d:'Braided whips and lengths of chain.'},
+ // Tau'ri
+ {n:'Beretta M9',t:'weapon',src:"Tau'ri",tl:2,b:1,w:{modes:[['Single shot','ranged','1d8','Piercing','50m/100m',0]],cap:15,reload:'1 action',pc:'sidearms',sp:'Pistol (no disadvantage with enemies within 1m)'},d:'The staple Tau\'ri military sidearm.'},
+ {n:'FN P90',t:'weapon',src:"Tau'ri",tl:2,b:2,w:{modes:[['Single shot','ranged','2d6','Piercing','200m/1800m',0],['Burst','ranged','2d6+TD','Piercing','200m/1800m',0]],cap:60,reload:'1 action',pc:'longarms',sp:'Automatic (+TD per 10 rounds up to STR mod, disadvantage), Burst (+TD), Extended Capacity, Reflex Sight (advantage within short range if you don\'t move and fire once)'},d:'Standard issue Phoenix Site longarm.'},
+ {n:'MP7A1',t:'weapon',src:"Tau'ri",tl:2,b:1,w:{modes:[['Single shot','ranged','2d6','Piercing','200m/1800m',0]],cap:30,reload:'1 action',pc:'longarms',sp:'Automatic (+TD per 10 rounds up to STR mod, disadvantage). Worn on the hip.'},d:'A compact submachine gun.'},
+ {n:'H&K SR9TC',t:'weapon',src:"Tau'ri",tl:2,b:2,w:{modes:[['Aimed shot','ranged','2d6','Piercing','200m/1800m',0]],cap:15,reload:'1 action',pc:'longarms',sp:'High Caliber, Scope (no long-range disadvantage if you don\'t move)'},d:'Standard issue sniper rifle.'},
+ {n:'Mossberg 500',t:'weapon',src:"Tau'ri",tl:2,b:2,w:{modes:[['Buckshot','ranged','1d10','Piercing','10m/30m',0],['Slug','ranged','1d10','Piercing','10m/30m',0]],cap:8,reload:'2 actions',pc:'shotguns',sp:'Scatter: buckshot hits every target in a 45 degree cone within short range. Longarm proficiency applies to slugs.'},d:'Reliable hunting shotgun with underbarrel flashlight.'},
+ {n:'Frag Grenade',t:'weapon',src:"Tau'ri",tl:2,b:1,w:{modes:[['Throw','ranged','6d6','Force','20m',0]],pc:'explosives',sp:'Blast 3m, explodes at the start of your next turn. DC 15 DEX save for half. Bulk 1 per 3.'},d:'The standard grenade.'},
+ {n:'Smoke Grenade',t:'gear',src:"Tau'ri",tl:2,b:1,d:'Fills a 5m x 5m area with thermal smoke that obscures vision and many sensors.'},
+ {n:'Flash-Bang Grenade',t:'gear',src:"Tau'ri",tl:2,b:1,d:'No damage. Everyone in the blast must pass a CON save (DC 11 + attacker\'s proficiency) or be blinded and deafened for 1d6 rounds.'},
+ {n:'Grenade Launcher',t:'weapon',src:"Tau'ri",tl:2,b:2,w:{modes:[['Launch','ranged','6d6','Force','150m/300m',0]],cap:6,reload:'2 actions',pc:'gunnery',sp:'Blast 3m'},d:'Greatly increases a grenade\'s range.'},
+ {n:'RPG (AT4)',t:'weapon',src:"Tau'ri",tl:2,b:3,w:{modes:[['Fire','ranged','8d6','Fire & Force','100m/300m',0]],cap:1,reload:'3 actions',pc:'gunnery',sp:'Blast 5m'},d:'Rocket-propelled grenade. Guided versions exist.'},
+ {n:'Chain Gun',t:'weapon',src:"Tau'ri",tl:2,b:4,w:{modes:[['Automatic','ranged','6d6','Piercing','100m/1000m',0]],cap:100,reload:'3 actions',pc:'gunnery',sp:'Automatic, Belt Fed. Must spend at least 5 capacity. Needs STR 18 or a harness.'},d:'Minigun with spinning barrels.'},
+ {n:'Flamethrower',t:'weapon',src:"Tau'ri",tl:2,b:2,w:{modes:[['Burn','ranged','1d10','Fire','15m line / 10m cone',0]],cap:5,reload:'1 minute',pc:'gunnery',sp:'No attack roll. DC 15 DEX save halves.'},d:'For clearing terrain. Not approved for combat.'},
+ // Alien
+ {n:"Ma'tok Staff",t:'weapon',src:'Alien',tl:4,b:2,w:{modes:[['Plasma blast','ranged','3d6','Fire','5m/60m',0],['Melee','melee','1d10','Bludgeoning','',0]],pc:'jaffa',sp:'Blast: Recharge 1, Shockwave 1m (DC 10 DEX save or prone)'},d:'The Jaffa staff weapon.'},
+ {n:"Zat'nik'tel",t:'weapon',src:'Alien',tl:3,b:1,w:{modes:[['Zat','ranged','0','Electric','10m/30m',0]],pc:'jaffa',sp:'Recharge 1. Targets suffer 3 levels of exhaustion instead of HP damage. Electronics take 1d12 electric.'},d:'Escalates quickly from suppression to lethal.'},
+ {n:'Clak Blade',t:'weapon',src:'Alien',tl:3,b:1,w:{modes:[['Strike','melee','1d8','Slashing','1m',1]],pc:'martial',sp:'Finesse. Unas with Martial Arts deal 1d8 + STR on a successful grapple; claws become 1d8.'},d:'Wrist-mounted Unas shortblade.'},
+ // Armour
+ {n:'Furs',t:'armor',src:'Common',tl:1,b:0,a:{kind:'light',ac:11,load:6},d:'Hides offering warmth and moderate protection.'},
+ {n:'Leather',t:'armor',src:'Common',tl:1,b:0,a:{kind:'light',ac:13,load:6},d:'Treated hides hardened against attacks.'},
+ {n:'Chainmail',t:'armor',src:'Common',tl:1,b:0,a:{kind:'heavy',ac:16,str:13,stealth:1,load:4},d:'Metal links. Heavy armour slows you by 2m.'},
+ {n:'Platemail',t:'armor',src:'Common',tl:1,b:0,a:{kind:'heavy',ac:18,str:15,stealth:1,load:3},d:'Worked steel plates. Heavy armour slows you by 2m.'},
+ {n:'Shield',t:'armor',src:'Common',tl:1,b:0,a:{kind:'addon',ac:2,load:-1},d:'From bucklers to kite shields.'},
+ {n:'Bullet Resistant Vest',t:'armor',src:"Tau'ri",tl:2,b:0,a:{kind:'light',ac:14,load:6},d:'Kevlar: +1 effective tech level against bullets and fast projectiles. Concealable (DC 20 Perception to spot).'},
+ {n:'Tactical Vest',t:'armor',src:"Tau'ri",tl:2,b:0,a:{kind:'light',ac:16,load:8},d:'Kevlar: +1 effective tech level against bullets and fast projectiles. Extra pockets and clips.'},
+ {n:'Tactical Helmet',t:'armor',src:"Tau'ri",tl:2,b:0,a:{kind:'addon',ac:1,load:0},d:'Night vision: see in low light and darkness in monochrome.'},
+ {n:'Tactical Armor',t:'armor',src:"Tau'ri",tl:2,b:0,a:{kind:'heavy',ac:20,str:13,stealth:1,load:6},d:'Kevlar and ceramic plates for frontline warfare. Heavy armour slows you by 2m.'},
+ {n:'Blast Shield',t:'armor',src:"Tau'ri",tl:2,b:0,a:{kind:'addon',ac:2,stealth:1,load:-2},d:'Advantage on DEX saves to resist blast damage.'},
+ // Gear
+ ...[['Binocular / Monocular',1,1,'Negates distance disadvantage on Investigation or Perception when surveying a target.'],
+  ['C4 Explosive Clay',2,1,'1d10 damage within 1m per use; each extra use +1d10 and +1m. Bulk 1 per 3 uses. Needs a detonator.'],['C4 Detonator',2,0,'Radio receiver pressed into C4 for remote detonation.'],
+  ['Camo Kit',1,1,'Proficient users gain advantage on Stealth in natural cover. Applied during a short rest.'],['Claymore Mine',2,1,'10m cone, 8d6 damage (DC 15 save for half). Trip-wire needs explosives proficiency.'],
+  ['Climbing Kit',2,1,'1000m of cord and hardware. Advantage on climbing checks.'],['Communications Balloon',2,2,'Extends tactical radio range to 500km for 10d6 hours.'],
+  ['Duct Tape',2,1,'Military grade. Bulk 1 per 100m.'],['Emergency Viral Response',3,0,'Heal ability damage from disease until your next long rest.'],
+  ['Engineering Kit',2,1,'Repair 1d6 damage to a machine during a short rest (2d6 if proficient).'],['Fabrication Kit',2,10,'Tools to fabricate or modify gear and structures in the field.'],
+  ['Galactic Positioning System',3,2,'Advantage on Science checks to find your location in the galaxy.'],['G.D.O.',2,1,'Sends your team\'s iris code through the gate.'],
+  ['Generator',2,3,'Powers a small hospital, not a Stargate.'],['Naquadah Generator',3,3,'Powers a base or a Stargate.'],['Guidance Flares',1,1,'Coloured smoke visible for 10 minutes. Bulk 1 per 3 flares.'],
+  ['Grapple Gun',3,1,'Fires a grappling hook and line up to 200m, or an anchor into stone at 100m.'],['Magazine (loaded)',2,1,'Bulk 1 per 2 magazines.'],
+  ['Med Kit',2,2,'Heal 1d8 (wounded) or 1d4 (scuffed) during a short rest; 2d8 / 2d4 if proficient. Once per short rest per patient.'],
+  ['Outbreak Kit',2,1,'Advantage on saves against ongoing poison or disease. Proficient users can extend this to others during rests.'],
+  ['Pan-Cultural Wardrobe',2,2,'Proficient users give one character per WIS modifier advantage on Deception to pass unnoticed.'],['Parachute',1,3,'Safe descent from 1km or higher.'],
+  ['Personal Computer / Tablet',2,1,'Laptop or tablet.'],['Research Kit',2,1,'Advantage on Science checks in its chosen field.'],['Restraints',2,1,'Wrist (DC 15), ankle (DC 20) or both (DC 24, restrained).'],
+  ['Rope',2,1,'Nylon, marked every metre. Bulk 1 per 100m.'],['SCUBA',2,2,'2 hours underwater. Proficient users gain 3m swim speed.'],
+  ['S.I.C.P.',1,1,'Care package. Sharing it grants advantage on one Persuasion check.'],['Signal Beacon',2,1,'Transmits for 100 hours. Detectable within 1000km.'],
+  ['Solar Recharging Station',2,2,'Recharges common devices during a long rest.'],['Space Suit',2,5,'One hour of vacuum operation.'],['Radio Relay',2,2,'Relays tactical radio within 20km.'],
+  ['Translator',2,1,'Proficient users make Charisma checks without sharing a language, for any language on file.'],['Uniform, Dress',1,1,'Advantage on Charisma checks against those you outrank.'],
+  ['Utility Ties',1,1,'Zip ties. Can be used as restraints.'],["Elio'so Paste",4,1,'Aturen healing paste. DC 20 Medicine to heal 1 STR, DEX and CON damage; heals HP equal to the check.'],
+  ['Phase Device',4,0,'Tollan. DC 15 Science to phase a touched target through solid matter until the end of its next turn.'],
+  ['Monitoring Implant',4,0,'Tollan. Your team knows each other\'s HP, and anyone may add TD to healing you.'],['Tunnel Crystals',4,1,"Tok'ra crystals that grow tunnel networks."],
+  ['Unas Necklace',1,0,'Advantage on saves to resist a Goa\'uld larva implanting.'],["Za'tarc Detector",4,1,"Tok'ra device that detects Goa'uld mind manipulation."]]
+  .map(([n,tl,b,d])=>({n,t:'gear',src:'Gear',tl,b,d}))];
+
+// ---- Proficiency & reference lists (for structured pickers) ----
+const DAMAGE_TYPES=['Acid','Bludgeoning','Cold','Fire','Force','Electricity','Necrotic','Piercing','Poison','Psychic','Radiant','Slashing','Sonic'];
+const WEAPON_GROUPS={common:'Common weapons',bows:'Bows',sidearms:'Sidearms',longarms:'Longarms',shotguns:'Shotguns',martial:'Martial Arts',jaffa:"Jaffa weapons",gunnery:'Gunnery'};
+const TOOLS=['Camo Kit','Engineering Kit','Explosives','Fabrication Kit','Med Kit','Outbreak Kit','Pan-Cultural Wardrobe','Research Kit','Scuba','Translator'];
+// Best-effort assembly from the campaign lore docs, not the core rulebook. Please check this list.
+const LANGUAGES=[
+ {n:'English',g:"Milky Way"},{n:'Aturen',g:"Milky Way"},{n:"Goa'uld",g:"Milky Way"},{n:'Ancient',g:"Milky Way"},{n:'Unas',g:"Milky Way"},
+ {n:'Kigali Common',g:'Kigal Galaxy'},{n:'Vorah',g:'Kigal Galaxy'},{n:"Keth'alis",g:'Kigal Galaxy'},
+ {n:'Lumenari',g:'Kigal Galaxy',note:'Not yet encountered by the team'},{n:'Furling',g:'Kigal Galaxy',note:'Exceedingly rare — GM permission'}];
+// ============================================================
+// CORE: state, derived values, dice
+// ============================================================
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const modOf=s=>Math.floor(((+s||0)-10)/2);
+const sgn=n=>(n>=0?'+':'')+n;
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const uid=()=>Math.random().toString(36).slice(2,10);
+const on=(fn,...a)=>`onclick="${esc(fn+'('+a.map(x=>JSON.stringify(x)).join(',')+')')}"`;
+const onS=(fn,...a)=>`onclick="${esc('event.stopPropagation();'+fn+'('+a.map(x=>JSON.stringify(x)).join(',')+')')}"`;
+const AB=k=>k.toUpperCase();
+const ABN=k=>ABILS.find(a=>a.k===k).n;
+
+function newChar(){return{v:2,name:'',race:'',cls:'',level:1,origins:['',''],portrait:'',
+ scores:{str:10,dex:10,con:10,int:10,wis:10,cha:10},saveProf:{},skillProf:{},skillAbil:{},
+ hp:{cur:null,temp:0,mod:0,override:null,ds:{s:0,f:0},stable:false,dead:false},
+ exh:0,conds:[],dp:null,tension:'d6',speedMod:0,acMod:0,impInit:false,impMoxie:false,
+ profs:{armorLight:false,armorHeavy:false,weapons:{common:false,bows:false,sidearms:false,longarms:false,shotguns:false,martial:false,jaffa:false,gunnery:false},tools:[],languages:['English'],other:''},defenses:[],
+ inv:[],kit:{},res:{},customRes:[],feats:[],eureka:0,mp:{earned:0},
+ facility:{name:'',rating:1,note:''},
+ bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'sgc_dark'}}
+
+let C=newChar(), D={};
+const UI={tab:'actions',filter:'all',ffilter:'all',rollMode:'normal',pinned:true,open:true,panel:{k:'log'},log:[],addq:'',addt:'all'};
+try{UI.pinned=localStorage.getItem('sgc-pinned')!=='0'}catch(e){}
+
+function itemFromCat(n,extra){const c=allCatalog().find(x=>x.n===n);if(!c)return null;
+ return Object.assign({id:uid(),n:c.n,catName:c.n,t:c.t,src:c.src,tl:c.tl,b:c.b,qty:1,kit:false,eq:false,notes:'',d:c.d,
+  w:c.w?JSON.parse(JSON.stringify(c.w)):null,a:c.a?{...c.a}:null,prof:'auto',ammo:c.w&&c.w.cap?c.w.cap:null},extra||{})}
+function starterKit(){return[itemFromCat('Tactical Vest',{kit:true,eq:true}),itemFromCat('Combat Knife',{kit:true,eq:true}),
+ itemFromCat('Beretta M9',{kit:true,eq:true}),itemFromCat('FN P90',{kit:true,eq:true})]}
+
+function normalise(c){const n=newChar();const o=Object.assign(n,c||{});
+ for(const k of ['hp','mp','facility','bg','notes'])o[k]=Object.assign(newChar()[k],(c||{})[k]||{});
+ o.scores=Object.assign(newChar().scores,(c||{}).scores||{});
+ o.hp.ds=Object.assign({s:0,f:0},o.hp.ds||{});
+ if(!Array.isArray(o.origins))o.origins=['',''];while(o.origins.length<2)o.origins.push('');
+ ['inv','conds','feats','customRes','defenses'].forEach(k=>{if(!Array.isArray(o[k]))o[k]=[]});
+ o.profs=upgradeProfs((c||{}).profs);
+ return o}
+
+// Turns old free-text proficiencies (or nothing) into the structured shape.
+function upgradeProfs(p){const fresh=newChar().profs;if(!p)return fresh;
+ if(p.weapons&&typeof p.weapons==='object'&&!Array.isArray(p.weapons))
+  return{armorLight:!!p.armorLight,armorHeavy:!!p.armorHeavy,weapons:Object.assign({...fresh.weapons},p.weapons),
+   tools:Array.isArray(p.tools)?p.tools:[],languages:Array.isArray(p.languages)&&p.languages.length?p.languages:['English'],other:p.other||''};
+ // old shape: armor/weapons/tools were free text, languages was a comma string
+ const out={armorLight:false,armorHeavy:false,weapons:{...fresh.weapons},tools:[],languages:[],other:''};
+ const at=(p.armor||'').toLowerCase();out.armorLight=/light/.test(at);out.armorHeavy=/heavy/.test(at);
+ const wt=(p.weapons||'').toLowerCase();const leftoverW=[];
+ [['common',/common/],['bows',/bow/],['sidearms',/sidearm/],['longarms',/longarm/],['shotguns',/shotgun/],['martial',/martial/],['jaffa',/jaffa/],['gunnery',/gunnery/]]
+  .forEach(([k,re])=>{if(re.test(wt))out.weapons[k]=true});
+ (p.weapons||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>{const low=x.toLowerCase();
+  if(!/common|bow|sidearm|longarm|shotgun|martial|jaffa|gunnery/.test(low))leftoverW.push(x)});
+ (p.tools||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>{const m=TOOLS.find(t=>t.toLowerCase()===x.toLowerCase());if(m)out.tools.push(m);else leftoverW.push(x)});
+ (p.languages||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>{const nx=/^common$/i.test(x)?'English':x;const m=LANGUAGES.find(l=>l.n.toLowerCase()===nx.toLowerCase());out.languages.push(m?m.n:nx)});
+ if(!out.languages.length)out.languages=['English'];
+ out.other=leftoverW.join(', ');return out}
+
+// Old single-file sheet (v1) -> v2
+function migrate(d){if(!d||d.v===2)return normalise(d);
+ const c=newChar();if(!d||!Object.keys(d).length){c.inv=starterKit();return c}
+ c.name=d['f-name']||'';c.race=d['f-race']||'';c.cls=d['f-class']||'';c.level=+d['f-level']||1;
+ if(d.scores)c.scores=Object.assign(c.scores,d.scores);
+ if(d.savePro)for(const k in d.savePro)if(d.savePro[k])c.saveProf[k]=true;
+ if(d.skillPro)for(const k in d.skillPro)if(d.skillPro[k])c.skillProf[k]=1;
+ c.hp.cur=d.hpCur??null;c.hp.temp=+d['f-hp-tmp']||0;c.exh=d.exh||0;
+ c.bg.traits=d['f-pers']||'';c.bg.ideals=d['f-ideals']||'';c.bg.flaws=d['f-flaws']||'';c.bg.appearance=d['f-appear']||'';
+ c.bg.allies=d['f-allies']||'';c.bg.story=d['f-story']||'';c.notes.session=d['f-notes']||'';
+ c.notes.general=[d['f-inv']&&('Old inventory notes:\n'+d['f-inv']),d['f-feat2']&&('Old feats notes:\n'+d['f-feat2'])].filter(Boolean).join('\n\n');
+ if(d.imgData&&d.imgData.length>10)c.portrait=d.imgData;if(d.theme)c.theme=d.theme;
+ const cl=CLASSES[c.cls];if(cl){if(!Object.keys(c.saveProf).length)cl.saves.forEach(k=>c.saveProf[k]=true);c.profs=upgradeProfs({armor:cl.armor,weapons:cl.weapons,tools:cl.tools,languages:'English'})}
+ c.inv=starterKit();return c}
+
+// ---------- derived ----------
+const PROF_BY_LVL=[2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6];
+function weaponProf(pc){if(pc==='explosives')return C.profs.tools.includes('Explosives')||C.profs.weapons.common;
+ if(pc==='jaffa')return C.profs.weapons.jaffa||C.race==='jaffa'||C.race==='jaffa_free';
+ return !!C.profs.weapons[pc]}
+function armorProf(kind){return kind==='light'?C.profs.armorLight:C.profs.armorHeavy}
+
+function derive(){const d={};const lvl=d.lvl=clamp(+C.level||1,1,20);const P=d.prof=PROF_BY_LVL[lvl-1];
+ const m=d.m={};ABILS.forEach(a=>m[a.k]=modOf(C.scores[a.k]));
+ const cls=d.cls=CLASSES[C.cls]||null,race=d.race=RACES[C.race]||null;
+ d.hdie=cls?cls.hdie:8;
+ d.origins=C.origins.filter(Boolean).map(n=>ORIGINS[n]?{n,...ORIGINS[n]}:null).filter(Boolean);
+ const drills=d.origins.some(o=>o.hpl)?lvl:0;
+ d.autoMax=cls?(cls.hdie+m.con)+(lvl-1)*(cls.lvlhp+m.con)+(race?race.hp:0)+drills:0;
+ const base=(C.hp.override!=null&&C.hp.override!=='')?+C.hp.override:d.autoMax+(+C.hp.mod||0);
+ d.maxHP=Math.max(1,C.exh>=4?Math.ceil(base/2):base);
+ d.hp=C.hp.cur==null?d.maxHP:clamp(+C.hp.cur,0,d.maxHP);
+ d.hpState=C.hp.dead?'dead':d.hp<=0?'down':d.hp>=d.maxHP?'healthy':d.hp>=d.maxHP/2?'scuffed':'wounded';
+ // armour & load
+ const eq=C.inv.filter(i=>i.eq&&i.a);d.body=eq.find(i=>i.a.kind!=='addon')||null;d.addons=eq.filter(i=>i.a.kind==='addon');
+ d.acBase=d.body?(d.body.a.kind==='light'?d.body.a.ac+m.dex:d.body.a.ac):10+m.dex;
+ d.ac=d.acBase+d.addons.reduce((s,i)=>s+(+i.a.ac||0),0)+(+C.acMod||0);
+ d.strShort=d.body&&d.body.a.str&&C.scores.str<d.body.a.str;
+ d.armorProfMissing=d.body?!armorProf(d.body.a.kind):false;
+ d.stealthDis=eq.some(i=>i.a.stealth);
+ d.loadCap=Math.max(0,(d.body?+d.body.a.load||0:0)+m.str+d.addons.reduce((s,i)=>s+(+i.a.load||0),0)+d.origins.reduce((s,o)=>s+(o.bulk||0),0));
+ d.bulk=C.inv.filter(i=>!i.kit).reduce((s,i)=>s+(+i.b||0)*(+i.qty||1),0);
+ let spd=6+d.origins.reduce((s,o)=>s+(o.spd||0),0)+(+C.speedMod||0)-(d.body&&d.body.a.kind==='heavy'?2:0);
+ if(d.strShort)spd=1;if(C.exh>=2)spd=Math.floor(spd/2);if(C.exh>=5)spd=0;
+ if(C.conds.some(c=>['Grappled','Restrained'].includes(c)))spd=0;else if(C.conds.includes('Entangled'))spd=Math.floor(spd/2);d.speed=spd;
+ d.init=Math.max(m.dex,m.wis)+(C.impInit?P:0);d.moxie=Math.max(m.int,m.cha)+(C.impMoxie?P:0);
+ d.dpBase=P+(cls?cls.det:0);d.dp=C.dp==null?d.dpBase:Math.max(0,+C.dp);
+ const fac=C.facility||{},fr=+fac.rating||0;
+ d.saves={};ABILS.forEach(a=>{d.saves[a.k]=m[a.k]+(C.saveProf[a.k]?P:0)+(fac.name==='Mess Hall'&&(a.k==='con'||a.k==='wis')?fr:0)});
+ d.skills={};SKILLS.forEach(s=>{const cand=[s.k];d.origins.forEach(o=>{if(o.sw&&o.sw[0]===s.n)cand.push(o.sw[1])});
+  if(C.cls==='engineer'&&lvl>=4&&s.n==='Perception')cand.push('int');
+  if(C.race==='tokra_pangaran'&&s.n==='Persuasion')cand.push('int','wis');
+  let ab=C.skillAbil[s.n]&&m[C.skillAbil[s.n]]!=null?C.skillAbil[s.n]:cand.reduce((b,k)=>m[k]>m[b]?k:b,cand[0]);
+  const pl=+C.skillProf[s.n]||0;let half=0;
+  if(!pl&&C.cls==='scientist'&&lvl>=3&&['int','wis','cha'].includes(ab))half=Math.floor(P/2);
+  d.skills[s.n]={ab,pl,half,v:m[ab]+(pl?P*pl:half),alt:cand.length>1}});
+ d.pass={Perception:10+d.skills.Perception.v,Investigation:10+d.skills.Investigation.v,Insight:10+d.skills.Insight.v};
+ d.feats=cls?cls.f.filter(f=>f[0]<=lvl):[];
+ d.inspDie=C.cls==='diplomat'?(lvl>=5?'1d8':'1d6'):null;
+ d.eurekaMax=C.cls==='scientist'?Math.max(0,Math.max(m.int,m.wis)):0;
+ d.res=computeRes(d);
+ // defences (auto + custom)
+ const df=[];d.origins.forEach(o=>{if(o.res)df.push(o.res+' ('+o.n+')')});
+ if(C.cls==='scout')df.push('Environmental damage incl. traps (Survivalist)');
+ if(C.cls==='engineer'&&lvl>=2)df.push('Attacks hindered by your cover (Hold Together)');
+ if(d.origins.some(o=>o.n==='Aviator'))df.push('Crash damage (Crash Landing)');
+ d.immune=C.cls==='scientist'&&lvl>=2?['Charmed (Great Mind)']:[];d.defAuto=df;
+ // MP
+ d.featMP=C.feats.reduce((s,f)=>s+(+f.mp||0),0);const E=+C.mp.earned||0;
+ d.mpLevel=E<20?Math.min(5,Math.floor(E/5)+1):5+Math.floor(d.featMP/10);d.mpAvail=E<20?0:E-20-d.featMP;
+ return d}
+
+function computeRes(d){const L=d.lvl,P=d.prof,m=d.m,r=[];
+ const add=(key,name,max,reset,src,desc)=>r.push({key,name,max:Math.max(0,max),reset,src,desc});
+ const cf=n=>(CLASSES[C.cls]?.f.find(f=>f[1]===n)||[])[3]||'';
+ if(C.cls==='diplomat'){add('inspire','Inspire ('+d.inspDie+')',1,'long','Class',cf('Inspire'));if(L>=2)add('peptalk','Pep Talk',1,'mission','Class',cf('Pep Talk'))}
+ if(C.cls==='scientist'&&L>=2)add('apt','Apt Analogy',1,'short','Class',cf('Apt Analogy'));
+ if(C.cls==='scout'&&L>=2)add('traps','Trap Parts',P,'long','Class',cf('Trap Rigging'));
+ if(C.cls==='soldier'){add('tflex','Tactical Flexibility',1,'long','Class',cf('Tactical Flexibility'));if(L>=2){add('surge','Surge',1,'short','Class',cf('Surge'));add('rally','Rally',1,'long','Class',cf('Rally'))}}
+ const rt=n=>(d.race?.tr.find(t=>t[0]===n)||[])[1]||'';
+ if(C.race==='aturen_pacifist')add('invis','Invisibility',P,'long','Race',rt('Invisibility'));
+ if(C.race==='jaffa')add('symb','Symbiote',Math.max(1,P),'long','Race',rt('Symbiote'));
+ if(C.race==='tokra')add('ssymb','Synergistic Symbiote',Math.max(1,m.wis),'long','Race',rt('Synergistic Symbiote'));
+ if(C.race==='unas'||C.race==='unas_unchained')add('imres','Impressive Resilience',1,'long','Race',rt('Impressive Resilience'));
+ d.origins.forEach(o=>{if(o.use)add('o_'+o.n,o.use.n,o.use.max,o.use.r,'Origin',o.t)});
+ C.customRes.forEach(x=>add('c_'+x.id,x.name,+x.max||1,x.reset,'Custom',x.desc||''));
+ r.forEach(x=>x.used=clamp(+C.res[x.key]||0,0,x.max));return r}
+
+// ---------- dice ----------
+function die(n){const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n+1}
+function rollExpr(expr,crit){let total=0;const parts=[];
+ const toks=String(expr).replace(/\s+/g,'').replace(/^\+/,'').match(/[+-]?[^+-]+/g)||[];
+ toks.forEach(tok=>{const sign=tok[0]==='-'?-1:1;const t=tok.replace(/^[+-]/,'');let m;
+  if(/^td$/i.test(t)){const s=+C.tension.slice(1);const n=crit?2:1;const rs=[...Array(n)].map(()=>die(s));const v=rs.reduce((a,b)=>a+b,0);total+=sign*v;parts.push((sign<0?'- ':'+ ')+'TD '+n+'d'+s+' ('+rs.join(', ')+')')}
+  else if((m=t.match(/^(\d*)d(\d+)$/i))){const n=(+m[1]||1)*(crit?2:1),s=+m[2];const rs=[...Array(n)].map(()=>die(s));const v=rs.reduce((a,b)=>a+b,0);total+=sign*v;parts.push((sign<0?'- ':'+ ')+n+'d'+s+' ('+rs.join(', ')+')')}
+  else if(!isNaN(+t)){total+=sign*(+t);if(+t)parts.push((sign<0?'- ':'+ ')+t)}});
+ return{total:Math.max(0,total),text:parts.join(' ').replace(/^\+ /,'')}}
+
+function autoAdv(kind,ab){const a=[],dz=[];const c=C.conds,x=C.exh;
+ if(kind==='check'){if(x>=1)dz.push('Exhaustion');if(c.includes('Poisoned'))dz.push('Poisoned');if(c.includes('Frightened'))dz.push('Frightened')}
+ if(kind==='attack'){if(x>=3)dz.push('Exhaustion');['Poisoned','Frightened','Prone','Restrained','Grappled'].forEach(k=>{if(c.includes(k))dz.push(k)});if(c.includes('Invisible'))a.push('Invisible');if(C.race==='aturen_pacifist')dz.push('Pacifist');if(D.strShort)dz.push('Armour too heavy');if(D.armorProfMissing)dz.push('Armour proficiency')}
+ if(kind==='save'){if(x>=3)dz.push('Exhaustion');if(ab==='dex'&&(c.includes('Restrained')||c.includes('Entangled')))dz.push(c.includes('Restrained')?'Restrained':'Entangled');if(c.includes('Distracted')&&['str','dex','con'].includes(ab))dz.push('Distracted')}
+ if(kind==='check'&&D.strShort&&(ab==='str'||ab==='dex'))dz.push('Armour too heavy');
+ if(kind==='check'&&D.armorProfMissing&&(ab==='str'||ab==='dex'))dz.push('Armour proficiency');
+ if(kind==='check'&&ab==='stealth'&&D.stealthDis)dz.push('Armour');
+ return{a,dz}}
+
+function rollD20(title,kind,bonus,opt={}){const au=autoAdv(kind,opt.ab);let adv=UI.rollMode==='adv'||au.a.length>0,dis=UI.rollMode==='dis'||au.dz.length>0;
+ let cancel=false;if(adv&&dis){adv=dis=false;cancel=true}const r1=die(20),r2=die(20);const nat=adv?Math.max(r1,r2):dis?Math.min(r1,r2):r1;const total=nat+bonus;
+ const how=adv?'Advantage':dis?'Disadvantage':'';const why=[...au.a,...au.dz];
+ let brk=(adv||dis?'2d20 ('+r1+', '+r2+')':'1d20 ('+r1+')')+(bonus?' '+(bonus<0?'- ':'+ ')+Math.abs(bonus):'');
+ if(how)brk+=' • '+how+(why.length?' ('+why.join(', ')+')':'');else if(cancel)brk+=' • Advantage and disadvantage cancel out'+(why.length?' ('+why.join(', ')+')':'');
+ const crit=kind==='attack'&&nat>=(opt.critOn||20),fum=nat===1&&kind!=='plain';
+ logRoll(title,kind==='plain'?'':kind,total,brk,crit?'crit':fum?'fumble':'');
+ if(UI.rollMode!=='normal'){UI.rollMode='normal';renderRollMode()}return{nat,total,crit}}
+function rollDamage(title,expr,crit){const r=rollExpr(expr,crit);logRoll(title,crit?'damage (crit)':'damage',r.total,r.text,crit?'crit':'');return r}
+function logRoll(title,kind,total,brk,cls){UI.log.unshift({time:Date.now(),title,kind,total,brk,cls});UI.log=UI.log.slice(0,150);
+ toast(title+(kind?' '+kind:'')+': '+total);if(UI.panel.k==='log')renderSide()}
+function logInfo(title,text){UI.log.unshift({time:Date.now(),title,kind:'',total:'',brk:text,cls:'info'});if(UI.panel.k==='log')renderSide()}
+let toastT;function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),2200)}
+// ============================================================
+// RENDER: main sheet
+// ============================================================
+function commit(side=true){D=derive();renderMain();if(side)renderSide();scheduleSave()}
+function renderMain(){renderHeader();renderRow1();renderColA();renderColB();renderCrow();renderTabs();renderRollMode()}
+
+function renderHeader(){const cls=D.cls,race=D.race;
+ $('h-name').innerHTML=esc(C.name||'Unnamed recruit')+(isGM?' <span class="gmtag">GM view</span>':'');
+ $('h-sub').textContent=[race?race.n:'No race',cls?cls.n:'No class','Level '+D.lvl].join(' • ');
+ const p=$('h-portrait');if(C.portrait){p.style.backgroundImage='url('+C.portrait+')';p.textContent=''}else{p.style.backgroundImage='';p.textContent=(C.name||'?').trim().charAt(0).toUpperCase()||'?'}}
+function renderRollMode(){$('rollmode').innerHTML=[['normal','Normal'],['adv','Adv'],['dis','Dis']].map(([k,l])=>`<button class="${UI.rollMode===k?'on':''}" ${on('setRollMode',k)}>${l}</button>`).join('')}
+
+function renderRow1(){let h=ABILS.map(a=>`<div class="box abil">
+  <div class="lbl" ${on('openPanel','ability',a.k)}>${a.n}</div>
+  <button class="modbtn" ${on('rollAbility',a.k)} title="Roll ${a.n} check">${sgn(D.m[a.k])}</button>
+  <div class="score" ${on('openPanel','ability',a.k)} title="Edit score">${C.scores[a.k]}</div></div>`).join('');
+ h+=`<div class="box stat" ${on('openPanel','prof')}><div class="lbl">Proficiency</div><div class="big">${sgn(D.prof)}</div><div class="lbl">Bonus</div></div>`;
+ h+=`<div class="box stat" ${on('openPanel','speed')}><div class="lbl">Speed</div><div class="big">${D.speed}<small>m</small></div><div class="lbl">Walking</div></div>`;
+ h+=`<div class="box stat" style="cursor:default"><div class="lbl clk" ${on('openPanel','tension')}>Tension</div><select class="tdsel" onchange="setTension(this.value)" title="Set by the GM">${Object.keys(TENSION).map(k=>`<option value="${k}" ${C.tension===k?'selected':''}>${k}</option>`).join('')}</select><div class="lbl clk" ${on('openPanel','tension')}>${TENSION[C.tension].n}</div></div>`;
+ h+=`<div class="box stat dpbox" style="cursor:default"><div class="lbl clk" ${on('openPanel','dp')}>Determination</div>
+  <div class="ctr"><button ${on('adjDP',-1)} aria-label="Spend DP">−</button><div class="big clk" ${on('openPanel','dp')}>${D.dp}<small>/${D.dpBase}</small></div><button ${on('adjDP',1)} aria-label="Gain DP">+</button></div></div>`;
+ h+=`<div class="hpwrap">${hpBox()}</div>`;$('row1').innerHTML=h}
+
+function hpBox(){const st=D.hpState;
+ if(st==='dead')return`<div class="box hp" ${on('openPanel','hp')} style="cursor:pointer"><div class="ds"><div class="lbl st-down" style="font-size:14px">Deceased</div><div class="muted" style="font-size:12px">Open to revive or reset</div></div></div>`;
+ if(st==='down'){const s=C.hp.ds.s,f=C.hp.ds.f;const pips=(n,c)=>[0,1,2].map(i=>`<span class="pip ${c} ${i<n?'on':''}"></span>`).join('');
+  return`<div class="box hp"><div class="ds" ${on('openPanel','hp')}>
+   <div class="ds-row"><span class="dl">FAILURES</span>${pips(f,'f')}</div><div class="ds-row"><span class="dl">SUCCESSES</span>${pips(s,'s')}</div>
+   <div class="lbl">${C.hp.stable?'Stable':'Death saves'}</div></div>
+   <div class="hp-io"><button class="btn sm pri" ${on('rollDeathSave')}>Roll save</button><input id="hpamt" type="number" inputmode="numeric" placeholder="0">
+   <button class="heal" ${on('hpApply',1)}>HEAL</button><button class="dmg" ${on('hpApply',-1)}>DAMAGE</button></div></div>`}
+ return`<div class="box hp"><div class="hp-io"><button class="heal" ${on('hpApply',1)}>HEAL</button>
+   <input id="hpamt" type="number" inputmode="numeric" placeholder="0" aria-label="Heal or damage amount"><button class="dmg" ${on('hpApply',-1)}>DAMAGE</button></div>
+  <div class="hp-nums" ${on('openPanel','hp')} title="Hit point management">
+   <div><div class="lbl">Current</div><div class="n">${D.hp}</div></div><div class="sl">/</div>
+   <div><div class="lbl">Max</div><div class="n">${D.maxHP}</div></div>
+   <div><div class="lbl">Temp</div><div class="n" style="color:${C.hp.temp?'var(--acc2)':'var(--text3)'}">${C.hp.temp||'--'}</div></div>
+   <div class="hp-status st-${st}">${st}</div></div></div>`}
+
+function profDot(pl){return`<span class="dot ${pl===2?'e':pl===1?'p':''}"></span>`}
+function renderColA(){let h=`<div class="box"><div class="saves">${ABILS.map(a=>`<div class="save" ${on('rollSave',a.k)} title="Roll ${a.n} save">
+   ${profDot(C.saveProf[a.k]?1:0)}<span class="nm">${AB(a.k)}</span><span class="v">${sgn(D.saves[a.k])}</span></div>`).join('')}</div>
+   <div class="note">Click a save to roll it</div><div class="boxtitle" ${on('openPanel','saveinfo')}>Saving throws</div></div>`;
+ h+=`<div class="box">${['Perception','Investigation','Insight'].map(s=>`<div class="sense" ${on('openPanel','senses')}><div class="v">${D.pass[s]}</div><div class="nm">Passive ${s}</div></div>`).join('')}
+   <div class="boxtitle" ${on('openPanel','senses')}>Senses</div></div>`;
+ const P=C.profs;const armorTxt=[P.armorLight&&'Light',P.armorHeavy&&'Heavy'].filter(Boolean).join(', ')||'None';
+ const weapTxt=Object.entries(WEAPON_GROUPS).filter(([k])=>P.weapons[k]).map(([,l])=>l).join(', ')||'None';
+ h+=`<div class="box"><div class="profs">
+   <div class="grp" ${on('openPanel','profs')}><div class="lbl">Armour</div><div class="val">${esc(armorTxt)}</div></div>
+   <div class="grp" ${on('openPanel','profs')}><div class="lbl">Weapons</div><div class="val">${esc(weapTxt)}</div></div>
+   <div class="grp" ${on('openPanel','profs')}><div class="lbl">Tools</div><div class="val">${P.tools.length?esc(P.tools.join(', ')):'None'}</div></div>
+   <div class="grp" ${on('openPanel','profs')}><div class="lbl">Languages</div><div class="val">${P.languages.length?esc(P.languages.join(', ')):'None'}</div></div>
+   ${P.other?`<div class="grp" ${on('openPanel','profs')}><div class="lbl">Other</div><div class="val">${esc(P.other)}</div></div>`:''}</div>
+   <div class="boxtitle" ${on('openPanel','profs')}>Proficiencies &amp; training</div></div>`;$('col-a').innerHTML=h}
+
+function renderColB(){$('col-b').innerHTML=`<div class="box"><div class="skills"><div class="sk-head"><span>PROF</span><span>MOD</span><span>SKILL</span><span style="text-align:center">BONUS</span></div>
+ ${SKILLS.map(s=>{const k=D.skills[s.n];return`<div class="sk"><button class="dotb" ${on('cycleSkill',s.n)} title="Toggle proficiency (none, proficient, expertise)">${k.half&&!k.pl?'<span class="dot h"></span>':profDot(k.pl)}</button>
+  <span class="ab">${AB(k.ab)}</span><span class="nm" ${on('openPanel','skill',s.n)}>${s.n}</span><button class="rollv" ${on('rollSkill',s.n)} title="Roll ${s.n}">${sgn(k.v)}</button></div>`}).join('')}</div>
+ <div class="boxtitle" ${on('openPanel','skillinfo')}>Skills</div></div>`}
+
+function renderCrow(){const conds=[...C.conds];const cc=conds.map(c=>`<span class="chip bad">${esc(c)}</span>`).join('')+(C.exh?`<span class="chip bad">Exhaustion ${C.exh}</span>`:'');
+ const DTL={resist:'Resist',immune:'Immune',vuln:'Vulnerable'};
+ const defs=[...D.defAuto.map(x=>'Resist: '+x),...C.defenses.map(x=>`${DTL[x.type]}: ${x.dmg}${x.note?' ('+x.note+')':''}`)];
+ $('crow').innerHTML=`<div class="box stat" style="cursor:default"><div class="lbl clk" ${on('openPanel','init')}>Initiative</div><button class="initbtn" ${on('rollInit')}>${sgn(D.init)}</button></div>
+ <div class="box stat" style="cursor:default"><div class="lbl clk" ${on('openPanel','moxie')}>Moxie</div><button class="initbtn" ${on('rollMoxie')}>${sgn(D.moxie)}</button></div>
+ <div class="box shield" ${on('openPanel','ac')}><div class="lbl">Armour</div><div class="big">${D.ac}</div><div class="lbl">Class</div></div>
+ <div class="box defbox"><div class="defcond">
+  <div ${on('openPanel','defenses')}><div class="lbl">Defences</div><div class="val">${defs.length||D.immune.length?[...D.immune.map(x=>'Immune: '+x),...defs].map(x=>`<span class="chip ${/^Vulnerable/.test(x)?'bad':''}">${esc(x)}</span>`).join(''):'Resistances, immunities, or vulnerabilities'}</div></div>
+  <div ${on('openPanel','conditions')}><div class="lbl">Conditions</div><div class="val">${cc||'Add active conditions'}</div></div></div></div>`}
+
+// ---------- TABS ----------
+const TABS=[['actions','Actions'],['abilities','Abilities'],['inventory','Inventory'],['features','Features & Traits'],['background','Background'],['notes','Notes'],['extras','Extras']];
+function setTab(t){UI.tab=t;UI.filter='all';renderTabs()}
+function renderTabs(){$('tabnav').innerHTML=TABS.map(([k,l])=>`<button class="${UI.tab===k?'on':''}" ${on('setTab',k)}>${esc(l)}</button>`).join('');
+ const f={actions:tabActions,abilities:tabAbilities,inventory:tabInventory,features:tabFeatures,background:tabBackground,notes:tabNotes,extras:tabExtras}[UI.tab];$('tabbody').innerHTML=f()}
+function filters(list,cur,fn){return`<div class="filters">${list.map(([k,l])=>`<button class="${cur===k?'on':''}" ${on(fn,k)}>${l}</button>`).join('')}</div>`}
+function setFilter(k){UI.filter=k;renderTabs()}
+
+// weapon maths
+function modeStats(it,mi){const md=it.w.modes[mi];const[mn,kind,dmg,dt,rng,fin]=md;const m=D.m;
+ let ab=kind==='melee'?'str':'dex';if(fin||/throw/i.test(mn)||(C.origins.includes("Student of Bra'tac")&&/ma'tok/i.test(it.n)))ab=m.str>=m.dex?'str':'dex';
+ const prof=it.prof==='auto'?weaponProf(it.w.pc):it.prof==='yes';const fac=C.facility||{},fr=+fac.rating||0;
+ let hit=m[ab]+(prof?D.prof:(C.race==='jaffa_free'?Math.floor(D.prof/2):0))+(kind==='ranged'&&fac.name==='Firing Range'?fr:0);
+ let dm=String(dmg);if(C.cls==='soldier'&&D.lvl>=3&&kind==='melee')dm=dm.replace(/^(\d*)d(4|6)\b/,'$1d8');
+ let bonus=m[ab]+(kind==='ranged'&&fac.name==='Armory'?fr:0)+(kind==='melee'&&fac.name==='Gym'?fr:0);
+ const dmgExpr=dm==='0'?'0':dm+(bonus?(bonus>0?'+':'')+bonus:'');
+ const critOn=(C.cls==='soldier'&&D.lvl>=3&&(C.impCrit||'')===it.w.pc)?19:20;
+ return{mn,kind,dt,rng,ab,prof,hit,dmgExpr,critOn}}
+function unarmed(){const ma=C.profs.weapons.martial;let die=ma?(C.cls==='soldier'&&D.lvl>=3?'1d8':'1d6'):'';const s=D.m.str;
+ const rows=[{n:ma?'Martial Arts':'Unarmed Strike',sub:'Melee • Bludgeoning',hit:s+D.prof,dmg:ma?die+(s?(s>0?'+':'')+s:''):String(Math.max(0,1+s)),rng:'1m'}];
+ if(C.race==='unas'||C.race==='unas_unchained')rows.push({n:'Claws',sub:'Melee • Natural weapon',hit:s+D.prof,dmg:'1d6'+(s?(s>0?'+':'')+s:''),rng:'1m'});return rows}
+
+function tabActions(){const F=UI.filter;let h=filters([['all','All'],['attack','Attack'],['action','Action'],['bonus','Bonus action'],['reaction','Reaction'],['limited','Limited use']],F,'setFilter');
+ const show=k=>F==='all'||F===k;
+ if(show('attack')){const eqw=C.inv.filter(i=>i.w&&i.eq);
+  h+=`<div class="sec"><span>Attacks</span><button class="btn sm" ${on('setTab','inventory')}>Manage weapons</button></div><div class="tblwrap"><table class="tbl"><thead><tr><th>Attack</th><th>Range</th><th>Hit</th><th>Damage</th><th class="hidem">Notes</th></tr></thead><tbody>`;
+  eqw.forEach(it=>it.w.modes.forEach((md,mi)=>{const s=modeStats(it,mi);
+   h+=`<tr class="clkrow" ${on('openPanel','item',it.id)}><td><b>${esc(it.n)}</b><div class="sub2">${esc(md[0])} • ${s.kind==='melee'?'Melee':'Ranged'}${s.prof?'':' • not proficient'}</div></td>
+    <td class="mono" style="font-size:12px">${esc(s.rng||'1m')}</td>
+    <td><button class="rbtn" ${onS('rollAttack',it.id,mi)}>${sgn(s.hit)}</button></td>
+    <td>${s.dmgExpr==='0'?'<span class="muted">Special</span>':`<button class="rbtn" ${onS('rollWeaponDmg',it.id,mi,false)}>${esc(s.dmgExpr)}</button>`}<div class="sub2">${esc(s.dt)}</div></td>
+    <td class="hidem" style="font-size:12px;color:var(--text2);max-width:220px">${it.w.cap?`<span class="mono" style="white-space:nowrap">Ammo <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,-1)}>−</button> ${it.ammo??it.w.cap}/${it.w.cap} <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,0)} title="Reload">↻</button></span><br>`:''}${esc(short(it.w.sp))}</td></tr>`}));
+  unarmed().forEach(u=>{h+=`<tr class="clkrow" ${on('openPanel','action','Unarmed')}><td><b>${u.n}</b><div class="sub2">${u.sub}</div></td><td class="mono" style="font-size:12px">${u.rng}</td>
+   <td><button class="rbtn" ${onS('rollUnarmedHit',u.n,u.hit)}>${sgn(u.hit)}</button></td><td><button class="rbtn" ${onS('rollUnarmedDmg',u.n,u.dmg)}>${esc(u.dmg)}</button></td><td class="muted hidem" style="font-size:12px">Always proficient</td></tr>`});
+  h+=`</tbody></table></div>`;if(!eqw.length)h+=`<div class="empty">No weapons equipped. Tick the box beside a weapon in Inventory to show it here.</div>`}
+ const byType=t=>D.feats.filter(f=>f[2]===t);
+ if(show('action')){h+=`<div class="sec">Actions in combat</div><div class="plist">${ACTIONS.filter(a=>a.g==='action').map(a=>`<a ${on('openPanel','action',a.n)}>${a.n}</a>`).join(', ')}</div>
+  <div class="sec">Combat contests</div><div class="plist">${ACTIONS.filter(a=>a.g==='contest').map(a=>`<a ${on('openPanel','action',a.n)}>${a.n}</a>`).join(', ')}</div>`;
+  const fa=byType('action');if(fa.length)h+=`<div class="sec">Class actions</div>`+fa.map(featRow).join('');
+  if(C.race==='aturen_pacifist')h+=traitRow('Invisibility')}
+ if(show('bonus')){const fb=byType('bonus');h+=`<div class="sec">Bonus actions</div>`+(fb.length?fb.map(featRow).join(''):`<div class="empty">No bonus actions from your class at this level.</div>`)}
+ if(show('reaction')){const fr=byType('reaction');h+=`<div class="sec">Reactions</div><div class="plist"><a ${on('openPanel','action','Opportunity Attack')}>Opportunity Attack</a></div>`+fr.map(featRow).join('');
+  if(C.race==='unas'||C.race==='unas_unchained')h+=traitRow('Impressive Resilience');if(C.origins.includes('Terraformed'))h+=`<div class="feat" ${on('openPanel','origin','Terraformed')}><div class="fn">Strange World</div><div class="fs">Origin • Reaction</div><div class="fd">${esc(ORIGINS.Terraformed.t)}</div></div>`}
+ if(show('limited')){h+=`<div class="sec">Limited use</div>`+(D.res.length?D.res.map(resRow).join(''):`<div class="empty">No limited-use abilities.</div>`)}
+ return h}
+function short(t){t=String(t||'').split(/[.(]/)[0].trim();return t.length>48?t.slice(0,46)+'...':t}
+function featRow(f){const i=D.cls.f.indexOf(f);return`<div class="feat" ${on('openPanel','feature',i)}><div class="fn">${esc(f[1])}</div><div class="fs">${D.cls.n} ${f[0]} • ${{action:'Action',bonus:'Bonus action',reaction:'Reaction',other:'Feature'}[f[2]]}</div><div class="fd">${esc(f[3])}</div></div>`}
+function traitRow(n){const i=D.race.tr.findIndex(t=>t[0]===n);if(i<0)return'';return`<div class="feat" ${on('openPanel','trait',i)}><div class="fn">${esc(n)}</div><div class="fs">${esc(D.race.n)} trait</div><div class="fd">${esc(D.race.tr[i][1])}</div></div>`}
+const RESET_L={short:'Short rest',long:'Long rest',mission:'Per mission',none:'Manual'};
+function resRow(r){return`<div class="res"><div class="rn" ${on('openPanel','res',r.key)}><b>${esc(r.name)}</b><small>${r.src} • ${RESET_L[r.reset]} • ${r.max-r.used} of ${r.max} left</small></div>
+ <div class="boxes">${[...Array(r.max)].map((_,i)=>`<button class="ubox ${i<r.used?'used':''}" ${on('toggleUse',r.key,i)} aria-label="Use ${esc(r.name)}"></button>`).join('')}</div></div>`}
+
+function tabAbilities(){let h='';
+ if(C.cls==='scientist')h+=`<div class="sec">Eureka points</div><div class="res"><div class="rn" ${on('openPanel','feature',0)}><b>Eureka</b><small>Gain one when you fail an INT or WIS check. Spend for advantage. Max ${D.eurekaMax}.</small></div>
+  <div class="ctr"><button ${on('adjEureka',-1)}>−</button><span class="mono" style="font-size:20px;min-width:52px;text-align:center">${Math.min(C.eureka,D.eurekaMax)}/${D.eurekaMax}</span><button ${on('adjEureka',1)}>+</button></div></div>`;
+ if(C.cls==='diplomat')h+=`<div class="sec">Inspire die</div><div class="res"><div class="rn"><b>Inspire die: ${D.inspDie}</b><small>Temporary HP granted by Inspire and Word In An Ear</small></div><button class="rbtn" ${on('rollPlain','Inspire die',D.inspDie)}>Roll ${D.inspDie}</button></div>`;
+ h+=`<div class="sec"><span>Limited-use abilities</span><span style="display:flex;gap:6px"><button class="btn sm" ${on('openPanel','addres')}>Add tracker</button><button class="btn sm" ${on('openPanel','newmission')}>New mission</button></span></div>`;
+ h+=D.res.length?D.res.map(resRow).join(''):`<div class="empty">No limited-use abilities yet. Choose a class and race in Manage, or add your own tracker.</div>`;
+ if(D.cls){const sf=C.feats.filter(f=>f.cat===D.cls.feat);h+=`<div class="sec"><span>${D.cls.feat} feats</span><button class="btn sm" ${on('openPanel','addfeat',D.cls.feat)}>Add ${D.cls.feat}</button></div>`;
+  h+=sf.length?sf.map(featItem).join(''):`<div class="empty">Your class chooses ${D.cls.feat} feats as it levels. Add the ones you've picked here.</div>`}
+ return h}
+function featItem(f){return`<div class="feat" ${on('openPanel','feat',f.id)}><div class="fn">${esc(f.name)}</div><div class="fs">${esc(f.cat)}${+f.mp?' • '+f.mp+' MP':''}</div><div class="fd">${esc(f.desc||'')}</div></div>`}
+
+function tabInventory(){const cap=D.loadCap,b=D.bulk,pct=cap?Math.min(100,b/cap*100):b?100:0;
+ let h=`<div class="sec"><span>Loadout</span><button class="btn sm pri" ${on('openPanel','additem')}>Add items</button></div>
+ <div class="kv" style="border:none"><span>Bulk carried (outside base kit)</span><b>${b} / ${cap}</b></div><div class="bar ${b>cap?'over':''}"><i style="width:${pct}%"></i></div>
+ <div class="muted" style="font-size:12px;margin:5px 0 4px">${b>cap?'<span style="color:var(--red2)">Over your loadout. Drop something or check with your GM.</span>':'Capacity = equipped armour loadout + STR modifier. Base kit items don\'t count.'}</div>`;
+ const row=it=>`<tr class="clkrow" ${on('openPanel','item',it.id)}><td style="width:34px">${(it.w||it.a)?`<input type="checkbox" ${it.eq?'checked':''} ${onS('toggleEquip',it.id)} aria-label="Equip">`:''}</td>
+  <td><b>${esc(it.n)}</b><div class="sub2">${esc(it.t==='weapon'?'Weapon':it.t==='armor'?(it.a.kind==='addon'?'Armour add-on':it.a.kind==='heavy'?'Heavy armour':'Light armour'):'Gear')} • TL ${it.tl??'-'}</div></td>
+  <td class="mono">${it.kit?'<span class="muted">kit</span>':(+it.b||0)*(+it.qty||1)}</td><td class="mono">${it.qty||1}</td><td style="font-size:12px;color:var(--text2)">${esc(it.notes||(it.d||'').slice(0,70))}</td></tr>`;
+ const carried=C.inv.filter(i=>!i.kit),kit=C.inv.filter(i=>i.kit);
+ const tbl=list=>`<div class="tblwrap"><table class="tbl"><thead><tr><th>Equip</th><th>Name</th><th>Bulk</th><th>Qty</th><th>Notes</th></tr></thead><tbody>${list.map(row).join('')}</tbody></table></div>`;
+ h+=`<div class="sec">Loadout items</div>`+(carried.length?tbl(carried):`<div class="empty">Nothing extra carried yet. Use Add items for gear you requisition, find or steal.</div>`);
+ h+=`<div class="sec">Base kit (issued, no bulk)</div>`+(kit.length?tbl(kit):'');
+ const extra=[...BASE_KIT];if(D.cls)extra.push(D.cls.kit+' (class)');if(C.race==='human_tollan')extra.push('Phase Device (Tollan)');
+ h+=`<div class="kitl" style="margin-top:8px">${extra.map(k=>`<label><input type="checkbox" ${C.kit[k]!==false?'checked':''} ${on('toggleKit',k)}> ${esc(k)}</label>`).join('')}</div>`;
+ return h}
+
+function tabFeatures(){const F=UI.filter;let h=filters([['all','All'],['class','Class'],['race','Race'],['origins','Origins'],['feats','Feats']],F,'setFilter');const show=k=>F==='all'||F===k;
+ if(show('class')){h+=`<div class="sec">${D.cls?D.cls.n+' features':'Class features'}</div>`;h+=D.cls?D.cls.f.map((f,i)=>`<div class="feat" ${on('openPanel','feature',i)} style="${f[0]>D.lvl?'opacity:.45':''}"><div class="fn">${esc(f[1])}</div><div class="fs">Level ${f[0]}${f[0]>D.lvl?' • not yet':''}</div><div class="fd">${esc(f[3])}</div></div>`).join(''):`<div class="empty">Choose a class in Manage.</div>`}
+ if(show('race')){h+=`<div class="sec">${D.race?esc(D.race.n)+' traits':'Racial traits'}</div>`;h+=D.race?`<div class="kv"><span>Hit point bonus</span><b>+${D.race.hp}</b></div><div class="kv"><span>Ability score increase</span><b>${esc(D.race.asi)}</b></div><div class="kv"><span>Proficiencies</span><b>${esc(D.race.prof)}</b></div>`+D.race.tr.map((t,i)=>`<div class="feat" ${on('openPanel','trait',i)}><div class="fn">${esc(t[0])}</div><div class="fd">${esc(t[1])}</div></div>`).join(''):`<div class="empty">Choose a race in Manage.</div>`}
+ if(show('origins')){h+=`<div class="sec"><span>Origins</span><button class="btn sm" ${on('openPanel','manage')}>Change</button></div>`;h+=D.origins.length?D.origins.map(o=>`<div class="feat" ${on('openPanel','origin',o.n)}><div class="fn">${esc(o.n)}: ${esc(o.ab)}</div><div class="fs">${o.c} origin • ${esc(o.a)}</div><div class="fd">${esc(o.t)}</div></div>`).join(''):`<div class="empty">Choose two origins from different categories (Biome, Background, Racial) in Manage.</div>`}
+ if(show('feats')){h+=`<div class="sec"><span>Feats</span><button class="btn sm" ${on('openPanel','addfeat','General')}>Add feat</button></div>`;h+=C.feats.length?C.feats.map(featItem).join(''):`<div class="empty">No feats recorded yet.</div>`}
+ return h}
+
+function ta(path,label,ph,rows=5){const v=path.split('.').reduce((o,k)=>o?.[k],C)||'';return`<div class="sec">${label}</div><textarea rows="${rows}" placeholder="${esc(ph)}" oninput="setField('${path}',this.value)">${esc(v)}</textarea>`}
+function tabBackground(){return ta('bg.traits','Personality traits','How do they act? What do people notice first?',3)+ta('bg.ideals','Ideals','What do they believe in?',2)+ta('bg.bonds','Bonds','Who or what do they care about?',2)+ta('bg.flaws','Flaws','Weaknesses, vices, blind spots.',2)+ta('bg.appearance','Appearance','Physical description and distinguishing features.',3)+ta('bg.allies','Allies & organisations','Contacts, factions, standing.',3)+ta('bg.story','Backstory','Where did they come from? Why the Phoenix Site?',6)}
+function tabNotes(){return ta('notes.session','Session notes','Discoveries, open questions, gate addresses, names to remember.',10)+ta('notes.general','Other notes','Anything else.',6)}
+
+function tabExtras(){const E=+C.mp.earned||0;const fac=C.facility;
+ let h=`<div class="sec">Mission points</div><div class="fgrid"><div><div class="lbl">MP earned (total)</div><input type="number" min="0" value="${E}" onchange="setNum('mp.earned',this.value)"></div>
+  <div><div class="lbl">MP spent on feats</div><input disabled value="${D.featMP}"></div></div>
+  <div class="kv"><span>${E<20?'Levels 1 to 5: every 5 MP earned is a level':'Specialist: every 10 MP spent on feats is a level'}</span><b>Level ${D.mpLevel}</b></div>
+  ${E>=20?`<div class="kv"><span>MP available to spend</span><b>${D.mpAvail}</b></div>`:''}
+  ${E>0&&D.mpLevel!==D.lvl?`<div class="panel-actions"><button class="btn" ${on('setLevel',D.mpLevel)}>Set level to ${D.mpLevel}</button></div>`:''}`;
+ h+=`<div class="sec">Downtime facility (this mission)</div><div class="fgrid"><div><div class="lbl">Facility</div><select onchange="setVal('facility.name',this.value)"><option value="">None</option>${Object.keys(FACILITIES).map(k=>`<option ${fac.name===k?'selected':''}>${k}</option>`).join('')}</select></div>
+  <div><div class="lbl">Facility bonus (1 to 5)</div><input type="number" min="1" max="5" value="${fac.rating||1}" onchange="setNum('facility.rating',this.value)"></div></div>
+  ${fac.name?`<p class="muted" style="font-size:13px;margin-bottom:6px">${esc(FACILITIES[fac.name])}</p>`:''}
+  <input placeholder="Note (e.g. chosen skill, honing plan)" value="${esc(fac.note||'')}" oninput="setField('facility.note',this.value)">
+  <div class="panel-actions"><button class="btn" ${on('openPanel','newmission')}>Start new mission</button></div>`;
+ h+=`<div class="sec">Theme</div><select onchange="setTheme(this.value)">${Object.keys(THEMES).map(k=>`<option value="${k}" ${C.theme===k?'selected':''}>${k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).replace('Sgc','SGC').replace('Goauld',"Goa'uld").replace('Tokra',"Tok'ra").replace('Kethalis',"Keth'alis")}</option>`).join('')}</select>`;
+ h+=`<div class="sec">Backup</div><div class="panel-actions" style="margin-top:0"><button class="btn" onclick="exportData()">Download backup (.json)</button><button class="btn" onclick="$('impF').click()">Restore from backup</button><input type="file" id="impF" accept=".json" class="hidden" onchange="importData(event)"></div>`;
+ return h}
+// ============================================================
+// SIDE PANEL
+// ============================================================
+function isWide(){return window.innerWidth>=1280}
+function openPanel(k,a){UI.panel={k,a};UI.open=true;applySide();renderSide();if(!isWide()||!UI.pinned)$('side-body').scrollTop=0}
+function closeSide(){UI.open=false;applySide()}
+function togglePin(){UI.pinned=!UI.pinned;try{localStorage.setItem('sgc-pinned',UI.pinned?'1':'0')}catch(e){}applySide()}
+function applySide(){const s=$('side'),over=!isWide()||!UI.pinned;
+ s.classList.toggle('overlay',over);s.classList.toggle('open',over&&UI.open);s.classList.toggle('hidden',!over&&!UI.open);
+ $('scrim').classList.toggle('hidden',!(over&&UI.open));$('fab').classList.toggle('hidden',UI.open);
+ const pb=$('pinbtn');pb.classList.toggle('hidden',!isWide());pb.textContent=UI.pinned?'Unpin':'Pin';pb.title=UI.pinned?'Let the panel slide over the sheet':'Keep the panel fixed beside the sheet'}
+window.addEventListener('resize',()=>{clearTimeout(window._rs);window._rs=setTimeout(applySide,120)});
+
+const PANEL_T={log:'Game log',ability:'Ability',save:'Saving throw',saveinfo:'Saving throws',skill:'Skill',skillinfo:'Skills',hp:'HP management',tension:'Tension die',dp:'Determination',prof:'Proficiency bonus',speed:'Speed',ac:'Armour class',init:'Initiative',moxie:'Moxie',senses:'Senses',defenses:'Defences',conditions:'Conditions',shortrest:'Short rest',longrest:'Long rest',manage:'Manage character',item:'Item',additem:'Add items',action:'Action',feature:'Class feature',trait:'Racial trait',origin:'Origin',feat:'Feat',addfeat:'Add feat',res:'Limited use',addres:'Add tracker',profs:'Proficiencies',newmission:'New mission'};
+function renderSide(){const {k,a}=UI.panel;$('side-t').textContent=PANEL_T[k]||'';const f=PANELS[k]||PANELS.log;$('side-body').innerHTML=f(a)}
+const btn=(label,fn,args=[],cls='btn')=>`<button class="${cls}" ${on(fn,...args)}>${label}</button>`;
+const rollBtn=(label,fn,...args)=>`<button class="btn pri" ${on(fn,...args)}>${label}</button>`;
+function ago(t){const s=Math.round((Date.now()-t)/1000);return s<60?'just now':s<3600?Math.round(s/60)+' min ago':Math.round(s/3600)+' h ago'}
+
+const PANELS={
+log(){if(!UI.log.length)return`<h2>Game log</h2><p class="rule">Click any modifier, save, skill, attack or damage value on the sheet to roll it. Results appear here. Use the Adv / Dis buttons at the top to roll your next d20 with advantage or disadvantage.</p><p class="rule">The log is kept on this device for this session.</p>`;
+ return`<div class="panel-actions" style="margin-top:0">${btn('Clear log','clearLog',[],'btn sm')}</div>`+UI.log.map(e=>`<div class="logentry"><div class="who">${esc(C.name||'You')} • ${ago(e.time)}</div>
+  <div class="logcard ${e.cls}"><div class="lt">${esc(e.title)}${e.kind?`: <em>${esc(e.kind)}</em>`:''}<span class="brk">${esc(e.brk)}</span></div>${e.total!==''?`<div class="tot">${e.total}</div>`:''}</div></div>`).join('')},
+
+ability(k){const a=ABILS.find(x=>x.k===k);return`<h2>${a.n}</h2><p>${esc(a.d)}</p>
+ <h3>Score</h3><div class="ctr" style="margin-bottom:8px"><button ${on('adjScore',k,-1)}>−</button><input type="number" style="width:80px;text-align:center" value="${C.scores[k]}" onchange="setScore('${k}',this.value)"><button ${on('adjScore',k,1)}>+</button><span class="muted">Modifier ${sgn(D.m[k])}</span></div>
+ <p class="rule">Enter your final score, including racial and origin bonuses. Modifier = (score − 10) ÷ 2, rounded down. Player characters can't exceed 20.</p>
+ <div class="panel-actions">${rollBtn('Roll '+a.n+' check','rollAbility',k)}${rollBtn(a.n+' save '+sgn(D.saves[k]),'rollSave',k)}</div>
+ <h3>Save proficiency</h3><label class="frow"><input type="checkbox" ${C.saveProf[k]?'checked':''} ${on('toggleSaveProf',k)}> Proficient in ${a.n} saves</label>
+ <h3>Skills using ${a.n}</h3>${SKILLS.filter(s=>D.skills[s.n].ab===k).map(s=>`<div class="kv"><span class="clk" ${on('openPanel','skill',s.n)}>${s.n}</span><b>${sgn(D.skills[s.n].v)}</b></div>`).join('')||'<p class="muted">None</p>'}`},
+
+saveinfo(){return`<h2>Saving throws</h2><p>A save resists harm such as a blast, poison or Goa'uld mind control. Roll d20 + the ability modifier, plus your proficiency bonus if proficient.</p>
+ ${ABILS.map(a=>`<div class="kv"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" ${C.saveProf[a.k]?'checked':''} ${on('toggleSaveProf',a.k)}> ${a.n}</label><b class="clk" ${on('rollSave',a.k)}>${sgn(D.saves[a.k])}</b></div>`).join('')}
+ <p class="rule" style="margin-top:10px">Class saves: Diplomat WIS/CHA, Engineer DEX/INT, Medic DEX/WIS, Scientist INT/WIS, Scout CON/DEX, Soldier STR/CON.${C.facility.name==='Mess Hall'?' Mess Hall bonus included in CON and WIS.':''}</p>`},
+
+skill(n){const s=SKILLS.find(x=>x.n===n),k=D.skills[n];return`<h2>${n}</h2><p class="rule">${ABN(s.k)} skill</p><p>${esc(s.d)}</p>
+ <div class="panel-actions">${rollBtn('Roll '+n+' '+sgn(k.v),'rollSkill',n)}</div>
+ <h3>Breakdown</h3><div class="kv"><span>${ABN(k.ab)} modifier</span><b>${sgn(D.m[k.ab])}</b></div>
+ <div class="kv"><span>${k.pl===2?'Expertise (double proficiency)':k.pl?'Proficiency':k.half?'Cross-Discipline Studies (half)':'Not proficient'}</span><b>${sgn(k.pl?D.prof*k.pl:k.half)}</b></div><div class="kv"><span>Total</span><b>${sgn(k.v)}</b></div>
+ <h3>Proficiency</h3><div class="seg">${[[0,'None'],[1,'Proficient'],[2,'Expertise']].map(([v,l])=>`<button class="${k.pl===v?'on':''}" ${on('setSkillProf',n,v)}>${l}</button>`).join('')}</div>
+ <h3>Ability used</h3><select onchange="setSkillAbil('${n}',this.value)"><option value="">Automatic (${AB(k.ab)})</option>${ABILS.map(a=>`<option value="${a.k}" ${C.skillAbil[n]===a.k?'selected':''}>${a.n}</option>`).join('')}</select>
+ <p class="rule" style="margin-top:6px">Some origins and abilities let you use a different ability for this skill. Automatic picks the best one you're allowed. The GM may also call for an unusual pairing.</p>`},
+skillinfo(){return`<h2>Skills</h2><p>Click a skill's bonus to roll it, or its name for details. Click the dot to cycle between not proficient, proficient (adds ${sgn(D.prof)}) and expertise (adds ${sgn(D.prof*2)}).</p><p class="rule">A dashed dot means Cross-Discipline Studies is adding half your proficiency bonus.</p>`},
+
+prof(){return`<h2>Proficiency bonus: ${sgn(D.prof)}</h2><p>Added to any d20 roll using a skill, save, tool or weapon you're proficient with. It never applies more than once to the same roll.</p><h3>By level</h3>${[[1,4,2],[5,8,3],[9,12,4],[13,16,5],[17,20,6]].map(([a,b,p])=>`<div class="kv"><span>Levels ${a} to ${b}</span><b>+${p}</b></div>`).join('')}`},
+
+speed(){return`<h2>Speed: ${D.speed}m</h2><p>How far you can move in one combat round. Everyone starts at 6m.</p>
+ <h3>Breakdown</h3><div class="kv"><span>Base</span><b>6m</b></div>${D.origins.filter(o=>o.spd).map(o=>`<div class="kv"><span>${o.n}</span><b>+${o.spd}m</b></div>`).join('')}
+ ${D.body&&D.body.a.kind==='heavy'?'<div class="kv"><span>Heavy armour</span><b>−2m</b></div>':''}${D.strShort?'<div class="kv"><span>Armour Strength requirement not met</span><b>1m</b></div>':''}
+ ${C.exh>=2?`<div class="kv"><span>Exhaustion ${C.exh}</span><b>${C.exh>=5?'0m':'halved'}</b></div>`:''}
+ <h3>Other modifier</h3><input type="number" value="${+C.speedMod||0}" onchange="setNum('speedMod',this.value)">
+ <p class="rule" style="margin-top:8px">Low gravity adds 2m. Climbing, crawling or swimming costs double unless you have that speed. Difficult terrain costs double.</p>`},
+
+tension(){return`<h2>Tension die</h2><p>Set by the GM for each episode or scene, using the dropdown at the top of the sheet. Anything marked +TD rolls this die automatically as part of that roll, so you shouldn't need to roll it alone.</p>
+ ${Object.entries(TENSION).map(([k,t])=>`<div class="kv" style="align-items:flex-start;${C.tension===k?'':'opacity:.55'}"><span><b style="font-family:var(--mono)">${k}</b> ${t.n}<br><span class="muted" style="font-size:12.5px">${t.t}</span></span><b>DC ${t.dc}</b></div>`).join('')}
+ <div class="panel-actions">${btn('Roll '+C.tension+' on its own','rollTD',[],'btn sm')}</div>`},
+
+dp(){return`<h2>Determination: ${D.dp} / ${D.dpBase}</h2><p>Grit and force of will, wagered or spent in Plot encounters (convince, diplomatic function, infiltration and so on). Some feats spend DP in other ways.</p>
+ <div class="ctr" style="margin:8px 0 12px"><button ${on('adjDP',-1)}>−</button><span class="mono" style="font-size:22px;min-width:40px;text-align:center">${D.dp}</span><button ${on('adjDP',1)}>+</button>${btn('Reset to base','setDP',[null],'btn sm')}</div>
+ <h3>Rules</h3><ul class="rule"><li>Base DP = proficiency bonus (${sgn(D.prof)}) + class bonus (${D.cls?'+'+D.cls.det:'+0'}).</li><li>You can earn DP above your base. You can't go below 0.</li><li>At 0 DP you can't choose to wager, but if forced you wager the minimum.</li><li>DP resets to base at the end of every long rest.</li></ul>`},
+
+init(){return`<h2>Initiative: ${sgn(D.init)}</h2><p>Sets the acting order in Action encounters (combat, chases, traversal). Uses your Dexterity or Wisdom modifier, whichever is higher.</p>
+ <label class="frow"><input type="checkbox" ${C.impInit?'checked':''} ${on('toggleFlag','impInit')}> Improved Initiative feat (add proficiency)</label>
+ ${D.origins.some(o=>o.n==='Freedom Fighter')?'<p class="rule">Freedom Fighter: advantage on Initiative checks (use Adv).</p>':''}<div class="panel-actions">${rollBtn('Roll initiative','rollInit')}</div>`},
+moxie(){return`<h2>Moxie: ${sgn(D.moxie)}</h2><p>Sets the acting order in Plot encounters (social, puzzle and mental challenges). Uses your Intelligence or Charisma modifier, whichever is higher.</p>
+ <label class="frow"><input type="checkbox" ${C.impMoxie?'checked':''} ${on('toggleFlag','impMoxie')}> Improved Moxie feat (add proficiency)</label>
+ ${D.origins.some(o=>o.n==='Freedom Fighter')?'<p class="rule">Freedom Fighter: disadvantage on Moxie checks (use Dis).</p>':''}<div class="panel-actions">${rollBtn('Roll Moxie','rollMoxie')}</div>`},
+
+senses(){return`<h2>Passive senses</h2><p>Used when the GM checks without asking you to roll: 10 + all modifiers that normally apply. Add 5 with advantage, subtract 5 with disadvantage.</p>
+ ${Object.entries(D.pass).map(([k,v])=>`<div class="kv"><span>Passive ${k}</span><b>${v}</b></div>`).join('')}`},
+
+ac(){const b=D.body;return`<h2>Armour class: ${D.ac}</h2><p>How hard you are to hit. An attack that meets or beats your AC hits.</p><h3>Breakdown</h3>
+ ${b?`<div class="kv"><span>${esc(b.n)} (${b.a.kind})</span><b>${b.a.ac}</b></div>${b.a.kind==='light'?`<div class="kv"><span>Dexterity</span><b>${sgn(D.m.dex)}</b></div>`:''}`:`<div class="kv"><span>No armour: 10 + Dexterity</span><b>${10+D.m.dex}</b></div>`}
+ ${D.addons.map(i=>`<div class="kv"><span>${esc(i.n)}</span><b>+${i.a.ac}</b></div>`).join('')}
+ <h3>Other bonus</h3><input type="number" value="${+C.acMod||0}" onchange="setNum('acMod',this.value)"><p class="rule" style="margin-top:6px">For feats like Dodge (+1 in light or no armour) or Defensive Motivation while Inspired.</p>
+ ${D.strShort?`<p style="color:var(--red2)">Your Strength is below this armour's requirement (${b.a.str}): disadvantage on attacks and STR/DEX checks, and speed drops to 1m.</p>`:''}
+ ${D.armorProfMissing?`<p style="color:var(--red2)">You're not proficient with ${b.a.kind} armour: disadvantage on attacks and on STR/DEX checks and saves. Fix this under Proficiencies.</p>`:''}
+ <h3>Cover</h3><ul class="rule"><li>Half cover: +2 AC and DEX saves.</li><li>Three-quarters cover: +5 AC and DEX saves.</li><li>Total cover: can't be targeted directly.</li></ul>
+ <div class="panel-actions">${btn('Change armour','setTab',['inventory'])}</div>`},
+
+profs(){const P=C.profs;return`<h2>Proficiencies &amp; training</h2><p class="rule">Filled in from your class when you choose it (Manage character). Tick anything extra from your race, origins or feats.</p>
+ <h3>Armour</h3><div class="kitl">${[['light','Light'],['heavy','Heavy']].map(([k,l])=>`<label><input type="checkbox" ${P['armor'+(k==='light'?'Light':'Heavy')]?'checked':''} ${on('toggleArmorProf',k)}> ${l}</label>`).join('')}</div>
+ <h3>Weapons</h3><div class="kitl">${Object.entries(WEAPON_GROUPS).map(([k,l])=>`<label><input type="checkbox" ${P.weapons[k]?'checked':''} ${on('toggleWeaponProf',k)}> ${l}</label>`).join('')}</div>
+ <h3>Tools</h3><div class="kitl">${TOOLS.map(t=>`<label><input type="checkbox" ${P.tools.includes(t)?'checked':''} ${on('toggleTool',t)}> ${t}</label>`).join('')}</div>
+ <h3>Languages</h3>${['Milky Way','Kigal Galaxy'].map(g=>`<div class="lbl" style="margin:8px 0 4px">${g}</div><div class="kitl">${LANGUAGES.filter(l=>l.g===g).map(l=>`<label><input type="checkbox" ${P.languages.includes(l.n)?'checked':''} ${on('toggleLanguage',l.n)}> ${esc(l.n)}${l.note?` <span class="muted" style="font-size:11px">(${esc(l.note)})</span>`:''}</label>`).join('')}</div>`).join('')}
+ <h3>Other</h3><textarea rows="2" placeholder="Anything unusual: a specific alien weapon, a local dialect..." oninput="setField('profs.other',this.value)" onchange="commit(false)">${esc(P.other||'')}</textarea>
+ <p class="rule" style="margin-top:8px">Wearing armour you're not proficient in gives disadvantage on attacks and on Strength and Dexterity checks and saves.</p>`},
+
+defenses(){const custom=C.defenses,DTL={resist:'Resistance',immune:'Immunity',vuln:'Vulnerability'};
+ return`<h2>Defences</h2><p>Resistance halves damage of that type. Immunity means you take none. Vulnerability doubles it. Multiple resistances to the same damage type don't stack.</p>
+ <h3>From your race, origins and class</h3>${[...D.immune.map(x=>'Immunity: '+x),...D.defAuto.map(x=>'Resistance: '+x)].map(x=>`<div class="kv"><span>${esc(x)}</span></div>`).join('')||'<p class="muted">None</p>'}
+ <h3>Other</h3>${custom.length?custom.map((x,i)=>`<div class="kv"><span>${DTL[x.type]}: ${esc(x.dmg)}${x.note?' ('+esc(x.note)+')':''}</span><button class="btn sm" ${on('removeDefense',i)}>Remove</button></div>`).join(''):'<p class="muted">None yet.</p>'}
+ <h3>Add one</h3><div class="fgrid"><div><div class="lbl">Type</div><select id="def-type"><option value="resist">Resistance</option><option value="immune">Immunity</option><option value="vuln">Vulnerability</option></select></div>
+ <div><div class="lbl">Damage type</div><select id="def-dmg"><option value="">Choose</option>${DAMAGE_TYPES.map(d=>`<option>${d}</option>`).join('')}</select></div></div>
+ <input id="def-note" placeholder="Source, e.g. Inspired, temporary" style="margin-bottom:8px"><button class="btn" onclick="addDefense()">Add</button>`},
+
+conditions(){const eo=!!UI.exhOpen;return`<h2>Conditions</h2><p class="rule">Toggle anything affecting you. Rolls apply their advantage or disadvantage automatically where they can. Use the arrow for a condition's full rules text.</p>
+ <h3>Exhaustion</h3><div class="exhrow"><span class="cname">Level</span><div class="exhlv">${['--',1,2,3,4,5,6].map((l,i)=>`<button class="${i===C.exh?'on':''}" ${on('setExh',i)}>${l}</button>`).join('')}</div>
+  <button class="chev" ${on('toggleExhInfo')}>${eo?'︿':'⌄'}</button></div>
+ ${eo?`<div class="condinfo" style="padding-left:0">${EXH.slice(1).map((t,i)=>`<div class="kv" style="${i+1<=C.exh?'color:var(--red2)':''}"><span>Level ${i+1}</span><span style="text-align:right">${t}</span></div>`).join('')}<p class="rule" style="margin-top:6px">Effects are cumulative. At level 3 and beyond, make a CON save (DC 10 + level) or fall unconscious. A long rest removes 1 level.</p></div>`:''}
+ <h3>Conditions</h3>${Object.entries(CONDITIONS).map(([n,t])=>{const on_=C.conds.includes(n),open=!!(UI.condOpen&&UI.condOpen[n]);return`<div class="condrow"><div class="condmain" ${on('toggleCond',n)}><span class="tgl ${on_?'on':''}"></span><span class="cname">${n}</span></div><button class="chev" ${on('toggleCondInfo',n)}>${open?'︿':'⌄'}</button></div>${open?`<div class="condinfo">${esc(t)}</div>`:''}`}).join('')}`},
+
+hp(){const st=D.hpState;let h=`<h2>Hit points</h2>`;
+ if(st==='dead')h+=`<p style="color:var(--red2)">This character is dead. If the story brings them back (a sarcophagus, the Ritual of Life, the Nox...), revive them below.</p><div class="panel-actions">${btn('Revive at 1 HP','revive',[],'btn pri')}</div>`;
+ if(st==='down'){h+=`<h3>Death saves</h3><div class="fgrid"><div><div class="lbl">Failures</div><div class="ds-row" style="justify-content:flex-start">${[0,1,2].map(i=>`<button class="pip f ${i<C.hp.ds.f?'on':''}" ${on('setDS','f',i<C.hp.ds.f?i:i+1)}></button>`).join('')}</div></div>
+  <div><div class="lbl">Successes</div><div class="ds-row" style="justify-content:flex-start">${[0,1,2].map(i=>`<button class="pip s ${i<C.hp.ds.s?'on':''}" ${on('setDS','s',i<C.hp.ds.s?i:i+1)}></button>`).join('')}</div></div></div>
+  <div class="panel-actions">${rollBtn('Roll death save','rollDeathSave')}${btn('Mark stable','setStable')}</div>
+  <p class="rule">Stabilise DC for a teammate using Medicine at this tension: <b>${TENSION[C.tension].dc}</b>.</p>`}
+ h+=`<h3>Current</h3><div class="fgrid"><div><div class="lbl">Current HP</div><input type="number" value="${D.hp}" onchange="setHP(this.value)"></div><div><div class="lbl">Temp HP</div><input type="number" min="0" value="${C.hp.temp||0}" onchange="setNum('hp.temp',this.value)"></div></div>
+ <div class="fgrid"><div><div class="lbl">Amount</div><input id="hpamt2" type="number" inputmode="numeric" placeholder="0"></div><div style="display:flex;gap:6px;align-items:flex-end"><button class="btn" style="flex:1;color:var(--grn2);border-color:var(--grn)" onclick="hpApply(1,'hpamt2')">Heal</button><button class="btn danger" style="flex:1" onclick="hpApply(-1,'hpamt2')">Damage</button></div></div>
+ <label class="frow"><input type="checkbox" id="critdmg"> Damage is from a critical hit (2 death save failures at 0 HP)</label>
+ <h3>Maximum HP: ${D.maxHP}</h3><div class="kv"><span>Calculated (${D.cls?D.cls.n+' d'+D.hdie:'no class'}, level ${D.lvl}, CON ${sgn(D.m.con)}${D.race?', '+D.race.n+' +'+D.race.hp:''}${D.origins.some(o=>o.hpl)?', Drills':''})</span><b>${D.autoMax}</b></div>
+ <div class="fgrid"><div><div class="lbl">Max HP modifier</div><input type="number" value="${+C.hp.mod||0}" onchange="setNum('hp.mod',this.value)"></div><div><div class="lbl">Override max HP</div><input type="number" placeholder="--" value="${C.hp.override??''}" onchange="setOverride(this.value)"></div></div>
+ ${C.exh>=4?'<p style="color:var(--red2)">Exhaustion 4+: maximum HP is halved.</p>':''}
+ <h3>Rules</h3><ul class="rule"><li><b>Healthy</b> is full HP, <b>scuffed</b> is half or more, <b>wounded</b> is below half.</li><li>Temporary HP soak damage first, don't stack (keep the higher), and last until your next long rest.</li>
+ <li>At 0 HP you fall unconscious. If the damage left over after reaching 0 equals or exceeds your max HP, you die instantly.</li>
+ <li>At the start of each turn at 0 HP, roll a death save: 10+ succeeds. A natural 1 counts as two failures, a natural 20 heals 1 HP. Three successes: stable. Three failures: dead.</li>
+ <li>Taking damage at 0 HP is a failure (two on a critical hit). A stable character regains 1 HP after 1d4 hours.</li></ul>
+ <p class="rule">Max HP: full hit die + CON at level 1, then the class's per-level HP + CON each level, plus your race's one-off bonus.</p>`;return h},
+
+shortrest(){const J=C.race==='jaffa',hum=C.race==='human_tauri'||C.race==='human_abydonian',heal=D.origins.some(o=>o.n==='Healer');const bonus=Math.max(D.m.con,D.prof);
+ const resets=D.res.filter(r=>r.reset==='short');return`<h2>Short rest</h2><p>At least one hour of downtime in a relatively secure place: eating, drinking, reading and tending wounds.</p>
+ <h3>Recover</h3>${J?`<p>Kelno'reem: Jaffa with a symbiote don't heal naturally during a short rest.</p>`:`<div class="kv"><span>1d${D.hdie} + ${bonus} (higher of CON or proficiency)${hum?' + TD (Recovery)':''}${heal?' + '+D.prof+' (Soothe)':''}</span><b>HP</b></div>
+  <label class="frow" style="margin-top:6px"><input type="checkbox" id="sr-auto" checked> Roll and apply healing automatically</label>`}
+ <p class="rule">A Med Kit can heal each character once per short rest on top of this (1d8 wounded or 1d4 scuffed, doubled dice if proficient).</p>
+ <h3>Resets</h3>${resets.length?resets.map(r=>`<div class="kv"><span>${esc(r.name)}</span><b>${r.used?'Recovers '+r.used:'Full'}</b></div>`).join(''):'<p class="muted">Nothing on your sheet resets on a short rest.</p>'}
+ <div class="panel-actions">${btn('Take short rest','takeShortRest',[],'btn pri')}</div>`},
+longrest(){const bonus=Math.max(D.m.con,D.prof);let heal=`${D.lvl}d${D.hdie} + ${bonus} (hit dice equal to level, plus higher of CON or proficiency)`;
+ if(C.race==='jaffa')heal=`${D.lvl} x ${D.hdie} + ${bonus} (Kelno'reem: hit dice roll maximum)`;if(C.race==='tokra'||C.race==='tokra_pangaran')heal='Full HP (Regeneration)';
+ const resets=D.res.filter(r=>r.reset==='short'||r.reset==='long');return`<h2>Long rest</h2><p>At least 8 hours of sleep or light activity, with no more than 2 hours on watch. An hour of walking or any fighting interrupts it. Only one long rest per 24 hours.</p>
+ ${D.hp<1?'<p style="color:var(--red2)">You need at least 1 HP at the start of a long rest to benefit from it.</p>':''}
+ <h3>Recover</h3><div class="kv"><span>${heal}</span><b>HP</b></div>
+ <div class="kv"><span>Exhaustion</span><b>${C.exh?C.exh+' → '+(C.exh-1):'None'}</b></div><div class="kv"><span>Determination</span><b>${D.dp} → ${D.dpBase}</b></div>
+ <div class="kv"><span>Temporary HP (expire)</span><b>${C.hp.temp||0} → 0</b></div><div class="kv"><span>Ability score damage</span><b>Heals 1 point</b></div>
+ <h3>Resets</h3>${resets.length?resets.map(r=>`<div class="kv"><span>${esc(r.name)}</span><b>${r.used?'Recovers '+r.used:'Full'}</b></div>`).join(''):'<p class="muted">No trackers to reset.</p>'}
+ <div class="panel-actions">${D.hp<1?'':btn('Take long rest','takeLongRest',[],'btn pri')}</div>`},
+
+newmission(){const mres=D.res.filter(r=>r.reset==='mission');return`<h2>Start a new mission</h2><p>Resets anything that works once per mission${C.cls==='scientist'?', and sets your Eureka points to '+(D.lvl>=5?Math.floor(D.prof/2)+' (Casual Genius)':'0 (unspent Eureka is lost between missions)'):''}.</p>
+ ${mres.map(r=>`<div class="kv"><span>${esc(r.name)}</span><b>Resets</b></div>`).join('')}<p class="rule">It doesn't heal you or change your downtime facility. Take a long rest separately if the GM says you've had one.</p>
+ <div class="panel-actions">${btn('Start new mission','newMission',[],'btn pri')}</div>`},
+
+manage(){const oo=(slot)=>{const cur=C.origins[slot];const other=C.origins[1-slot];const oc=ORIGINS[other]?.c;
+  return`<select onchange="setOrigin(${slot},this.value)"><option value="">None</option>${['Biome','Background','Racial'].map(cat=>`<optgroup label="${cat}${oc===cat?' (used by your other origin)':''}">${Object.entries(ORIGINS).filter(([n,o])=>o.c===cat).map(([n,o])=>{const bad=(oc===cat)||(o.req&&!o.req.includes(C.race));return`<option value="${esc(n)}" ${cur===n?'selected':''} ${bad&&cur!==n?'disabled':''}>${esc(n)}</option>`}).join('')}</optgroup>`).join('')}</select>`};
+ return`<h2>Manage character</h2><div class="lbl">Name</div><input value="${esc(C.name)}" oninput="setField('name',this.value);renderHeader()" style="margin-bottom:10px">
+ <div class="lbl">Portrait</div><div class="frow"><div class="portrait" style="background-image:${C.portrait?'url('+C.portrait+')':'none'}"></div><button class="btn" onclick="$('portraitUp').click()">Upload</button>${C.portrait?btn('Remove','setVal',['portrait',''],'btn sm'):''}<input type="file" id="portraitUp" class="hidden" accept="image/*" onchange="loadPortrait(event)"></div>
+ <div class="fgrid"><div><div class="lbl">Race</div><select onchange="setRace(this.value)"><option value="">Choose race</option>${Object.entries(RACES).map(([k,r])=>`<option value="${k}" ${C.race===k?'selected':''}>${esc(r.n)}</option>`).join('')}</select></div>
+ <div><div class="lbl">Class</div><select onchange="setClass(this.value)"><option value="">Choose class</option>${Object.entries(CLASSES).map(([k,c])=>`<option value="${k}" ${C.cls===k?'selected':''}>${c.n}</option>`).join('')}</select></div></div>
+ <div class="fgrid"><div><div class="lbl">Level</div><input type="number" min="1" max="20" value="${D.lvl}" onchange="setLevel(this.value)"></div><div><div class="lbl">Hit die</div><input disabled value="d${D.hdie}"></div></div>
+ <h3>Origins (two, different categories)</h3><div class="fgrid"><div>${oo(0)}</div><div>${oo(1)}</div></div>
+ ${D.origins.map(o=>`<p class="rule" style="margin-bottom:4px"><b>${esc(o.n)}</b>: ${esc(o.a)}. ${esc(o.ab)}.</p>`).join('')}
+ <h3>Ability scores</h3><div class="fgrid" style="grid-template-columns:repeat(3,1fr)">${ABILS.map(a=>`<div><div class="lbl">${AB(a.k)}</div><input type="number" min="1" max="30" value="${C.scores[a.k]}" onchange="setScore('${a.k}',this.value)"></div>`).join('')}</div>
+ <p class="rule">Enter final scores including your race's +2 and any origin +1. Point buy is 27 points, or roll 4d6 and drop the lowest die.</p>
+ ${D.race?`<p class="rule">${esc(D.race.n)}: ${esc(D.race.asi)}. Proficiencies: ${esc(D.race.prof)}.</p>`:''}
+ ${C.cls==='soldier'&&D.lvl>=3?`<h3>Improved Critical weapon type</h3><select onchange="setVal('impCrit',this.value)"><option value="">Choose</option>${['common','sidearms','longarms','shotguns','bows','martial','jaffa'].map(k=>`<option ${C.impCrit===k?'selected':''}>${k}</option>`).join('')}</select>`:''}
+ <h3>Class defaults</h3><p class="rule">Choosing a class ticks its saves and skills and fills proficiencies. Re-apply if you've cleared them.</p><div class="panel-actions" style="margin-top:0">${D.cls?btn('Re-apply '+D.cls.n+' defaults','applyClassDefaults',[],'btn sm'):''}</div>`},
+
+item(id){const it=C.inv.find(i=>i.id===id);if(!it)return'<p class="muted">Item not found.</p>';
+ let h=`<h2>${esc(it.n)}</h2><p class="rule">${esc(it.src||'Custom')} • Tech level ${it.tl??'-'}${it.kit?' • Base kit':''}</p>${it.d?`<p>${esc(it.d)}</p>`:''}`;
+ if(it.w){h+=`<h3>Attacks</h3>`+it.w.modes.map((md,mi)=>{const s=modeStats(it,mi);return`<div class="kv"><span>${esc(md[0])} • ${esc(s.rng||'1m')} • ${esc(s.dt)}</span><span style="display:flex;gap:5px"><button class="rbtn" ${on('rollAttack',id,mi)}>${sgn(s.hit)}</button>${s.dmgExpr!=='0'?`<button class="rbtn" ${on('rollWeaponDmg',id,mi,false)}>${esc(s.dmgExpr)}</button><button class="rbtn" title="Critical damage" ${on('rollWeaponDmg',id,mi,true)}>Crit</button>`:''}</span></div>`}).join('');
+  if(it.w.sp)h+=`<p class="rule" style="margin-top:8px">${esc(it.w.sp)}</p>`;
+  h+=`<div class="fgrid" style="margin-top:8px"><div><div class="lbl">Proficient</div><select onchange="setItem('${id}','prof',this.value)">${[['auto','Automatic ('+(weaponProf(it.w.pc)?'yes':'no')+')'],['yes','Yes'],['no','No']].map(([v,l])=>`<option value="${v}" ${it.prof===v?'selected':''}>${l}</option>`).join('')}</select></div>
+   <div><div class="lbl">Proficiency group</div><select onchange="setItemW('${id}','pc',this.value)">${['common','bows','sidearms','longarms','shotguns','martial','jaffa','gunnery','explosives'].map(k=>`<option ${it.w.pc===k?'selected':''}>${k}</option>`).join('')}</select></div></div>`}
+ if(it.a)h+=`<h3>Armour</h3><div class="kv"><span>Type</span><b>${it.a.kind==='addon'?'Add-on':it.a.kind}</b></div><div class="kv"><span>AC</span><b>${it.a.kind==='addon'?'+'+it.a.ac:it.a.ac+(it.a.kind==='light'?' + DEX':'')}</b></div>${it.a.str?`<div class="kv"><span>Strength needed</span><b>${it.a.str}</b></div>`:''}<div class="kv"><span>Loadout</span><b>${it.a.kind==='addon'?(it.a.load?it.a.load:'0'):it.a.load+' + STR'}</b></div>${it.a.stealth?'<div class="kv"><span>Stealth</span><b>Disadvantage</b></div>':''}`;
+ h+=`<h3>Details</h3><div class="fgrid"><div><div class="lbl">Name</div><input value="${esc(it.n)}" onchange="setItem('${id}','n',this.value)"></div><div><div class="lbl">Quantity</div><input type="number" min="0" value="${it.qty||1}" onchange="setItem('${id}','qty',+this.value)"></div>
+  <div><div class="lbl">Bulk each</div><input type="number" min="0" value="${it.b||0}" onchange="setItem('${id}','b',+this.value)"></div><div><div class="lbl">Tech level</div><input type="number" min="0" max="5" value="${it.tl??''}" onchange="setItem('${id}','tl',+this.value)"></div></div>
+  ${it.w?`<div class="fgrid">${it.w.modes.map((md,mi)=>`<div><div class="lbl">${esc(md[0])} damage</div><input value="${esc(md[2])}" onchange="setMode('${id}',${mi},2,this.value)"></div>`).join('')}</div><p class="rule">Damage dice like 2d6, 1d8+TD. Your ability modifier is added automatically.</p>`:''}
+  <div class="lbl">Notes</div><textarea rows="3" onchange="setItem('${id}','notes',this.value)">${esc(it.notes||'')}</textarea>
+  <label class="frow" style="margin-top:8px"><input type="checkbox" ${it.kit?'checked':''} onchange="setItem('${id}','kit',this.checked)"> Part of issued base kit (no bulk)</label>
+  <div class="panel-actions">${(it.w||it.a)?btn(it.eq?'Unequip':'Equip','toggleEquip',[id]):''}${btn('Remove','removeItem',[id],'btn danger')}</div>`;return h},
+
+additem(){const q=UI.addq.toLowerCase(),t=UI.addt;const list=allCatalog().filter(c=>(t==='all'||c.t===t)&&(!q||c.n.toLowerCase().includes(q)||(c.d||'').toLowerCase().includes(q)));
+ return`<h2>Add items</h2><p class="rule">Everything from the rulebook, plus anything ${isGM?'you\'ve':'your GM has'} added to the campaign list below. An amber note means it's flagged, not proficient, too heavy, or alien tech needing GM sign-off, but you can still add it. Items already in your inventory show a quantity stepper here instead of Add.</p>
+ <input id="addq" placeholder="Search: sidearm, med kit, staff..." value="${esc(UI.addq)}" oninput="UI.addq=this.value;renderAddList()">
+ <div class="filters" style="margin-top:8px">${[['all','All'],['weapon','Weapons'],['armor','Armour'],['gear','Gear']].map(([k,l])=>`<button class="${t===k?'on':''}" ${on('setAddType',k)}>${l}</button>`).join('')}</div>
+ <div id="addlist">${addListHtml(list)}</div>
+ <h3>Custom item (just for you)</h3><div class="fgrid"><div><div class="lbl">Name</div><input id="ci-n"></div><div><div class="lbl">Type</div><select id="ci-t"><option value="gear">Gear</option><option value="weapon">Weapon</option></select></div>
+ <div><div class="lbl">Bulk</div><input id="ci-b" type="number" value="1"></div><div><div class="lbl">Damage (weapons)</div><input id="ci-d" placeholder="1d8"></div></div>
+ <div class="lbl">Description</div><textarea id="ci-desc" rows="2"></textarea><div class="panel-actions"><button class="btn pri" onclick="addCustomItem()">Add custom item</button></div>
+ ${isGM?`<h3>Campaign items (everyone can see these)</h3><p class="rule">Add loot here once a player finds or is given it, and they can pick it up themselves from this same list, on their own device.</p>
+ ${CAMPAIGN_ITEMS.length?CAMPAIGN_ITEMS.map(r=>`<div class="res"><div class="rn"><b>${esc(r.name)}</b><small>${esc((r.data&&r.data.d)||'')}</small></div><button class="btn sm danger" ${on('removeCampaignItem',r.id)}>Remove</button></div>`).join(''):'<p class="muted">Nothing added yet.</p>'}
+ <div class="fgrid" style="margin-top:8px"><div><div class="lbl">Name</div><input id="gi-n" placeholder="e.g. Vorah signet ring"></div><div><div class="lbl">Type</div><select id="gi-t"><option value="gear">Gear</option><option value="weapon">Weapon</option></select></div>
+ <div><div class="lbl">Bulk</div><input id="gi-b" type="number" value="1"></div><div><div class="lbl">Tech level</div><input id="gi-tl" type="number" value="4"></div></div>
+ <input id="gi-d" placeholder="Damage, if a weapon (e.g. 1d8)" style="margin-bottom:8px">
+ <div class="lbl">Description</div><textarea id="gi-desc" rows="3" placeholder="What it is, what it does, anything the player has learned about it so far."></textarea>
+ <div class="panel-actions"><button class="btn pri" onclick="addCampaignItem()">Add to campaign list</button></div>`:''}`},
+
+action(n){if(n==='Unarmed')return`<h2>Unarmed strike</h2><p>A punch, kick or head-butt: 1 + STR bludgeoning damage. Characters proficient in Martial Arts deal 1d6 + STR instead. Improvised weapons deal 1d4. You're always proficient with unarmed strikes and improvised weapons.</p>`;
+ const a=ACTIONS.find(x=>x.n===n);return`<h2>${esc(n)}</h2><p class="rule">${a.g==='contest'?'Combat contest':a.g==='reaction'?'Reaction':'Action'}</p><p>${esc(a.d)}</p>`},
+feature(i){const f=D.cls?.f[i];if(!f)return'';return`<h2>${esc(f[1])}</h2><p class="rule">${D.cls.n} level ${f[0]} • ${{action:'Action',bonus:'Bonus action',reaction:'Reaction',other:'Feature'}[f[2]]}</p><p>${esc(f[3])}</p>`},
+trait(i){const t=D.race?.tr[i];if(!t)return'';return`<h2>${esc(t[0])}</h2><p class="rule">${esc(D.race.n)} trait</p><p>${esc(t[1])}</p>`},
+origin(n){const o=ORIGINS[n];return`<h2>${esc(n)}</h2><p class="rule">${o.c} origin • ${esc(o.a)}</p><h3>${esc(o.ab)}</h3><p>${esc(o.t)}</p>`},
+res(key){const r=D.res.find(x=>x.key===key);if(!r)return'';const cust=key.startsWith('c_');return`<h2>${esc(r.name)}</h2><p class="rule">${r.src} • ${RESET_L[r.reset]} • ${r.max-r.used} of ${r.max} left</p>${r.desc?`<p>${esc(r.desc)}</p>`:''}
+ <div class="panel-actions">${btn('Use one','useRes',[key,1],'btn pri')}${btn('Restore one','useRes',[key,-1])}${cust?btn('Delete tracker','removeRes',[key.slice(2)],'btn danger'):''}</div>`},
+addres(){return`<h2>Add a tracker</h2><p class="rule">For anything with limited uses the sheet doesn't track yet: a feat, a gadget, grenades, charges.</p>
+ <div class="lbl">Name</div><input id="nr-n" style="margin-bottom:8px"><div class="fgrid"><div><div class="lbl">Uses</div><input id="nr-m" type="number" min="1" value="1"></div><div><div class="lbl">Resets on</div><select id="nr-r"><option value="short">Short rest</option><option value="long">Long rest</option><option value="mission">New mission</option><option value="none">Manual only</option></select></div></div>
+ <div class="lbl">Description</div><textarea id="nr-d" rows="3"></textarea><div class="panel-actions"><button class="btn pri" onclick="addRes()">Add tracker</button></div>`},
+feat(id){const f=C.feats.find(x=>x.id===id);if(!f)return'';return`<h2>${esc(f.name)}</h2><p class="rule">${esc(f.cat)}${+f.mp?' • '+f.mp+' MP':''}</p>
+ <div class="lbl">Name</div><input value="${esc(f.name)}" onchange="setFeat('${id}','name',this.value)" style="margin-bottom:8px">
+ <div class="fgrid"><div><div class="lbl">Category</div><select onchange="setFeat('${id}','cat',this.value)">${FEAT_CATS.map(c=>`<option ${f.cat===c?'selected':''}>${c}</option>`).join('')}</select></div><div><div class="lbl">MP cost</div><input type="number" min="0" value="${+f.mp||0}" onchange="setFeat('${id}','mp',+this.value)"></div></div>
+ <div class="lbl">Description</div><textarea rows="6" onchange="setFeat('${id}','desc',this.value)">${esc(f.desc||'')}</textarea>
+ <div class="panel-actions">${btn('Remove feat','removeFeat',[id],'btn danger')}</div>`},
+addfeat(cat){return`<h2>Add a feat</h2><p class="rule">Record a feat you've taken. Enter 0 MP for feats your class gives you free (levels 1 to 5) and bonus feats at levels 5, 11 and 17.</p>
+ <div class="lbl">Name</div><input id="nf-n" style="margin-bottom:8px"><div class="fgrid"><div><div class="lbl">Category</div><select id="nf-c">${FEAT_CATS.map(c=>`<option ${cat===c?'selected':''}>${c}</option>`).join('')}</select></div><div><div class="lbl">MP cost</div><input id="nf-m" type="number" min="0" value="0"></div></div>
+ <div class="lbl">Description</div><textarea id="nf-d" rows="5" placeholder="What the feat does."></textarea><div class="panel-actions"><button class="btn pri" onclick="addFeat()">Add feat</button></div>`}
+};
+function itemTags(c){const tags=[];
+ if(c.t==='weapon'&&!weaponProf(c.w.pc))tags.push('Not proficient');
+ if(c.t==='armor'&&c.a.kind!=='addon'&&!armorProf(c.a.kind))tags.push('Not proficient');
+ if(c.t==='armor'&&c.a.str&&C.scores.str<c.a.str)tags.push('Needs STR '+c.a.str);
+ if(c.src==='Alien')tags.push('GM approval');
+ return tags}
+function addListHtml(list){return list.length?list.map(c=>{const ex=invByCat(c.n);const tags=itemTags(c);
+ return`<div class="res"><div class="rn"><b>${esc(c.n)}</b><small>${c.t==='weapon'?c.w.modes.map(m=>m[2]).join(' / ')+' • ':''}${c.t==='armor'?(c.a.kind==='addon'?'+':'AC ')+c.a.ac+' • ':''}Bulk ${c.b} • TL ${c.tl} • ${esc(c.src)}${tags.length?' • <span style="color:var(--amber2)">'+tags.join(', ')+'</span>':''}</small></div>
+ ${ex?`<div class="ctr"><button ${on('adjCatQty',c.n,-1)}>−</button><span class="mono" style="min-width:20px;text-align:center">${ex.qty||1}</span><button ${on('adjCatQty',c.n,1)}>+</button></div>`:`<button class="btn sm" ${on('addCatItem',c.n)}>Add</button>`}</div>`}).join(''):'<p class="muted">No matches.</p>'}
+function renderAddList(){const q=UI.addq.toLowerCase(),t=UI.addt;$('addlist').innerHTML=addListHtml(allCatalog().filter(c=>(t==='all'||c.t===t)&&(!q||c.n.toLowerCase().includes(q)||(c.d||'').toLowerCase().includes(q))))}
+function setAddType(t){UI.addt=t;renderSide();const q=$('addq');if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}
+// ============================================================
+// ACTIONS: everything that changes the character
+// ============================================================
+function setPath(o,path,v){const ks=path.split('.');let t=o;ks.slice(0,-1).forEach(k=>{if(t[k]==null)t[k]={};t=t[k]});t[ks[ks.length-1]]=v}
+function setField(path,v){setPath(C,path,v);scheduleSave()}
+function setVal(path,v){setPath(C,path,v);commit()}
+function setNum(path,v){setPath(C,path,v===''?0:+v);commit()}
+function setRollMode(m){UI.rollMode=UI.rollMode===m?'normal':m;renderRollMode()}
+function setTheme(k){C.theme=k;applyTheme(k);commit(false)}
+function applyTheme(k){const t=THEMES[k]||THEMES.sgc_dark;const r=document.documentElement.style;for(const v in t)r.setProperty('--'+v,t[v]);r.setProperty('--bodyBg',t.bodyBg||t.bg)}
+
+// abilities & skills
+function setScore(k,v){C.scores[k]=clamp(parseInt(v)||1,1,30);commit()}
+function adjScore(k,d){setScore(k,C.scores[k]+d)}
+function toggleSaveProf(k){C.saveProf[k]=!C.saveProf[k];commit()}
+function cycleSkill(n){C.skillProf[n]=((+C.skillProf[n]||0)+1)%3;commit()}
+function setSkillProf(n,v){C.skillProf[n]=v;commit()}
+function setSkillAbil(n,v){if(v)C.skillAbil[n]=v;else delete C.skillAbil[n];commit()}
+function toggleFlag(k){C[k]=!C[k];commit()}
+function setLevel(v){C.level=clamp(parseInt(v)||1,1,20);commit()}
+function setRace(v){C.race=v;C.origins=C.origins.map(o=>ORIGINS[o]?.req&&!ORIGINS[o].req.includes(v)?'':o);commit()}
+function setClass(v){const first=!C.cls;C.cls=v;if(v)applyClassDefaults(true);else commit()}
+function applyClassDefaults(quiet){const c=CLASSES[C.cls];if(!c)return;C.saveProf={};c.saves.forEach(k=>C.saveProf[k]=true);
+ c.skills.forEach(s=>{if(!C.skillProf[s])C.skillProf[s]=1});
+ const upg=upgradeProfs({armor:c.armor,weapons:c.weapons,tools:c.tools,languages:C.profs.languages.join(', ')});
+ upg.languages=C.profs.languages.length?C.profs.languages:upg.languages;C.profs=upg;
+ commit();if(!quiet)toast(c.n+' defaults applied')}
+function setOrigin(slot,v){C.origins[slot]=v;const o=ORIGINS[v];if(o&&o.sk&&!C.skillProf[o.sk])C.skillProf[o.sk]=1;commit()}
+function loadPortrait(ev){const f=ev.target.files[0];if(!f)return;const img=new Image();const url=URL.createObjectURL(f);
+ img.onload=()=>{const s=256,cv=document.createElement('canvas');const r=Math.min(1,s/Math.max(img.width,img.height));cv.width=Math.round(img.width*r);cv.height=Math.round(img.height*r);
+  cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);C.portrait=cv.toDataURL('image/jpeg',.85);URL.revokeObjectURL(url);commit()};img.src=url}
+
+// HP & death
+function hpApply(sign,inputId='hpamt'){const el=$(inputId);const n=Math.abs(parseInt(el&&el.value)||0);if(!n)return;
+ if(sign>0)heal(n,'Healed');else damage(n,!!($('critdmg')&&$('critdmg').checked));if(el)el.value=''}
+function heal(n,why){if(C.hp.dead)return toast('Dead characters can\'t be healed');const before=D.hp;C.hp.cur=Math.min(D.maxHP,D.hp+n);
+ if(C.hp.cur>0){C.hp.ds={s:0,f:0};C.hp.stable=false}logInfo(why||'Healed','+'+(C.hp.cur-before)+' HP ('+before+' → '+C.hp.cur+')');commit()}
+function damage(n,crit){if(C.hp.dead)return;let left=n;const t=+C.hp.temp||0;if(t){const u=Math.min(t,left);C.hp.temp=t-u;left-=u}
+ const cur=D.hp;let msg='';
+ if(cur>0){const nc=cur-left;if(nc>0){C.hp.cur=nc;msg=cur+' → '+nc}else{C.hp.cur=0;const over=-nc;
+   if(over>=D.maxHP){C.hp.dead=true;msg='Massive damage: '+over+' left over after 0 HP equals or exceeds max HP. Killed outright.'}else{C.hp.ds={s:0,f:0};C.hp.stable=false;msg='Down to 0 HP and unconscious. Start death saves.'}}}
+ else if(left>0){if(left>=D.maxHP){C.hp.dead=true;msg='Massive damage at 0 HP. Killed outright.'}else{C.hp.stable=false;C.hp.ds.f+=crit?2:1;msg='Damage at 0 HP: '+(crit?'two death save failures':'one death save failure');if(C.hp.ds.f>=3){C.hp.dead=true;msg+='. Three failures: dead.'}}}
+ logInfo('Took '+n+' damage'+(t?' ('+Math.min(t,n)+' absorbed by temp HP)':''),msg||'Absorbed by temporary HP');commit()}
+function setHP(v){C.hp.cur=clamp(parseInt(v)||0,0,D.maxHP);if(C.hp.cur>0){C.hp.ds={s:0,f:0};C.hp.stable=false}commit()}
+function setOverride(v){C.hp.override=v===''?null:+v;commit()}
+function rollDeathSave(){if(C.hp.stable)return toast('You are stable. No death saves needed.');const n=die(20);let msg;
+ if(n===20){C.hp.cur=1;C.hp.ds={s:0,f:0};msg='Natural 20! You regain 1 HP and wake up.'}
+ else if(n===1){C.hp.ds.f+=2;msg='Natural 1: two failures.'}else if(n>=10){C.hp.ds.s++;msg='Success.'}else{C.hp.ds.f++;msg='Failure.'}
+ if(C.hp.ds.f>=3){C.hp.dead=true;msg+=' Three failures: dead.'}else if(C.hp.ds.s>=3){C.hp.stable=true;C.hp.ds={s:0,f:0};msg+=' Three successes: stable.'}
+ logRoll('Death save','',n,'1d20 ('+n+') • '+msg,n===20?'crit':n===1?'fumble':'');commit()}
+function setDS(k,v){C.hp.ds[k]=clamp(v,0,3);if(C.hp.ds.f>=3)C.hp.dead=true;if(C.hp.ds.s>=3){C.hp.stable=true;C.hp.ds={s:0,f:0}}commit()}
+function setStable(){C.hp.stable=true;C.hp.ds={s:0,f:0};logInfo('Stabilised','Unconscious but no longer making death saves. Regain 1 HP after 1d4 hours.');commit()}
+function revive(){C.hp.dead=false;C.hp.cur=1;C.hp.ds={s:0,f:0};C.hp.stable=false;logInfo('Revived','Back at 1 HP.');commit()}
+
+// resources
+function adjDP(d){C.dp=Math.max(0,D.dp+d);commit()}
+function setDP(v){C.dp=v;commit()}
+function setTension(k){C.tension=k;commit()}
+function setExh(n){C.exh=clamp(n,0,6);if(C.exh>=6){C.hp.dead=true;logInfo('Exhaustion 6','Death.')}commit()}
+function toggleCond(n){C.conds=C.conds.includes(n)?C.conds.filter(x=>x!==n):[...C.conds,n];commit()}
+function toggleCondInfo(n){UI.condOpen=UI.condOpen||{};UI.condOpen[n]=!UI.condOpen[n];renderSide()}
+function toggleExhInfo(){UI.exhOpen=!UI.exhOpen;renderSide()}
+function addDefense(){const type=$('def-type').value,dmg=$('def-dmg').value,note=$('def-note').value.trim();if(!dmg)return toast('Choose a damage type');
+ C.defenses.push({type,dmg,note});$('def-note').value='';commit(false);renderSide()}
+function removeDefense(i){C.defenses.splice(i,1);commit(false);renderSide()}
+
+// proficiencies
+function toggleArmorProf(kind){const k='armor'+(kind==='light'?'Light':'Heavy');C.profs[k]=!C.profs[k];commit()}
+function toggleWeaponProf(k){C.profs.weapons[k]=!C.profs.weapons[k];commit()}
+function toggleTool(n){const t=C.profs.tools;C.profs.tools=t.includes(n)?t.filter(x=>x!==n):[...t,n];commit()}
+function toggleLanguage(n){const l=C.profs.languages;C.profs.languages=l.includes(n)?l.filter(x=>x!==n):[...l,n];commit()}
+
+// inventory qty helpers for the Add Items list
+function invByCat(n){return C.inv.find(i=>i.catName===n)}
+function adjCatQty(n,d){const it=invByCat(n);if(!it)return;it.qty=(it.qty||1)+d;if(it.qty<=0)C.inv=C.inv.filter(i=>i!==it);commit(false);renderSide()}
+function toggleUse(key,i){const r=D.res.find(x=>x.key===key);if(!r)return;C.res[key]=r.used>i?i:i+1;commit()}
+function useRes(key,d){const r=D.res.find(x=>x.key===key);C.res[key]=clamp(r.used+d,0,r.max);commit()}
+function adjEureka(d){C.eureka=clamp(Math.min(C.eureka,D.eurekaMax)+d,0,D.eurekaMax);commit()}
+function addRes(){const n=$('nr-n').value.trim();if(!n)return toast('Give the tracker a name');C.customRes.push({id:uid(),name:n,max:Math.max(1,+$('nr-m').value||1),reset:$('nr-r').value,desc:$('nr-d').value});commit(false);openPanel('log');setTab('abilities')}
+function removeRes(id){C.customRes=C.customRes.filter(x=>x.id!==id);delete C.res['c_'+id];UI.panel={k:'log'};commit()}
+function resetRes(types){D.res.forEach(r=>{if(types.includes(r.reset))C.res[r.key]=0})}
+
+// rests
+function takeShortRest(){const auto=$('sr-auto')?$('sr-auto').checked:false;let msg=[];
+ if(C.race!=='jaffa'&&auto&&!C.hp.dead&&D.hp>0){let ex='1d'+D.hdie+'+'+Math.max(D.m.con,D.prof);if(C.race==='human_tauri'||C.race==='human_abydonian')ex+='+TD';if(D.origins.some(o=>o.n==='Healer'))ex+='+'+D.prof;
+  const r=rollExpr(ex);const b=D.hp;C.hp.cur=Math.min(D.maxHP,D.hp+r.total);msg.push('Healed '+(C.hp.cur-b)+' ('+r.text+')')}
+ resetRes(['short']);logInfo('Short rest',msg.join('. ')||'Short-rest abilities reset.');UI.panel={k:'log'};commit()}
+function takeLongRest(){if(D.hp<1)return toast('You need at least 1 HP to benefit from a long rest');const b=D.hp;let r;
+ if(C.race==='tokra'||C.race==='tokra_pangaran')C.hp.cur=D.maxHP;
+ else{const bonus=Math.max(D.m.con,D.prof);r=C.race==='jaffa'?{total:D.lvl*D.hdie+bonus,text:D.lvl+' x '+D.hdie+' + '+bonus+' (Kelno\'reem)'}:rollExpr(D.lvl+'d'+D.hdie+'+'+bonus);C.hp.cur=Math.min(D.maxHP,b+r.total)}
+ const ex=C.exh;C.exh=Math.max(0,C.exh-1);C.dp=null;C.hp.temp=0;C.hp.ds={s:0,f:0};C.hp.stable=false;resetRes(['short','long']);
+ D=derive();C.hp.cur=Math.min(D.maxHP,C.hp.cur);
+ logInfo('Long rest','Healed '+(C.hp.cur-b)+(r?' ('+r.text+')':' (Regeneration)')+'. '+(ex?'Exhaustion '+ex+' → '+C.exh+'. ':'')+'DP reset to '+D.dpBase+'. Temp HP cleared.');UI.panel={k:'log'};commit()}
+function newMission(){resetRes(['mission']);if(C.cls==='scientist')C.eureka=D.lvl>=5?Math.floor(D.prof/2):0;logInfo('New mission','Per-mission abilities reset.');UI.panel={k:'log'};commit()}
+
+// inventory
+function addCatItem(n){const ex=invByCat(n);if(ex){ex.qty=(ex.qty||1)+1;commit(false);renderSide();return}
+ const it=itemFromCat(n);if(!it)return;if(it.a&&!C.inv.some(i=>i.eq&&i.a&&i.a.kind!=='addon'&&it.a.kind!=='addon'))it.eq=true;if(it.w)it.eq=true;C.inv.push(it);commit(false);renderSide();toast(n+' added');}
+function addCustomItem(){const n=$('ci-n').value.trim();if(!n)return toast('Give the item a name');const t=$('ci-t').value,dmg=$('ci-d').value.trim()||'1d6';
+ C.inv.push({id:uid(),n,t,src:'Custom',tl:2,b:+$('ci-b').value||0,qty:1,kit:false,eq:t==='weapon',notes:'',d:$('ci-desc').value,
+  w:t==='weapon'?{modes:[['Attack','ranged',dmg,'Piercing','',0]],pc:'common'}:null,a:null,prof:'auto',ammo:null});commit(false);toast(n+' added');$('ci-n').value=''}
+function toggleEquip(id){const it=C.inv.find(i=>i.id===id);if(!it)return;it.eq=!it.eq;
+ if(it.eq&&it.a&&it.a.kind!=='addon')C.inv.forEach(o=>{if(o!==it&&o.a&&o.a.kind!=='addon')o.eq=false});commit()}
+function setItem(id,k,v){const it=C.inv.find(i=>i.id===id);if(it){it[k]=v;commit()}}
+function setItemW(id,k,v){const it=C.inv.find(i=>i.id===id);if(it&&it.w){it.w[k]=v;commit()}}
+function setMode(id,mi,idx,v){const it=C.inv.find(i=>i.id===id);if(it&&it.w){it.w.modes[mi][idx]=v;commit()}}
+function removeItem(id){C.inv=C.inv.filter(i=>i.id!==id);UI.panel={k:'log'};commit()}
+function toggleKit(k){C.kit[k]=C.kit[k]===false;commit(false)}
+function ammo(id,d){const it=C.inv.find(i=>i.id===id);if(!it||!it.w.cap)return;it.ammo=d===0?it.w.cap:clamp((it.ammo??it.w.cap)+d,0,it.w.cap);commit(false)}
+
+// feats
+function addFeat(){const n=$('nf-n').value.trim();if(!n)return toast('Give the feat a name');C.feats.push({id:uid(),name:n,cat:$('nf-c').value,mp:+$('nf-m').value||0,desc:$('nf-d').value});
+ if(/improved initiative/i.test(n))C.impInit=true;if(/improved moxie/i.test(n))C.impMoxie=true;UI.panel={k:'log'};commit()}
+function setFeat(id,k,v){const f=C.feats.find(x=>x.id===id);if(f){f[k]=v;commit()}}
+function removeFeat(id){C.feats=C.feats.filter(x=>x.id!==id);UI.panel={k:'log'};commit()}
+
+// rolls
+function rollAbility(k){rollD20(ABN(k),'check',D.m[k],{ab:k})}
+function rollSave(k){rollD20(ABN(k),'save',D.saves[k],{ab:k})}
+function rollSkill(n){const s=D.skills[n];rollD20(n,'check',s.v,{ab:n==='Stealth'?'stealth':s.ab})}
+function rollInit(){rollD20('Initiative','check',D.init,{ab:'dex'})}
+function rollMoxie(){rollD20('Moxie','check',D.moxie,{ab:'int'})}
+function rollTD(){const r=rollExpr('TD');logRoll('Tension die ('+C.tension+')','',r.total,r.text,'')}
+function rollPlain(title,expr){const r=rollExpr(expr);logRoll(title,'',r.total,r.text,'')}
+function rollAttack(id,mi){const it=C.inv.find(i=>i.id===id);const s=modeStats(it,mi);if(it.w.cap){if((it.ammo??it.w.cap)<=0)toast('Out of ammo. Reload first.');else it.ammo=(it.ammo??it.w.cap)-1}
+ const r=rollD20(it.n+(it.w.modes.length>1?' ('+it.w.modes[mi][0]+')':''),'attack',s.hit,{critOn:s.critOn});if(r.crit)toast('Critical hit! Roll crit damage from the item panel.');if(it.w.cap)commit(false)}
+function rollWeaponDmg(id,mi,crit){const it=C.inv.find(i=>i.id===id);const s=modeStats(it,mi);rollDamage(it.n,s.dmgExpr,crit)}
+function rollUnarmedHit(n,hit){rollD20(n,'attack',hit,{})}
+function rollUnarmedDmg(n,dmg){rollDamage(n,dmg,false)}
+function clearLog(){UI.log=[];renderSide()}
+
+// backup
+function exportData(){const b=new Blob([JSON.stringify(C,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=(C.name||'character').replace(/\s+/g,'-').toLowerCase()+'-phoenix.json';a.click();toast('Backup downloaded')}
+function importData(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{C=migrate(JSON.parse(e.target.result));applyTheme(C.theme);commit();toast('Backup restored')}catch(x){toast('That file couldn\'t be read')}};r.readAsText(f)}
+
+// ============================================================
+// CLOUD: login + save/load (Supabase)
+// Paste your anon public key below: Supabase dashboard ->
+// Settings -> API -> Project API keys -> "anon public".
+// Never use the service_role key here.
+// ============================================================
+const SUPABASE_URL='https://zgkohcxskfxmsxmqkgoa.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_eH_SkZVCFKUD4wEWZKhyjw_3ErxAfDy';
+let sb=null,charId=null,saveT=null,started=false,offline=false,isGM=false,CAMPAIGN_ITEMS=[];
+try{if(window.supabase&&!SUPABASE_ANON_KEY.startsWith('PASTE'))sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY)}catch(e){sb=null}
+
+function loginMsg(t){$('login-msg').innerHTML=t}
+async function handleLogin(){if(!sb)return offlineStart();const email=$('login-email').value.trim(),password=$('login-pass').value;if(!email||!password)return loginMsg('Enter your email and password.');
+ loginMsg('Checking...');const{error}=await sb.auth.signInWithPassword({email,password});if(error)loginMsg(esc(error.message))}
+async function handleSignup(){if(!sb)return offlineStart();const email=$('login-email').value.trim(),password=$('login-pass').value;if(!email||!password)return loginMsg('Enter an email and password.');
+ loginMsg('Creating account...');const{data,error}=await sb.auth.signUp({email,password});if(error)return loginMsg(esc(error.message));if(!data.session)loginMsg('Account created. Check your email to confirm, then log in.')}
+async function handleLogout(){if(started)await saveNow();if(sb)await sb.auth.signOut();else location.reload()}
+
+function startApp(row){C=migrate(row?row.sheet_data:null);if(!C.inv.length&&(!row||!row.sheet_data))C.inv=starterKit();applyTheme(C.theme);D=derive();
+ $('login-screen').classList.add('hidden');$('picker-screen').classList.add('hidden');$('app').classList.remove('hidden');started=true;UI.open=isWide();UI.tab='actions';UI.panel={k:'log'};
+ $('charsbtn').classList.toggle('hidden',!isGM);renderMain();applySide();renderSide();setSaveStat(offline?'Offline':'Saved');loadCampaignItems()}
+
+async function enterSheetFor(user){if(started)return;loginMsg('Checking your access...');
+ const prof=await sb.from('profiles').select('role').eq('id',user.id).single();
+ isGM=!prof.error&&prof.data&&prof.data.role==='gm';
+ if(isGM){showPicker();return}
+ loginMsg('Loading character...');
+ let{data:rows,error}=await sb.from('characters').select('*').eq('owner_id',user.id).order('created_at').limit(1);if(error)return loginMsg('Couldn\'t load your character: '+esc(error.message));
+ let row=rows&&rows[0];if(!row){const ins=await sb.from('characters').insert({owner_id:user.id,name:'Unnamed Character',sheet_data:{}}).select().single();if(ins.error)return loginMsg('Couldn\'t create a character: '+esc(ins.error.message));row=ins.data}
+ charId=row.id;startApp(row)}
+
+// ---- GM: character picker ----
+async function showPicker(){if(started)await saveNow();started=false;$('app').classList.add('hidden');$('login-screen').classList.add('hidden');$('picker-screen').classList.remove('hidden');
+ $('picker-msg').textContent='Loading characters...';
+ const{data,error}=await sb.from('characters').select('*').order('updated_at',{ascending:false});
+ if(error){$('picker-msg').textContent='Couldn\'t load characters: '+error.message;return}
+ $('picker-msg').textContent=data.length?'':'No characters yet.';
+ $('picker-list').innerHTML=data.map(r=>`<button class="pickrow" onclick="openCharacter('${r.id}')"><div class="pn"><b>${esc(r.name||'Unnamed Character')}</b><small>${esc(r.class_name||'No class')} • Level ${r.level||1} • Saved ${ago(new Date(r.updated_at).getTime())}</small></div></button>`).join('')}
+async function openCharacter(id){$('picker-msg').textContent='Opening...';const{data,error}=await sb.from('characters').select('*').eq('id',id).single();
+ if(error){$('picker-msg').textContent='Couldn\'t open that character: '+error.message;return}charId=id;startApp(data)}
+
+function offlineStart(){offline=true;isGM=true;let d=null;try{d=JSON.parse(localStorage.getItem('sgc-v2-local')||'null')}catch(e){}startApp(d?{sheet_data:d}:null)}
+
+function setSaveStat(t){const e=$('savestat');if(e)e.textContent=t}
+function scheduleSave(){if(!started)return;setSaveStat('Unsaved');clearTimeout(saveT);saveT=setTimeout(saveNow,1200)}
+async function saveNow(){if(!started)return;clearTimeout(saveT);try{localStorage.setItem(charId?'sgc-v2-cache-'+charId:'sgc-v2-local',JSON.stringify(C))}catch(e){}
+ if(!sb||!charId){setSaveStat('Saved on device');return}setSaveStat('Saving...');
+ const{error}=await sb.from('characters').update({sheet_data:C,name:C.name||'Unnamed Character',class_name:CLASSES[C.cls]?.n||null,level:D.lvl,updated_at:new Date().toISOString()}).eq('id',charId);
+ setSaveStat(error?'Save failed':'Saved');if(error)toast('Cloud save failed. Your changes are kept on this device.')}
+window.addEventListener('beforeunload',()=>{if(saveT)saveNow()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&saveT)saveNow()});
+
+// ---- Campaign items: GM-curated shared list every player can browse and self-add from ----
+async function loadCampaignItems(){if(sb){const r=await sb.from('campaign_items').select('*').order('created_at',{ascending:false});if(!r.error)CAMPAIGN_ITEMS=r.data||[]}
+ else{try{CAMPAIGN_ITEMS=JSON.parse(localStorage.getItem('sgc-campaign-items')||'[]')}catch(e){CAMPAIGN_ITEMS=[]}}
+ if(UI.panel.k==='additem')renderSide()}
+function allCatalog(){return[...CAT,...CAMPAIGN_ITEMS.map(r=>({...(r.data||{}),n:(r.data&&r.data.n)||r.name,src:'Campaign',_row:r.id}))]}
+async function addCampaignItem(){const n=$('gi-n').value.trim();if(!n)return toast('Give the item a name');
+ const t=$('gi-t').value,dmg=$('gi-d').value.trim();
+ const data={n,t,src:'Campaign',tl:+$('gi-tl').value||2,b:+$('gi-b').value||1,d:$('gi-desc').value,
+  w:t==='weapon'?{modes:[['Attack','ranged',dmg||'1d6','Piercing','',0]],pc:'common'}:null,a:null};
+ if(sb&&isGM){const ins=await sb.from('campaign_items').insert({name:n,data}).select().single();if(ins.error)return toast('Couldn\'t add it: '+ins.error.message);CAMPAIGN_ITEMS.unshift(ins.data)}
+ else{CAMPAIGN_ITEMS.unshift({id:uid(),name:n,data,created_at:new Date().toISOString()});try{localStorage.setItem('sgc-campaign-items',JSON.stringify(CAMPAIGN_ITEMS))}catch(e){}}
+ $('gi-n').value='';$('gi-desc').value='';$('gi-d').value='';toast(n+' added to the campaign list');renderSide()}
+async function removeCampaignItem(id){if(sb&&isGM){const del=await sb.from('campaign_items').delete().eq('id',id);if(del.error)return toast('Couldn\'t remove it: '+del.error.message)}
+ CAMPAIGN_ITEMS=CAMPAIGN_ITEMS.filter(x=>x.id!==id);if(!sb)try{localStorage.setItem('sgc-campaign-items',JSON.stringify(CAMPAIGN_ITEMS))}catch(e){}renderSide()}
+
+if(sb){sb.auth.onAuthStateChange((ev,session)=>{if(session&&session.user)enterSheetFor(session.user);else if(ev==='SIGNED_OUT')location.reload()});
+ sb.auth.getSession().then(({data:{session}})=>{if(session&&session.user)enterSheetFor(session.user)})}
+else{loginMsg(window.supabase?'The cloud key hasn\'t been added to this file yet.<br><button class="btn" style="margin-top:8px" onclick="offlineStart()">Continue on this device only</button>'
+ :'Can\'t reach the server right now.<br><button class="btn" style="margin-top:8px" onclick="offlineStart()">Continue on this device only</button>')}
+</script>
+</body></html>
