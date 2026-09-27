@@ -22,16 +22,14 @@ input[type=checkbox]{width:16px;height:16px;accent-color:var(--acc);cursor:point
 :focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
 .hidden{display:none!important}
 .mono{font-family:var(--mono)}
-.lbl{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.3px;color:var(--text2);text-transform:uppercase}
+.lbl{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.3px;color:var(--text2);text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 .muted{color:var(--text2)}
 .clk{cursor:pointer}
 .clk:hover{color:var(--acc2)}
 
 /* Bracketed box: HUD corner marks are the sheet's signature detail */
-.box{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:3px}
-.box::before,.box::after{content:"";position:absolute;width:9px;height:9px;pointer-events:none}
-.box::before{top:-1px;left:-1px;border-top:2px solid var(--acc);border-left:2px solid var(--acc)}
-.box::after{bottom:-1px;right:-1px;border-bottom:2px solid var(--acc);border-right:2px solid var(--acc)}
+.box{position:relative;background:rgba(9,13,24,.72);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border:1px solid var(--border2);border-radius:14px;
+ box-shadow:0 8px 20px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05)}
 .boxtitle{font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.4px;color:var(--acc2);text-align:center;text-transform:uppercase;padding:7px 4px 8px;cursor:pointer}
 .boxtitle:hover{color:var(--text)}
 
@@ -63,28 +61,21 @@ input[type=checkbox]{width:16px;height:16px;accent-color:var(--acc);cursor:point
 .bsopt.bs-hairline .bssample{border-color:var(--text3)}
 
 /* Border style variants, applied globally via a body class */
-body.bs-round .box{border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.35)}
-body.bs-round .box::before,body.bs-round .box::after{display:none}
-body.bs-cut .box{border-radius:0;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)}
-body.bs-cut .box::before,body.bs-cut .box::after{display:none}
-body.bs-hairline .box{border-radius:0;border-color:var(--border2)}
-body.bs-hairline .box::before,body.bs-hairline .box::after{display:none}
 body.nightmode #app{filter:brightness(.84) saturate(.88)}
 
 /* AC shield + Initiative/Moxie hex badges: distinct from ordinary stat boxes */
-.acshape{clip-path:polygon(50% 0%,100% 18%,100% 62%,50% 100%,0% 62%,0% 18%);background:var(--bg3);border:1px solid var(--border2)}
-.hexbadge{clip-path:polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0% 50%);background:var(--bg3);border:1px solid var(--border2)}
-body.bs-round .acshape,body.bs-round .hexbadge{box-shadow:0 2px 10px rgba(0,0,0,.35)}
-.statshape{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:4px 0}
-.statshape:hover .shapebig{border-color:var(--acc2)}
-.shapebig{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;color:var(--text)}
-.hexbadge.shapebig{width:64px;height:56px;font-size:21px}
-.acshape.shapebig{width:78px;height:74px;font-size:27px}
+.statshape{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:4px 0}
+.statshape svg{filter:drop-shadow(0 8px 16px rgba(0,0,0,.55));transition:filter .15s}
+.statshape:hover svg{filter:drop-shadow(0 8px 16px rgba(0,0,0,.55)) brightness(1.15)}
+.shapebig{fill:#fbfdff;font-family:var(--sans);font-weight:700}
+.shapenum{font-size:26px}
+.shapenum-sm{font-size:20px}
 .btn{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.2px;text-transform:uppercase;border:1px solid var(--border2);background:var(--bg3);color:var(--acc2);padding:6px 11px;border-radius:3px;white-space:nowrap}
 .btn:hover{border-color:var(--acc2);color:var(--text)}
 .btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
 .btn.pri:hover{filter:brightness(1.15)}
 .btn.sm{padding:3px 7px;font-size:10px}
+.icobtn{display:inline-flex;align-items:center;justify-content:center;padding:6px 8px}
 .btn.danger{color:var(--red2);border-color:var(--red2)}
 .btn.on{background:var(--acc);border-color:var(--acc);color:#fff}
 
@@ -348,7 +339,7 @@ body.bs-round .acshape,body.bs-round .hexbadge{box-shadow:0 2px 10px rgba(0,0,0,
       <button class="btn" onclick="openPanel('longrest')">Long rest</button>
       <button class="btn" onclick="openPanel('log')">Game log</button>
       <span class="savestat" id="savestat" onclick="saveNow()" title="Click to save now"></span>
-      <button class="btn sm" onclick="openPanel('settings')" aria-label="Settings">&#9881;</button>
+      <button class="btn sm icobtn" onclick="openPanel('settings')" aria-label="Settings" title="Settings"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       <button class="btn sm" onclick="handleLogout()">Log out</button>
     </div>
   </header>
@@ -962,9 +953,15 @@ function renderColB(){$('col-b').innerHTML=`<div class="box"><div class="skills"
 function renderCrow(){const conds=[...C.conds];const cc=conds.map(c=>`<span class="chip bad">${esc(c)}</span>`).join('')+(C.exh?`<span class="chip bad">Exhaustion ${C.exh}</span>`:'');
  const DTL={resist:'Resist',immune:'Immune',vuln:'Vulnerable'};
  const defs=[...D.defAuto.map(x=>'Resist: '+x),...C.defenses.map(x=>`${DTL[x.type]}: ${x.dmg}${x.note?' ('+x.note+')':''}`)];
- $('crow').innerHTML=`<div class="statshape" ${on('openPanel','init')}><div class="lbl">Initiative</div><button class="hexbadge shapebig" ${onS('rollInit')}>${sgn(D.init)}</button></div>
- <div class="statshape" ${on('openPanel','moxie')}><div class="lbl">Moxie</div><button class="hexbadge shapebig" ${onS('rollMoxie')}>${sgn(D.moxie)}</button></div>
- <div class="statshape" ${on('openPanel','ac')}><div class="lbl">Armour Class</div><div class="acshape shapebig ac">${D.ac}</div></div>
+ const hexSvg=(val,id)=>`<svg width="72" height="62" viewBox="0 0 72 62"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2942" stop-opacity=".92"/><stop offset="1" stop-color="#0a0f1c" stop-opacity=".92"/></linearGradient></defs>
+  <polygon points="18,3 54,3 70,31 54,59 18,59 2,31" fill="url(#${id})" stroke="var(--acc2)" stroke-width="2.5"/>
+  <text x="36" y="38" text-anchor="middle" class="shapebig shapenum-sm">${esc(val)}</text></svg>`;
+ const shieldSvg=(val)=>`<svg width="82" height="88" viewBox="0 0 82 88"><defs><linearGradient id="acg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2942" stop-opacity=".92"/><stop offset="1" stop-color="#0a0f1c" stop-opacity=".92"/></linearGradient></defs>
+  <path d="M41 3 L77 15 V41 C77 63 61 78 41 85 C21 78 5 63 5 41 V15 Z" fill="url(#acg)" stroke="var(--amber2)" stroke-width="3"/>
+  <text x="41" y="50" text-anchor="middle" class="shapebig shapenum">${esc(val)}</text></svg>`;
+ $('crow').innerHTML=`<div class="statshape" ${on('openPanel','init')}><div class="lbl">Initiative</div><button style="background:none;border:none;padding:0;cursor:pointer" ${onS('rollInit')}>${hexSvg(sgn(D.init),'hexA')}</button></div>
+ <div class="statshape" ${on('openPanel','moxie')}><div class="lbl">Moxie</div><button style="background:none;border:none;padding:0;cursor:pointer" ${onS('rollMoxie')}>${hexSvg(sgn(D.moxie),'hexB')}</button></div>
+ <div class="statshape" ${on('openPanel','ac')}><div class="lbl">Armour Class</div>${shieldSvg(D.ac)}</div>
  <div class="box defbox"><div class="defcond">
   <div ${on('openPanel','defenses')}><div class="lbl">Defences</div><div class="val">${defs.length||D.immune.length?[...D.immune.map(x=>'Immune: '+x),...defs].map(x=>`<span class="chip ${/^Vulnerable/.test(x)?'bad':''}">${esc(x)}</span>`).join(''):'Resistances, immunities, or vulnerabilities'}</div></div>
   <div ${on('openPanel','conditions')}><div class="lbl">Conditions</div><div class="val">${cc||'Add active conditions'}</div></div></div></div>`}
@@ -1096,18 +1093,17 @@ function ago(t){const s=Math.round((Date.now()-t)/1000);return s<60?'just now':s
 const PANELS={
 settings(){return`<h2>Settings</h2>
  ${isGM?`<div class="res"><div class="rn" ${on('showPicker')}><b>Characters</b><small>See or switch to any player's sheet</small></div></div>`:''}
- <div class="res"><div class="rn" ${on('openPanel','appearance')}><b>Change sheet appearance</b><small>Colour theme, border style, background, night mode</small></div></div>
+ <div class="res"><div class="rn" ${on('openPanel','appearance')}><b>Change sheet appearance</b><small>Colour theme, background, night mode</small></div></div>
  <div class="res"><div class="rn" ${on('openPanel','profs')}><b>Proficiencies &amp; training</b><small>Armour, weapons, tools, languages</small></div></div>
  <div class="res"><div class="rn" ${on('setTab','extras')}><b>Backup &amp; mission points</b><small>Download/restore a backup, downtime facility</small></div></div>`},
 
-appearance(){const bs=C.borderStyle||'hud';const bg=C.bgImage;
+appearance(){const bg=C.bgImage;
  return`<h2>Appearance</h2>
  <h3>Colour theme</h3><div class="swrow">${Object.keys(THEMES).map(k=>`<button class="sw ${C.theme===k?'on':''}" style="background:${THEMES[k].acc||THEMES[k].acc2}" title="${themeLabel(k)}" ${on('setTheme',k)}></button>`).join('')}</div>
  <div class="muted" style="font-size:12px;margin-top:2px">${themeLabel(C.theme)}</div>
- <h3>Border style</h3><div class="bsrow">${[['hud','HUD Corners'],['round','Rounded'],['cut','Angular Cut'],['hairline','Hairline']].map(([k,l])=>`<button class="bsopt bs-${k} ${bs===k?'on':''}" ${on('setBorderStyle',k)}><span class="bssample"></span>${l}</button>`).join('')}</div>
  <h3>Background</h3>
  <div class="frow"><button class="btn sm ${!bg?'on':''}" ${on('clearBg')}>Solid colour</button><button class="btn sm" onclick="$('bgUp').click()">Upload image</button><input type="file" id="bgUp" class="hidden" accept="image/*" onchange="loadBgImage(event)"></div>
- ${bg?`<div class="kv"><span>Custom background set</span><button class="btn sm" ${on('clearBg')}>Remove</button></div>`:'<p class="rule">An image is dimmed automatically so text stays readable.</p>'}
+ ${bg?`<div class="kv"><span>Custom background set</span><button class="btn sm" ${on('clearBg')}>Remove</button></div>`:'<p class="rule">Panels use frosted glass over any background, so text stays sharp either way.</p>'}
  <h3>Night mode</h3><label class="frow"><input type="checkbox" ${C.nightMode?'checked':''} ${on('toggleNight')}> Dim the whole sheet slightly, easier on the eyes for late sessions</label>`},
 
 log(){if(!UI.log.length)return`<h2>Game log</h2><p class="rule">Click any modifier, save, skill, attack or damage value on the sheet to roll it. Results appear here. Use the Adv / Dis buttons at the top to roll your next d20 with advantage or disadvantage.</p><p class="rule">The log is kept on this device for this session.</p>`;
