@@ -46,6 +46,40 @@ input[type=checkbox]{width:16px;height:16px;accent-color:var(--acc);cursor:point
 .pickrow .pn b{display:block;font-size:14px}
 .pickrow .pn small{color:var(--text3);font-size:11.5px}
 .gmtag{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;color:var(--amber2);border:1px solid var(--amber2);border-radius:3px;padding:1px 6px;margin-left:8px;vertical-align:middle}
+
+/* Appearance: swatches, border-style picker */
+.swrow{display:flex;flex-wrap:wrap;gap:7px}
+.sw{width:26px;height:26px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;padding:0}
+.sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--bg2)}
+.bsrow{display:flex;flex-direction:column;gap:7px}
+.bsopt{display:flex;align-items:center;gap:11px;border:1px solid var(--border2);border-radius:4px;padding:8px 11px;background:var(--bg);color:var(--text2);font-family:var(--sans);font-size:13px;text-align:left}
+.bsopt.on{border-color:var(--acc2);color:var(--text);background:var(--bg3)}
+.bssample{width:30px;height:20px;background:var(--bg3);border:1px solid var(--border2);flex-shrink:0;position:relative}
+.bsopt.bs-hud .bssample::before,.bsopt.bs-hud .bssample::after{content:"";position:absolute;width:6px;height:6px}
+.bsopt.bs-hud .bssample::before{top:-1px;left:-1px;border-top:2px solid var(--acc);border-left:2px solid var(--acc)}
+.bsopt.bs-hud .bssample::after{bottom:-1px;right:-1px;border-bottom:2px solid var(--acc);border-right:2px solid var(--acc)}
+.bsopt.bs-round .bssample{border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.bsopt.bs-cut .bssample{clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)}
+.bsopt.bs-hairline .bssample{border-color:var(--text3)}
+
+/* Border style variants, applied globally via a body class */
+body.bs-round .box{border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+body.bs-round .box::before,body.bs-round .box::after{display:none}
+body.bs-cut .box{border-radius:0;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)}
+body.bs-cut .box::before,body.bs-cut .box::after{display:none}
+body.bs-hairline .box{border-radius:0;border-color:var(--border2)}
+body.bs-hairline .box::before,body.bs-hairline .box::after{display:none}
+body.nightmode #app{filter:brightness(.84) saturate(.88)}
+
+/* AC shield + Initiative/Moxie hex badges: distinct from ordinary stat boxes */
+.acshape{clip-path:polygon(50% 0%,100% 18%,100% 62%,50% 100%,0% 62%,0% 18%);background:var(--bg3);border:1px solid var(--border2)}
+.hexbadge{clip-path:polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0% 50%);background:var(--bg3);border:1px solid var(--border2)}
+body.bs-round .acshape,body.bs-round .hexbadge{box-shadow:0 2px 10px rgba(0,0,0,.35)}
+.statshape{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:4px 0}
+.statshape:hover .shapebig{border-color:var(--acc2)}
+.shapebig{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;color:var(--text)}
+.hexbadge.shapebig{width:64px;height:56px;font-size:21px}
+.acshape.shapebig{width:78px;height:74px;font-size:27px}
 .btn{font-family:var(--mono);font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;border:1px solid var(--border2);background:var(--bg3);color:var(--acc2);padding:5px 9px;border-radius:3px;white-space:nowrap}
 .btn:hover{border-color:var(--acc2);color:var(--text)}
 .btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
@@ -174,7 +208,7 @@ input[type=checkbox]{width:16px;height:16px;accent-color:var(--acc);cursor:point
 .rollv:hover{border-color:var(--acc2);color:var(--acc2)}
 
 /* combat row */
-.crow{display:grid;grid-template-columns:100px 100px 96px 1fr;gap:10px}
+.crow{display:grid;grid-template-columns:104px 104px 110px 1fr;gap:10px;align-items:center}
 .shield{text-align:center;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .shield .big{font-family:var(--mono);font-size:30px;font-weight:600;line-height:1}
 .shield:hover .big{color:var(--acc2)}
@@ -187,6 +221,10 @@ input[type=checkbox]{width:16px;height:16px;accent-color:var(--acc);cursor:point
 .defcond .val{font-size:12.5px;color:var(--text2);margin-top:3px}
 .chip{display:inline-block;font-size:11.5px;border:1px solid var(--border2);border-radius:10px;padding:1px 8px;margin:2px 3px 0 0;color:var(--text)}
 .chip.bad{border-color:var(--red2);color:var(--red2)}
+.custwrap{margin-top:10px}
+.custtoggle{font-family:var(--mono);font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--acc2);padding:9px 0;display:flex;align-items:center;gap:7px;width:100%;text-align:left;border-top:1px solid var(--border)}
+.custtoggle:hover{color:var(--text)}
+.custbody{padding:2px 0 4px;display:flex;flex-direction:column;gap:2px}
 
 /* TABS */
 .tabsbox{padding:0 0 10px;min-height:520px}
@@ -310,7 +348,7 @@ input[type=checkbox]{width:16px;height:16px;accent-color:var(--acc);cursor:point
       <button class="btn" onclick="openPanel('longrest')">Long rest</button>
       <button class="btn" onclick="openPanel('log')">Game log</button>
       <span class="savestat" id="savestat" onclick="saveNow()" title="Click to save now"></span>
-      <button class="btn sm hidden" id="charsbtn" onclick="showPicker()">Characters</button>
+      <button class="btn sm" onclick="openPanel('settings')" aria-label="Settings">&#9881;</button>
       <button class="btn sm" onclick="handleLogout()">Log out</button>
     </div>
   </header>
@@ -702,7 +740,7 @@ function newChar(){return{v:2,name:'',race:'',cls:'',level:1,origins:['',''],por
  profs:{armorLight:false,armorHeavy:false,weapons:{common:false,bows:false,sidearms:false,longarms:false,shotguns:false,martial:false,jaffa:false,gunnery:false},tools:[],languages:['English'],other:''},defenses:[],
  inv:[],kit:{},res:{},customRes:[],feats:[],eureka:0,mp:{earned:0},
  facility:{name:'',rating:1,note:''},
- bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'sgc_dark'}}
+ bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'sgc_dark',borderStyle:'hud',bgImage:'',nightMode:false}}
 
 let C=newChar(), D={};
 const UI={tab:'actions',filter:'all',ffilter:'all',rollMode:'normal',pinned:true,open:true,panel:{k:'log'},log:[],addq:'',addt:'all'};
@@ -924,9 +962,9 @@ function renderColB(){$('col-b').innerHTML=`<div class="box"><div class="skills"
 function renderCrow(){const conds=[...C.conds];const cc=conds.map(c=>`<span class="chip bad">${esc(c)}</span>`).join('')+(C.exh?`<span class="chip bad">Exhaustion ${C.exh}</span>`:'');
  const DTL={resist:'Resist',immune:'Immune',vuln:'Vulnerable'};
  const defs=[...D.defAuto.map(x=>'Resist: '+x),...C.defenses.map(x=>`${DTL[x.type]}: ${x.dmg}${x.note?' ('+x.note+')':''}`)];
- $('crow').innerHTML=`<div class="box stat" style="cursor:default"><div class="lbl clk" ${on('openPanel','init')}>Initiative</div><button class="initbtn" ${on('rollInit')}>${sgn(D.init)}</button></div>
- <div class="box stat" style="cursor:default"><div class="lbl clk" ${on('openPanel','moxie')}>Moxie</div><button class="initbtn" ${on('rollMoxie')}>${sgn(D.moxie)}</button></div>
- <div class="box shield" ${on('openPanel','ac')}><div class="lbl">Armour</div><div class="big">${D.ac}</div><div class="lbl">Class</div></div>
+ $('crow').innerHTML=`<div class="statshape" ${on('openPanel','init')}><div class="lbl">Initiative</div><button class="hexbadge shapebig" ${onS('rollInit')}>${sgn(D.init)}</button></div>
+ <div class="statshape" ${on('openPanel','moxie')}><div class="lbl">Moxie</div><button class="hexbadge shapebig" ${onS('rollMoxie')}>${sgn(D.moxie)}</button></div>
+ <div class="statshape" ${on('openPanel','ac')}><div class="lbl">Armour Class</div><div class="acshape shapebig ac">${D.ac}</div></div>
  <div class="box defbox"><div class="defcond">
   <div ${on('openPanel','defenses')}><div class="lbl">Defences</div><div class="val">${defs.length||D.immune.length?[...D.immune.map(x=>'Immune: '+x),...defs].map(x=>`<span class="chip ${/^Vulnerable/.test(x)?'bad':''}">${esc(x)}</span>`).join(''):'Resistances, immunities, or vulnerabilities'}</div></div>
   <div ${on('openPanel','conditions')}><div class="lbl">Conditions</div><div class="val">${cc||'Add active conditions'}</div></div></div></div>`}
@@ -1047,35 +1085,54 @@ function applySide(){const s=$('side'),over=!isWide()||!UI.pinned;
  const pb=$('pinbtn');pb.classList.toggle('hidden',!isWide());pb.textContent=UI.pinned?'Unpin':'Pin';pb.title=UI.pinned?'Let the panel slide over the sheet':'Keep the panel fixed beside the sheet'}
 window.addEventListener('resize',()=>{clearTimeout(window._rs);window._rs=setTimeout(applySide,120)});
 
-const PANEL_T={log:'Game log',ability:'Ability',save:'Saving throw',saveinfo:'Saving throws',skill:'Skill',skillinfo:'Skills',hp:'HP management',tension:'Tension die',dp:'Determination',prof:'Proficiency bonus',speed:'Speed',ac:'Armour class',init:'Initiative',moxie:'Moxie',senses:'Senses',defenses:'Defences',conditions:'Conditions',shortrest:'Short rest',longrest:'Long rest',manage:'Manage character',item:'Item',additem:'Add items',action:'Action',feature:'Class feature',trait:'Racial trait',origin:'Origin',feat:'Feat',addfeat:'Add feat',res:'Limited use',addres:'Add tracker',profs:'Proficiencies',newmission:'New mission'};
+const PANEL_T={log:'Game log',ability:'Ability',save:'Saving throw',saveinfo:'Saving throws',skill:'Skill',skillinfo:'Skills',hp:'HP management',tension:'Tension die',dp:'Determination',prof:'Proficiency bonus',speed:'Speed',ac:'Armour class',init:'Initiative',moxie:'Moxie',senses:'Senses',defenses:'Defences',conditions:'Conditions',shortrest:'Short rest',longrest:'Long rest',manage:'Manage character',item:'Item',additem:'Add items',action:'Action',feature:'Class feature',trait:'Racial trait',origin:'Origin',feat:'Feat',addfeat:'Add feat',res:'Limited use',addres:'Add tracker',profs:'Proficiencies',newmission:'New mission',settings:'Settings',appearance:'Appearance'};
 function renderSide(){const {k,a}=UI.panel;$('side-t').textContent=PANEL_T[k]||'';const f=PANELS[k]||PANELS.log;$('side-body').innerHTML=f(a)}
 const btn=(label,fn,args=[],cls='btn')=>`<button class="${cls}" ${on(fn,...args)}>${label}</button>`;
 const rollBtn=(label,fn,...args)=>`<button class="btn pri" ${on(fn,...args)}>${label}</button>`;
+function custBlock(key,inner){const open=!!(UI.custOpen&&UI.custOpen[key]);
+ return`<div class="custwrap"><button class="custtoggle" ${on('toggleCustom',key)}>${open?'︿':'⌄'} Customize</button>${open?`<div class="custbody">${inner}</div>`:''}</div>`}
 function ago(t){const s=Math.round((Date.now()-t)/1000);return s<60?'just now':s<3600?Math.round(s/60)+' min ago':Math.round(s/3600)+' h ago'}
 
 const PANELS={
+settings(){return`<h2>Settings</h2>
+ ${isGM?`<div class="res"><div class="rn" ${on('showPicker')}><b>Characters</b><small>See or switch to any player's sheet</small></div></div>`:''}
+ <div class="res"><div class="rn" ${on('openPanel','appearance')}><b>Change sheet appearance</b><small>Colour theme, border style, background, night mode</small></div></div>
+ <div class="res"><div class="rn" ${on('openPanel','profs')}><b>Proficiencies &amp; training</b><small>Armour, weapons, tools, languages</small></div></div>
+ <div class="res"><div class="rn" ${on('setTab','extras')}><b>Backup &amp; mission points</b><small>Download/restore a backup, downtime facility</small></div></div>`},
+
+appearance(){const bs=C.borderStyle||'hud';const bg=C.bgImage;
+ return`<h2>Appearance</h2>
+ <h3>Colour theme</h3><div class="swrow">${Object.keys(THEMES).map(k=>`<button class="sw ${C.theme===k?'on':''}" style="background:${THEMES[k].acc||THEMES[k].acc2}" title="${themeLabel(k)}" ${on('setTheme',k)}></button>`).join('')}</div>
+ <div class="muted" style="font-size:12px;margin-top:2px">${themeLabel(C.theme)}</div>
+ <h3>Border style</h3><div class="bsrow">${[['hud','HUD Corners'],['round','Rounded'],['cut','Angular Cut'],['hairline','Hairline']].map(([k,l])=>`<button class="bsopt bs-${k} ${bs===k?'on':''}" ${on('setBorderStyle',k)}><span class="bssample"></span>${l}</button>`).join('')}</div>
+ <h3>Background</h3>
+ <div class="frow"><button class="btn sm ${!bg?'on':''}" ${on('clearBg')}>Solid colour</button><button class="btn sm" onclick="$('bgUp').click()">Upload image</button><input type="file" id="bgUp" class="hidden" accept="image/*" onchange="loadBgImage(event)"></div>
+ ${bg?`<div class="kv"><span>Custom background set</span><button class="btn sm" ${on('clearBg')}>Remove</button></div>`:'<p class="rule">An image is dimmed automatically so text stays readable.</p>'}
+ <h3>Night mode</h3><label class="frow"><input type="checkbox" ${C.nightMode?'checked':''} ${on('toggleNight')}> Dim the whole sheet slightly, easier on the eyes for late sessions</label>`},
+
 log(){if(!UI.log.length)return`<h2>Game log</h2><p class="rule">Click any modifier, save, skill, attack or damage value on the sheet to roll it. Results appear here. Use the Adv / Dis buttons at the top to roll your next d20 with advantage or disadvantage.</p><p class="rule">The log is kept on this device for this session.</p>`;
  return`<div class="panel-actions" style="margin-top:0">${btn('Clear log','clearLog',[],'btn sm')}</div>`+UI.log.map(e=>`<div class="logentry"><div class="who">${esc(C.name||'You')} • ${ago(e.time)}</div>
   <div class="logcard ${e.cls}"><div class="lt">${esc(e.title)}${e.kind?`: <em>${esc(e.kind)}</em>`:''}<span class="brk">${esc(e.brk)}</span></div>${e.total!==''?`<div class="tot">${e.total}</div>`:''}</div></div>`).join('')},
 
-ability(k){const a=ABILS.find(x=>x.k===k);return`<h2>${a.n}</h2><p>${esc(a.d)}</p>
- <h3>Score</h3><div class="ctr" style="margin-bottom:8px"><button ${on('adjScore',k,-1)}>−</button><input type="number" style="width:80px;text-align:center" value="${C.scores[k]}" onchange="setScore('${k}',this.value)"><button ${on('adjScore',k,1)}>+</button><span class="muted">Modifier ${sgn(D.m[k])}</span></div>
+ability(k){const a=ABILS.find(x=>x.k===k);return`<h2>${a.n}</h2>
+ <div class="kv"><span>Score</span><b>${C.scores[k]}</b></div>
+ <div class="kv"><span>Modifier</span><b>${sgn(D.m[k])}</b></div>
+ <div class="kv"><span>${a.n} save</span><b>${sgn(D.saves[k])}${C.saveProf[k]?' • proficient':''}</b></div>
+ <p style="margin-top:12px">${esc(a.d)}</p>
+ ${custBlock('ability-'+k,`<div class="ctr" style="margin-bottom:8px"><button ${on('adjScore',k,-1)}>−</button><input type="number" style="width:80px;text-align:center" value="${C.scores[k]}" onchange="setScore('${k}',this.value)"><button ${on('adjScore',k,1)}>+</button></div>
  <p class="rule">Enter your final score, including racial and origin bonuses. Modifier = (score − 10) ÷ 2, rounded down. Player characters can't exceed 20.</p>
- <div class="panel-actions">${rollBtn('Roll '+a.n+' check','rollAbility',k)}${rollBtn(a.n+' save '+sgn(D.saves[k]),'rollSave',k)}</div>
- <h3>Save proficiency</h3><label class="frow"><input type="checkbox" ${C.saveProf[k]?'checked':''} ${on('toggleSaveProf',k)}> Proficient in ${a.n} saves</label>
- <h3>Skills using ${a.n}</h3>${SKILLS.filter(s=>D.skills[s.n].ab===k).map(s=>`<div class="kv"><span class="clk" ${on('openPanel','skill',s.n)}>${s.n}</span><b>${sgn(D.skills[s.n].v)}</b></div>`).join('')||'<p class="muted">None</p>'}`},
+ <label class="frow"><input type="checkbox" ${C.saveProf[k]?'checked':''} ${on('toggleSaveProf',k)}> Proficient in ${a.n} saves</label>`)}`},
 
 saveinfo(){return`<h2>Saving throws</h2><p>A save resists harm such as a blast, poison or Goa'uld mind control. Roll d20 + the ability modifier, plus your proficiency bonus if proficient.</p>
  ${ABILS.map(a=>`<div class="kv"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" ${C.saveProf[a.k]?'checked':''} ${on('toggleSaveProf',a.k)}> ${a.n}</label><b class="clk" ${on('rollSave',a.k)}>${sgn(D.saves[a.k])}</b></div>`).join('')}
  <p class="rule" style="margin-top:10px">Class saves: Diplomat WIS/CHA, Engineer DEX/INT, Medic DEX/WIS, Scientist INT/WIS, Scout CON/DEX, Soldier STR/CON.${C.facility.name==='Mess Hall'?' Mess Hall bonus included in CON and WIS.':''}</p>`},
 
-skill(n){const s=SKILLS.find(x=>x.n===n),k=D.skills[n];return`<h2>${n}</h2><p class="rule">${ABN(s.k)} skill</p><p>${esc(s.d)}</p>
- <div class="panel-actions">${rollBtn('Roll '+n+' '+sgn(k.v),'rollSkill',n)}</div>
- <h3>Breakdown</h3><div class="kv"><span>${ABN(k.ab)} modifier</span><b>${sgn(D.m[k.ab])}</b></div>
+skill(n){const s=SKILLS.find(x=>x.n===n),k=D.skills[n];return`<h2>${n}</h2><p class="rule">${ABN(k.ab)}</p><p>${esc(s.d)}</p>
+ ${custBlock('skill-'+n,`<div class="kv"><span>${ABN(k.ab)} modifier</span><b>${sgn(D.m[k.ab])}</b></div>
  <div class="kv"><span>${k.pl===2?'Expertise (double proficiency)':k.pl?'Proficiency':k.half?'Cross-Discipline Studies (half)':'Not proficient'}</span><b>${sgn(k.pl?D.prof*k.pl:k.half)}</b></div><div class="kv"><span>Total</span><b>${sgn(k.v)}</b></div>
  <h3>Proficiency</h3><div class="seg">${[[0,'None'],[1,'Proficient'],[2,'Expertise']].map(([v,l])=>`<button class="${k.pl===v?'on':''}" ${on('setSkillProf',n,v)}>${l}</button>`).join('')}</div>
  <h3>Ability used</h3><select onchange="setSkillAbil('${n}',this.value)"><option value="">Automatic (${AB(k.ab)})</option>${ABILS.map(a=>`<option value="${a.k}" ${C.skillAbil[n]===a.k?'selected':''}>${a.n}</option>`).join('')}</select>
- <p class="rule" style="margin-top:6px">Some origins and abilities let you use a different ability for this skill. Automatic picks the best one you're allowed. The GM may also call for an unusual pairing.</p>`},
+ <p class="rule" style="margin-top:6px">Some origins and abilities let you use a different ability for this skill. Automatic picks the best one you're allowed.</p>`)}`},
 skillinfo(){return`<h2>Skills</h2><p>Click a skill's bonus to roll it, or its name for details. Click the dot to cycle between not proficient, proficient (adds ${sgn(D.prof)}) and expertise (adds ${sgn(D.prof*2)}).</p><p class="rule">A dashed dot means Cross-Discipline Studies is adding half your proficiency bonus.</p>`},
 
 prof(){return`<h2>Proficiency bonus: ${sgn(D.prof)}</h2><p>Added to any d20 roll using a skill, save, tool or weapon you're proficient with. It never applies more than once to the same roll.</p><h3>By level</h3>${[[1,4,2],[5,8,3],[9,12,4],[13,16,5],[17,20,6]].map(([a,b,p])=>`<div class="kv"><span>Levels ${a} to ${b}</span><b>+${p}</b></div>`).join('')}`},
@@ -1193,16 +1250,18 @@ manage(){const oo=(slot)=>{const cur=C.origins[slot];const other=C.origins[1-slo
 item(id){const it=C.inv.find(i=>i.id===id);if(!it)return'<p class="muted">Item not found.</p>';
  let h=`<h2>${esc(it.n)}</h2><p class="rule">${esc(it.src||'Custom')} • Tech level ${it.tl??'-'}${it.kit?' • Base kit':''}</p>${it.d?`<p>${esc(it.d)}</p>`:''}`;
  if(it.w){h+=`<h3>Attacks</h3>`+it.w.modes.map((md,mi)=>{const s=modeStats(it,mi);return`<div class="kv"><span>${esc(md[0])} • ${esc(s.rng||'1m')} • ${esc(s.dt)}</span><span style="display:flex;gap:5px"><button class="rbtn" ${on('rollAttack',id,mi)}>${sgn(s.hit)}</button>${s.dmgExpr!=='0'?`<button class="rbtn" ${on('rollWeaponDmg',id,mi,false)}>${esc(s.dmgExpr)}</button><button class="rbtn" title="Critical damage" ${on('rollWeaponDmg',id,mi,true)}>Crit</button>`:''}</span></div>`}).join('');
-  if(it.w.sp)h+=`<p class="rule" style="margin-top:8px">${esc(it.w.sp)}</p>`;
-  h+=`<div class="fgrid" style="margin-top:8px"><div><div class="lbl">Proficient</div><select onchange="setItem('${id}','prof',this.value)">${[['auto','Automatic ('+(weaponProf(it.w.pc)?'yes':'no')+')'],['yes','Yes'],['no','No']].map(([v,l])=>`<option value="${v}" ${it.prof===v?'selected':''}>${l}</option>`).join('')}</select></div>
-   <div><div class="lbl">Proficiency group</div><select onchange="setItemW('${id}','pc',this.value)">${['common','bows','sidearms','longarms','shotguns','martial','jaffa','gunnery','explosives'].map(k=>`<option ${it.w.pc===k?'selected':''}>${k}</option>`).join('')}</select></div></div>`}
+  if(it.w.sp)h+=`<p class="rule" style="margin-top:8px">${esc(it.w.sp)}</p>`}
  if(it.a)h+=`<h3>Armour</h3><div class="kv"><span>Type</span><b>${it.a.kind==='addon'?'Add-on':it.a.kind}</b></div><div class="kv"><span>AC</span><b>${it.a.kind==='addon'?'+'+it.a.ac:it.a.ac+(it.a.kind==='light'?' + DEX':'')}</b></div>${it.a.str?`<div class="kv"><span>Strength needed</span><b>${it.a.str}</b></div>`:''}<div class="kv"><span>Loadout</span><b>${it.a.kind==='addon'?(it.a.load?it.a.load:'0'):it.a.load+' + STR'}</b></div>${it.a.stealth?'<div class="kv"><span>Stealth</span><b>Disadvantage</b></div>':''}`;
- h+=`<h3>Details</h3><div class="fgrid"><div><div class="lbl">Name</div><input value="${esc(it.n)}" onchange="setItem('${id}','n',this.value)"></div><div><div class="lbl">Quantity</div><input type="number" min="0" value="${it.qty||1}" onchange="setItem('${id}','qty',+this.value)"></div>
-  <div><div class="lbl">Bulk each</div><input type="number" min="0" value="${it.b||0}" onchange="setItem('${id}','b',+this.value)"></div><div><div class="lbl">Tech level</div><input type="number" min="0" max="5" value="${it.tl??''}" onchange="setItem('${id}','tl',+this.value)"></div></div>
-  ${it.w?`<div class="fgrid">${it.w.modes.map((md,mi)=>`<div><div class="lbl">${esc(md[0])} damage</div><input value="${esc(md[2])}" onchange="setMode('${id}',${mi},2,this.value)"></div>`).join('')}</div><p class="rule">Damage dice like 2d6, 1d8+TD. Your ability modifier is added automatically.</p>`:''}
-  <div class="lbl">Notes</div><textarea rows="3" onchange="setItem('${id}','notes',this.value)">${esc(it.notes||'')}</textarea>
-  <label class="frow" style="margin-top:8px"><input type="checkbox" ${it.kit?'checked':''} onchange="setItem('${id}','kit',this.checked)"> Part of issued base kit (no bulk)</label>
-  <div class="panel-actions">${(it.w||it.a)?btn(it.eq?'Unequip':'Equip','toggleEquip',[id]):''}${btn('Remove','removeItem',[id],'btn danger')}</div>`;return h},
+ h+=`<div class="panel-actions">${(it.w||it.a)?btn(it.eq?'Unequip':'Equip','toggleEquip',[id]):''}</div>`;
+ h+=custBlock('item-'+id,`${it.w?`<div class="fgrid"><div><div class="lbl">Proficient</div><select onchange="setItem('${id}','prof',this.value)">${[['auto','Automatic ('+(weaponProf(it.w.pc)?'yes':'no')+')'],['yes','Yes'],['no','No']].map(([v,l])=>`<option value="${v}" ${it.prof===v?'selected':''}>${l}</option>`).join('')}</select></div>
+   <div><div class="lbl">Proficiency group</div><select onchange="setItemW('${id}','pc',this.value)">${['common','bows','sidearms','longarms','shotguns','martial','jaffa','gunnery','explosives'].map(k=>`<option ${it.w.pc===k?'selected':''}>${k}</option>`).join('')}</select></div></div>`:''}
+  <div class="fgrid" style="margin-top:${it.w?8:0}px"><div><div class="lbl">Name</div><input value="${esc(it.n)}" onchange="setItem('${id}','n',this.value)"></div><div><div class="lbl">Quantity</div><input type="number" min="0" value="${it.qty||1}" onchange="setItem('${id}','qty',+this.value)"></div>
+   <div><div class="lbl">Bulk each</div><input type="number" min="0" value="${it.b||0}" onchange="setItem('${id}','b',+this.value)"></div><div><div class="lbl">Tech level</div><input type="number" min="0" max="5" value="${it.tl??''}" onchange="setItem('${id}','tl',+this.value)"></div></div>
+   ${it.w?`<div class="fgrid">${it.w.modes.map((md,mi)=>`<div><div class="lbl">${esc(md[0])} damage</div><input value="${esc(md[2])}" onchange="setMode('${id}',${mi},2,this.value)"></div>`).join('')}</div><p class="rule">Damage dice like 2d6, 1d8+TD. Your ability modifier is added automatically.</p>`:''}
+   <div class="lbl">Notes</div><textarea rows="3" onchange="setItem('${id}','notes',this.value)">${esc(it.notes||'')}</textarea>
+   <label class="frow" style="margin-top:8px"><input type="checkbox" ${it.kit?'checked':''} onchange="setItem('${id}','kit',this.checked)"> Part of issued base kit (no bulk)</label>
+   <div class="panel-actions">${btn('Remove','removeItem',[id],'btn danger')}</div>`);
+ return h},
 
 additem(){const q=UI.addq.toLowerCase(),t=UI.addt;const list=allCatalog().filter(c=>(t==='all'||c.t===t)&&(!q||c.n.toLowerCase().includes(q)||(c.d||'').toLowerCase().includes(q)));
  return`<h2>Add items</h2><p class="rule">Everything from the rulebook, plus anything ${isGM?'you\'ve':'your GM has'} added to the campaign list below. An amber note means it's flagged, not proficient, too heavy, or alien tech needing GM sign-off, but you can still add it. Items already in your inventory show a quantity stepper here instead of Add.</p>
@@ -1258,8 +1317,19 @@ function setField(path,v){setPath(C,path,v);scheduleSave()}
 function setVal(path,v){setPath(C,path,v);commit()}
 function setNum(path,v){setPath(C,path,v===''?0:+v);commit()}
 function setRollMode(m){UI.rollMode=UI.rollMode===m?'normal':m;renderRollMode()}
-function setTheme(k){C.theme=k;applyTheme(k);commit(false)}
-function applyTheme(k){const t=THEMES[k]||THEMES.sgc_dark;const r=document.documentElement.style;for(const v in t)r.setProperty('--'+v,t[v]);r.setProperty('--bodyBg',t.bodyBg||t.bg)}
+function setTheme(k){C.theme=k;applyTheme(k);commit(false);if(UI.panel.k==='appearance')renderSide()}
+function applyTheme(k){const t=THEMES[k]||THEMES.sgc_dark;const r=document.documentElement.style;for(const v in t)r.setProperty('--'+v,t[v]);r.setProperty('--bodyBg',t.bodyBg||t.bg);applyAppearance()}
+function applyAppearance(){document.body.className=document.body.className.replace(/\bbs-\S+/g,'').trim();
+ document.body.classList.add('bs-'+(C.borderStyle||'hud'));document.body.classList.toggle('nightmode',!!C.nightMode);
+ document.body.style.backgroundImage=C.bgImage?`linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.7)),url(${C.bgImage})`:'';
+ document.body.style.backgroundSize=C.bgImage?'cover':'';document.body.style.backgroundAttachment=C.bgImage?'fixed':''}
+function themeLabel(k){return k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).replace('Sgc','SGC').replace('Goauld',"Goa'uld").replace('Tokra',"Tok'ra").replace('Kethalis',"Keth'alis")}
+function setBorderStyle(k){C.borderStyle=k;applyAppearance();commit(false)}
+function toggleNight(){C.nightMode=!C.nightMode;applyAppearance();commit(false)}
+function clearBg(){C.bgImage='';applyAppearance();commit(false);renderSide()}
+function loadBgImage(ev){const f=ev.target.files[0];if(!f)return;const img=new Image();const url=URL.createObjectURL(f);
+ img.onload=()=>{const s=1280,cv=document.createElement('canvas');const r=Math.min(1,s/Math.max(img.width,img.height));cv.width=Math.round(img.width*r);cv.height=Math.round(img.height*r);
+  cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);C.bgImage=cv.toDataURL('image/jpeg',.75);URL.revokeObjectURL(url);applyAppearance();commit(false);renderSide()};img.src=url}
 
 // abilities & skills
 function setScore(k,v){C.scores[k]=clamp(parseInt(v)||1,1,30);commit()}
@@ -1311,6 +1381,7 @@ function setTension(k){C.tension=k;commit()}
 function setExh(n){C.exh=clamp(n,0,6);if(C.exh>=6){C.hp.dead=true;logInfo('Exhaustion 6','Death.')}commit()}
 function toggleCond(n){C.conds=C.conds.includes(n)?C.conds.filter(x=>x!==n):[...C.conds,n];commit()}
 function toggleCondInfo(n){UI.condOpen=UI.condOpen||{};UI.condOpen[n]=!UI.condOpen[n];renderSide()}
+function toggleCustom(key){UI.custOpen=UI.custOpen||{};UI.custOpen[key]=!UI.custOpen[key];renderSide()}
 function toggleExhInfo(){UI.exhOpen=!UI.exhOpen;renderSide()}
 function addDefense(){const type=$('def-type').value,dmg=$('def-dmg').value,note=$('def-note').value.trim();if(!dmg)return toast('Choose a damage type');
  C.defenses.push({type,dmg,note});$('def-note').value='';commit(false);renderSide()}
@@ -1392,20 +1463,20 @@ function importData(ev){const f=ev.target.files[0];if(!f)return;const r=new File
 // Never use the service_role key here.
 // ============================================================
 const SUPABASE_URL='https://zgkohcxskfxmsxmqkgoa.supabase.co';
-const SUPABASE_ANON_KEY='PASTE_YOUR_ANON_PUBLIC_KEY_HERE';
+const SUPABASE_ANON_KEY='sb_publishable_eH_SkZVCFKUD4wEWZKhyjw_3ErxAfDy';
 let sb=null,charId=null,saveT=null,started=false,offline=false,isGM=false,entering=false,CAMPAIGN_ITEMS=[];
 try{if(window.supabase&&!SUPABASE_ANON_KEY.startsWith('PASTE'))sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY)}catch(e){sb=null}
 
 function loginMsg(t){$('login-msg').innerHTML=t}
-async function handleLogin(){if(!sb)return offlineStart();const email=$('login-email').value.trim(),password=$('login-pass').value;if(!email||!password)return loginMsg('Enter your email and password.');
+async function handleLogin(){if(!sb)return loginMsg('This copy of the file isn\'t connected to the cloud (the anon key is missing or wrong). Log in won\'t work until that\'s fixed.');const email=$('login-email').value.trim(),password=$('login-pass').value;if(!email||!password)return loginMsg('Enter your email and password.');
  loginMsg('Checking...');const{error}=await sb.auth.signInWithPassword({email,password});if(error)loginMsg(esc(error.message))}
-async function handleSignup(){if(!sb)return offlineStart();const email=$('login-email').value.trim(),password=$('login-pass').value;if(!email||!password)return loginMsg('Enter an email and password.');
+async function handleSignup(){if(!sb)return loginMsg('This copy of the file isn\'t connected to the cloud (the anon key is missing or wrong). Sign up won\'t work until that\'s fixed.');const email=$('login-email').value.trim(),password=$('login-pass').value;if(!email||!password)return loginMsg('Enter an email and password.');
  loginMsg('Creating account...');const{data,error}=await sb.auth.signUp({email,password});if(error)return loginMsg(esc(error.message));if(!data.session)loginMsg('Account created. Check your email to confirm, then log in.')}
 async function handleLogout(){if(started)await saveNow();if(sb)await sb.auth.signOut();else location.reload()}
 
 function startApp(row){C=migrate(row?row.sheet_data:null);if(!C.inv.length&&(!row||!row.sheet_data))C.inv=starterKit();applyTheme(C.theme);D=derive();
  $('login-screen').classList.add('hidden');$('picker-screen').classList.add('hidden');$('app').classList.remove('hidden');started=true;UI.open=isWide();UI.tab='actions';UI.panel={k:'log'};
- $('charsbtn').classList.toggle('hidden',!isGM);renderMain();applySide();renderSide();setSaveStat(offline?'Offline':'Saved');loadCampaignItems()}
+ renderMain();applySide();renderSide();setSaveStat(offline?'Offline':'Saved');loadCampaignItems()}
 
 async function enterSheetFor(user){if(started||entering)return;entering=true;loginMsg('Checking your access...');
  const prof=await sb.from('profiles').select('role').eq('id',user.id).single();
