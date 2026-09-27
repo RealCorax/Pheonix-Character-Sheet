@@ -1392,8 +1392,8 @@ function importData(ev){const f=ev.target.files[0];if(!f)return;const r=new File
 // Never use the service_role key here.
 // ============================================================
 const SUPABASE_URL='https://zgkohcxskfxmsxmqkgoa.supabase.co';
-const SUPABASE_ANON_KEY='sb_publishable_eH_SkZVCFKUD4wEWZKhyjw_3ErxAfDy';
-let sb=null,charId=null,saveT=null,started=false,offline=false,isGM=false,CAMPAIGN_ITEMS=[];
+const SUPABASE_ANON_KEY='PASTE_YOUR_ANON_PUBLIC_KEY_HERE';
+let sb=null,charId=null,saveT=null,started=false,offline=false,isGM=false,entering=false,CAMPAIGN_ITEMS=[];
 try{if(window.supabase&&!SUPABASE_ANON_KEY.startsWith('PASTE'))sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY)}catch(e){sb=null}
 
 function loginMsg(t){$('login-msg').innerHTML=t}
@@ -1407,13 +1407,13 @@ function startApp(row){C=migrate(row?row.sheet_data:null);if(!C.inv.length&&(!ro
  $('login-screen').classList.add('hidden');$('picker-screen').classList.add('hidden');$('app').classList.remove('hidden');started=true;UI.open=isWide();UI.tab='actions';UI.panel={k:'log'};
  $('charsbtn').classList.toggle('hidden',!isGM);renderMain();applySide();renderSide();setSaveStat(offline?'Offline':'Saved');loadCampaignItems()}
 
-async function enterSheetFor(user){if(started)return;loginMsg('Checking your access...');
+async function enterSheetFor(user){if(started||entering)return;entering=true;loginMsg('Checking your access...');
  const prof=await sb.from('profiles').select('role').eq('id',user.id).single();
  isGM=!prof.error&&prof.data&&prof.data.role==='gm';
  if(isGM){showPicker();return}
  loginMsg('Loading character...');
- let{data:rows,error}=await sb.from('characters').select('*').eq('owner_id',user.id).order('created_at').limit(1);if(error)return loginMsg('Couldn\'t load your character: '+esc(error.message));
- let row=rows&&rows[0];if(!row){const ins=await sb.from('characters').insert({owner_id:user.id,name:'Unnamed Character',sheet_data:{}}).select().single();if(ins.error)return loginMsg('Couldn\'t create a character: '+esc(ins.error.message));row=ins.data}
+ let{data:rows,error}=await sb.from('characters').select('*').eq('owner_id',user.id).order('created_at').limit(1);if(error){entering=false;return loginMsg('Couldn\'t load your character: '+esc(error.message))}
+ let row=rows&&rows[0];if(!row){const ins=await sb.from('characters').insert({owner_id:user.id,name:'Unnamed Character',sheet_data:{}}).select().single();if(ins.error){entering=false;return loginMsg('Couldn\'t create a character: '+esc(ins.error.message))}row=ins.data}
  charId=row.id;startApp(row)}
 
 // ---- GM: character picker ----
@@ -1452,8 +1452,7 @@ async function addCampaignItem(){const n=$('gi-n').value.trim();if(!n)return toa
 async function removeCampaignItem(id){if(sb&&isGM){const del=await sb.from('campaign_items').delete().eq('id',id);if(del.error)return toast('Couldn\'t remove it: '+del.error.message)}
  CAMPAIGN_ITEMS=CAMPAIGN_ITEMS.filter(x=>x.id!==id);if(!sb)try{localStorage.setItem('sgc-campaign-items',JSON.stringify(CAMPAIGN_ITEMS))}catch(e){}renderSide()}
 
-if(sb){sb.auth.onAuthStateChange((ev,session)=>{if(session&&session.user)enterSheetFor(session.user);else if(ev==='SIGNED_OUT')location.reload()});
- sb.auth.getSession().then(({data:{session}})=>{if(session&&session.user)enterSheetFor(session.user)})}
+if(sb){sb.auth.onAuthStateChange((ev,session)=>{if(session&&session.user)enterSheetFor(session.user);else if(ev==='SIGNED_OUT')location.reload()})}
 else{loginMsg(window.supabase?'The cloud key hasn\'t been added to this file yet.<br><button class="btn" style="margin-top:8px" onclick="offlineStart()">Continue on this device only</button>'
  :'Can\'t reach the server right now.<br><button class="btn" style="margin-top:8px" onclick="offlineStart()">Continue on this device only</button>')}
 </script>
