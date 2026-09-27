@@ -6,7 +6,7 @@
 <title>Phoenix Site Personnel File</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#0a0f1e;--bg2:#0d1525;--bg3:#111c30;--border:#1e3a5a;--border2:#2a4a6a;--text:#c0d4e8;--text2:#7a9ab8;--text3:#4a6a8a;--acc:#3a7aa0;--acc2:#6aa8c8;--grn:#2a7a4a;--grn2:#4ab870;--amber2:#d0a040;--red2:#c04030;--statbg:#0b1828;--bodyBg:#0a0f1e;
+:root{--bg:#0a0f1e;--bg2:#0d1525;--bg3:#111c30;--border:#1e3a5a;--border2:#2a4a6a;--text:#c0d4e8;--text2:#7a9ab8;--text3:#4a6a8a;--acc:#3a7aa0;--acc2:#6aa8c8;--grn:#2a7a4a;--grn2:#4ab870;--amber2:#d0a040;--red2:#c04030;--statbg:#0b1828;--bodyBg:#0a0f1e;--glass:rgba(9,13,24,.72);--glass-hi:rgba(255,255,255,.05);
 --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Liberation Mono","Courier New",monospace;
 --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--side:370px}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -28,8 +28,8 @@ input[type=checkbox]{width:16px;height:16px;accent-color:var(--acc);cursor:point
 .clk:hover{color:var(--acc2)}
 
 /* Bracketed box: HUD corner marks are the sheet's signature detail */
-.box{position:relative;background:rgba(9,13,24,.72);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border:1px solid var(--border2);border-radius:14px;
- box-shadow:0 8px 20px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05)}
+.box{position:relative;background:var(--glass);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border:1px solid var(--border2);border-radius:14px;
+ box-shadow:0 8px 20px rgba(0,0,0,.5),inset 0 1px 0 var(--glass-hi)}
 .boxtitle{font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.4px;color:var(--acc2);text-align:center;text-transform:uppercase;padding:7px 4px 8px;cursor:pointer}
 .boxtitle:hover{color:var(--text)}
 
@@ -67,7 +67,7 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 .statshape{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:4px 0}
 .statshape svg{filter:drop-shadow(0 8px 16px rgba(0,0,0,.55));transition:filter .15s}
 .statshape:hover svg{filter:drop-shadow(0 8px 16px rgba(0,0,0,.55)) brightness(1.15)}
-.shapebig{fill:#fbfdff;font-family:var(--sans);font-weight:700}
+.shapebig{fill:var(--text);font-family:var(--sans);font-weight:700}
 .shapenum{font-size:26px}
 .shapenum-sm{font-size:20px}
 .btn{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.2px;text-transform:uppercase;border:1px solid var(--border2);background:var(--bg3);color:var(--acc2);padding:6px 11px;border-radius:3px;white-space:nowrap}
@@ -192,7 +192,7 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 .sk-head{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.2px;color:var(--text3);padding:2px 0 5px;border-bottom:1px solid var(--border);text-transform:uppercase}
 .sk{padding:4px 0;border-bottom:1px solid var(--bg3)}
 .sk .dotb{display:flex;justify-content:center;padding:4px 0}
-.sk .ab{font-family:var(--mono);font-size:10.5px;color:var(--text3)}
+.sk .ab{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--text3)}
 .sk .nm{font-size:13.5px;cursor:pointer}
 .sk .nm:hover{color:var(--acc2)}
 .rollv{font-family:var(--mono);font-size:13.5px;border:1px solid var(--border2);border-radius:3px;padding:1px 0;text-align:center;background:var(--bg)}
@@ -953,10 +953,10 @@ function renderColB(){$('col-b').innerHTML=`<div class="box"><div class="skills"
 function renderCrow(){const conds=[...C.conds];const cc=conds.map(c=>`<span class="chip bad">${esc(c)}</span>`).join('')+(C.exh?`<span class="chip bad">Exhaustion ${C.exh}</span>`:'');
  const DTL={resist:'Resist',immune:'Immune',vuln:'Vulnerable'};
  const defs=[...D.defAuto.map(x=>'Resist: '+x),...C.defenses.map(x=>`${DTL[x.type]}: ${x.dmg}${x.note?' ('+x.note+')':''}`)];
- const hexSvg=(val,id)=>`<svg width="72" height="62" viewBox="0 0 72 62"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2942" stop-opacity=".92"/><stop offset="1" stop-color="#0a0f1c" stop-opacity=".92"/></linearGradient></defs>
+ const hexSvg=(val,id)=>`<svg width="72" height="62" viewBox="0 0 72 62"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--bg3);stop-opacity:.94"/><stop offset="1" style="stop-color:var(--bg);stop-opacity:.94"/></linearGradient></defs>
   <polygon points="18,3 54,3 70,31 54,59 18,59 2,31" fill="url(#${id})" stroke="var(--acc2)" stroke-width="2.5"/>
   <text x="36" y="38" text-anchor="middle" class="shapebig shapenum-sm">${esc(val)}</text></svg>`;
- const shieldSvg=(val)=>`<svg width="82" height="88" viewBox="0 0 82 88"><defs><linearGradient id="acg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2942" stop-opacity=".92"/><stop offset="1" stop-color="#0a0f1c" stop-opacity=".92"/></linearGradient></defs>
+ const shieldSvg=(val)=>`<svg width="82" height="88" viewBox="0 0 82 88"><defs><linearGradient id="acg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--bg3);stop-opacity:.94"/><stop offset="1" style="stop-color:var(--bg);stop-opacity:.94"/></linearGradient></defs>
   <path d="M41 3 L77 15 V41 C77 63 61 78 41 85 C21 78 5 63 5 41 V15 Z" fill="url(#acg)" stroke="var(--amber2)" stroke-width="3"/>
   <text x="41" y="50" text-anchor="middle" class="shapebig shapenum">${esc(val)}</text></svg>`;
  $('crow').innerHTML=`<div class="statshape" ${on('openPanel','init')}><div class="lbl">Initiative</div><button style="background:none;border:none;padding:0;cursor:pointer" ${onS('rollInit')}>${hexSvg(sgn(D.init),'hexA')}</button></div>
@@ -1314,7 +1314,10 @@ function setVal(path,v){setPath(C,path,v);commit()}
 function setNum(path,v){setPath(C,path,v===''?0:+v);commit()}
 function setRollMode(m){UI.rollMode=UI.rollMode===m?'normal':m;renderRollMode()}
 function setTheme(k){C.theme=k;applyTheme(k);commit(false);if(UI.panel.k==='appearance')renderSide()}
-function applyTheme(k){const t=THEMES[k]||THEMES.sgc_dark;const r=document.documentElement.style;for(const v in t)r.setProperty('--'+v,t[v]);r.setProperty('--bodyBg',t.bodyBg||t.bg);applyAppearance()}
+function applyTheme(k){const t=THEMES[k]||THEMES.sgc_dark;const r=document.documentElement.style;for(const v in t)r.setProperty('--'+v,t[v]);r.setProperty('--bodyBg',t.bodyBg||t.bg);
+ r.setProperty('--glass',k.endsWith('_light')?'rgba(255,255,255,.72)':'rgba(9,13,24,.72)');
+ r.setProperty('--glass-hi',k.endsWith('_light')?'rgba(0,0,0,.04)':'rgba(255,255,255,.05)');
+ applyAppearance()}
 function applyAppearance(){document.body.className=document.body.className.replace(/\bbs-\S+/g,'').trim();
  document.body.classList.add('bs-'+(C.borderStyle||'hud'));document.body.classList.toggle('nightmode',!!C.nightMode);
  document.body.style.backgroundImage=C.bgImage?`linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.7)),url(${C.bgImage})`:'';
