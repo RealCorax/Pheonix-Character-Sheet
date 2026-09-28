@@ -80,7 +80,7 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 .btn.on{background:var(--acc);border-color:var(--acc);color:#fff}
 
 /* TOP BAR */
-.topbar{display:flex;align-items:center;gap:14px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--bg2);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-wrap:wrap}
 .who{display:flex;align-items:center;gap:11px;min-width:0;cursor:pointer}
 .portrait{width:52px;height:52px;border:1px solid var(--border2);border-radius:3px;background:var(--bg3) center/cover no-repeat;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:18px;color:var(--text3)}
 .cname{font-size:20px;font-weight:600;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
@@ -296,10 +296,12 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
  .fgrid{grid-template-columns:1fr}
 }
 /* WRIST DEVICE: top tabs, archive frame, image gallery, lightbox */
-.viewtabs{display:flex;gap:2px;padding:0 14px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto}
-.viewtabs button{font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.2px;text-transform:uppercase;padding:11px 16px 9px;color:var(--text2);border-bottom:2px solid transparent;white-space:nowrap}
-.viewtabs button.on{color:var(--text);border-bottom-color:var(--acc2)}
-.viewtabs button:hover{color:var(--acc2)}
+.viewtabs{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;padding-top:env(safe-area-inset-top,0px);background:var(--bg2);border-bottom:1px solid var(--border)}
+.vtabs{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:none}
+.vright{display:flex;align-items:center;gap:8px;flex-shrink:0;padding:5px 0;margin-left:auto}
+.vtabs button{font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.2px;text-transform:uppercase;padding:11px 16px 9px;color:var(--text2);border-bottom:2px solid transparent;white-space:nowrap}
+.vtabs button.on{color:var(--text);border-bottom-color:var(--acc2)}
+.vtabs button:hover{color:var(--acc2)}
 .view{display:none}
 #app[data-view="archive"] #view-archive{display:flex;flex-direction:column;height:calc(100vh - var(--chrome,110px));height:calc(100dvh - var(--chrome,110px))}
 #app[data-view="images"] #view-images{display:block}
@@ -326,6 +328,16 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 .lbbar{padding:12px 14px calc(14px + env(safe-area-inset-bottom,0px));max-height:40vh;overflow-y:auto;background:var(--bg2);color:var(--text);border-top:1px solid var(--border)}
 .lbbar h3{font-family:var(--sans);font-size:13.5px;font-weight:700;color:var(--acc2);margin:12px 0 6px}
 .lbcap{font-size:14px;font-weight:600}
+@media (max-width:520px){
+ .viewtabs{padding-left:8px;padding-right:8px;gap:6px}
+ .vtabs button{padding:11px 9px 9px;font-size:11.5px;letter-spacing:0}
+ .vright{gap:6px}
+ .savestat{font-size:0;min-width:0;display:inline-flex;align-items:center;padding:6px 4px}
+ .savestat::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--amber2)}
+ .savestat[data-s=ok]::before{background:var(--grn2)}
+ .savestat[data-s=bad]::before{background:var(--red2)}
+}
+@media (max-width:380px){.vtabs button{padding:11px 7px 9px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -356,6 +368,11 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 </div>
 
 <div id="app" class="hidden" data-view="sheet">
+  <nav class="viewtabs" id="viewtabs"><div class="vtabs" id="vtabs"></div><div class="vright">
+      <span class="savestat" id="savestat" onclick="saveNow()" title="Click to save now"></span>
+      <button class="btn sm icobtn" onclick="openPanel('settings')" aria-label="Settings" title="Settings"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      <button class="btn sm" onclick="handleLogout()">Log out</button>
+  </div></nav>
   <header class="topbar" id="topbar">
     <div class="who" onclick="openPanel('manage')" title="Manage character">
       <div class="portrait" id="h-portrait"></div>
@@ -369,12 +386,8 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
       <button class="btn" onclick="openPanel('shortrest')">Short rest</button>
       <button class="btn" onclick="openPanel('longrest')">Long rest</button>
       <button class="btn" onclick="openPanel('log')">Game log</button>
-      <span class="savestat" id="savestat" onclick="saveNow()" title="Click to save now"></span>
-      <button class="btn sm icobtn" onclick="openPanel('settings')" aria-label="Settings" title="Settings"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
-      <button class="btn sm" onclick="handleLogout()">Log out</button>
     </div>
   </header>
-  <nav class="viewtabs hidden" id="viewtabs"></nav>
   <section class="view" id="view-archive">
     <div class="viewbar"><span class="vt">Rala'Kethara Archive</span><a class="btn sm" style="text-decoration:none" href="https://realcorax.github.io/rala-kethara/" target="_blank" rel="noopener">Open in new tab</a></div>
     <iframe id="archive-frame" title="Rala'Kethara Archive" referrerpolicy="no-referrer"></iframe>
@@ -1372,8 +1385,7 @@ function renderViewTabs(){const tabs=[['sheet','Sheet']];
  if(deviceOn('archive'))tabs.push(['archive','Archive']);
  if(deviceOn('images'))tabs.push(['images','Images']);
  if(!tabs.some(t=>t[0]===UI.view)){UI.view='sheet';applyView()}
- const el=$('viewtabs');el.classList.toggle('hidden',tabs.length<2);
- el.innerHTML=tabs.map(([k,l])=>`<button class="${UI.view===k?'on':''}" ${on('setView',k)}>${l}</button>`).join('');sizeViews()}
+ $('vtabs').innerHTML=tabs.length<2?'':tabs.map(([k,l])=>`<button class="${UI.view===k?'on':''}" ${on('setView',k)}>${l}</button>`).join('');sizeViews()}
 function setView(v){if((v==='archive'&&!deviceOn('archive'))||(v==='images'&&!deviceOn('images')))v='sheet';
  UI.view=v;applyView();renderViewTabs();window.scrollTo(0,0);
  if(v==='archive')loadArchive();if(v==='images')loadImages()}
@@ -1670,7 +1682,7 @@ async function openCharacter(id){$('picker-msg').textContent='Opening...';const{
 
 function offlineStart(){offline=true;isGM=true;let d=null;try{d=JSON.parse(localStorage.getItem('sgc-v2-local')||'null')}catch(e){}startApp(d?{sheet_data:d}:null)}
 
-function setSaveStat(t){const e=$('savestat');if(e)e.textContent=t}
+function setSaveStat(t){const e=$('savestat');if(!e)return;e.textContent=t;e.dataset.s=/fail/i.test(t)?'bad':(/^(saved|offline)/i.test(t)?'ok':'wait');e.title=t+' (tap to save now)'}
 function scheduleSave(){if(!started)return;setSaveStat('Unsaved');clearTimeout(saveT);saveT=setTimeout(saveNow,1200)}
 async function saveNow(){if(!started)return;clearTimeout(saveT);try{localStorage.setItem(charId?'sgc-v2-cache-'+charId:'sgc-v2-local',JSON.stringify(C))}catch(e){}
  if(!sb||!charId){setSaveStat('Saved on device');return}setSaveStat('Saving...');
