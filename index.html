@@ -339,6 +339,97 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 }
 @media (max-width:380px){.vtabs button{padding:11px 7px 9px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===================== LUMEN PANE STYLE =====================
+   Visual layer only. Layout rules above are untouched.
+   Glow colours come from each theme's acc2 (information, cool)
+   and amber2 (things you act on, warm). */
+:root{--edge:color-mix(in srgb,var(--acc2) 55%,transparent);--edge2:color-mix(in srgb,var(--acc2) 24%,transparent);--warm:var(--amber2);--hi:color-mix(in srgb,var(--text) 65%,#fff)}
+body.lighttheme{--warm:color-mix(in srgb,var(--amber2) 62%,#000);--hi:var(--text);--edge:color-mix(in srgb,var(--acc2) 60%,transparent);--edge2:color-mix(in srgb,var(--acc2) 30%,transparent)}
+body{background:radial-gradient(110% 55% at 50% 0%,color-mix(in srgb,var(--acc2) 15%,transparent),transparent 62%),radial-gradient(80% 45% at 50% 105%,color-mix(in srgb,var(--amber2) 8%,transparent),transparent 60%),var(--bodyBg);background-attachment:fixed}
+
+/* panes: lens-shaped glass with a bioluminescent edge */
+.box{background:linear-gradient(180deg,color-mix(in srgb,var(--acc2) 9%,var(--glass)),var(--glass));border:1px solid var(--edge);border-radius:26px 26px 26px 10px;overflow:hidden;
+ box-shadow:0 0 22px color-mix(in srgb,var(--acc2) 12%,transparent),inset 0 0 30px color-mix(in srgb,var(--acc2) 5%,transparent),0 8px 20px rgba(0,0,0,.32)}
+.box::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 42%,color-mix(in srgb,var(--acc2) 9%,transparent) 50%,transparent 58%);transform:translateX(-130%);animation:lumenSweep 11s ease-in-out infinite}
+.box:nth-child(3n+2)::before{animation-delay:-4s}.box:nth-child(3n)::before{animation-delay:-7.5s}
+@keyframes lumenSweep{0%,60%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+.box:hover{border-color:color-mix(in srgb,var(--acc2) 75%,transparent)}
+.lbl{color:var(--warm)}
+.boxtitle{color:var(--acc2)}
+.tbl th{color:var(--warm)}
+.tbl td{border-bottom-color:var(--edge2)}
+
+/* ability scores: rounded pods */
+.abil.box{border-radius:50% 50% 42% 42%/56% 56% 44% 44%;padding:22px 6px 14px;min-height:118px;justify-content:center;gap:4px}
+.abil .modbtn{border:none;background:none;min-width:0;padding:0 6px;font-size:30px;font-weight:700;color:var(--hi);border-radius:12px}
+.abil .modbtn:hover{color:var(--acc2)}
+.abil .score{border-color:var(--edge2);color:var(--text2);font-weight:600}
+body:not(.lighttheme) .abil .modbtn,body:not(.lighttheme) .stat .big,body:not(.lighttheme) .hp-nums .n{text-shadow:0 0 14px color-mix(in srgb,var(--acc2) 45%,transparent)}
+.stat .big,.hp-nums .n{color:var(--hi)}
+
+/* top bars */
+.viewtabs{position:relative;background:linear-gradient(180deg,color-mix(in srgb,var(--acc2) 13%,var(--bg2)),color-mix(in srgb,var(--bg2) 75%,transparent));border-bottom:1px solid var(--edge)}
+.viewtabs::after{content:"";position:absolute;left:6%;right:6%;bottom:-2px;height:2px;border-radius:2px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--acc2),transparent);box-shadow:0 0 12px var(--acc2)}
+.vtabs{padding:6px 0}
+.vtabs button{border:1px solid transparent;border-radius:999px;padding:7px 16px}
+.vtabs button.on{color:var(--hi);border-color:var(--edge);background:color-mix(in srgb,var(--acc2) 10%,transparent);box-shadow:0 0 14px color-mix(in srgb,var(--acc2) 26%,transparent),inset 0 0 10px color-mix(in srgb,var(--acc2) 12%,transparent)}
+.topbar{background:transparent;border-bottom:1px solid var(--edge2)}
+.portrait{border-radius:50%;border-color:var(--edge);box-shadow:0 0 12px color-mix(in srgb,var(--acc2) 22%,transparent)}
+#h-portrait{cursor:zoom-in}
+
+/* controls: pills. Warm = press me, cool = information */
+.btn{border-radius:999px;background:transparent;border-color:color-mix(in srgb,var(--warm) 80%,transparent);color:var(--warm)}
+.btn:hover{background:color-mix(in srgb,var(--warm) 12%,transparent);border-color:var(--warm);color:var(--warm)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.pri:hover{background:var(--acc);color:#fff;filter:brightness(1.15)}
+.btn.danger{border-color:var(--red2);color:var(--red2)}
+.btn.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.icobtn{color:var(--acc2);border-color:var(--edge2);padding:6px}
+.icobtn:hover{color:var(--hi);border-color:var(--edge);background:color-mix(in srgb,var(--acc2) 10%,transparent)}
+.seg{border-radius:999px;border-color:var(--edge2)}
+.seg button.on{background:var(--edge2);color:var(--hi)}
+.tabnav{border-bottom-color:var(--edge2);padding:10px 12px 9px;gap:6px}
+.tabnav button{border:1px solid transparent;border-radius:999px;padding:7px 14px}
+.tabnav button.on{color:var(--hi);background:var(--edge2);border-color:var(--edge2)}
+.filters button{border-radius:999px;background:color-mix(in srgb,var(--acc2) 8%,transparent);border:1px solid var(--edge2)}
+.filters button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.rollv{border-radius:999px;border-color:var(--edge);color:var(--hi);background:color-mix(in srgb,var(--acc2) 8%,transparent)}
+.rbtn{border-radius:999px;border-color:color-mix(in srgb,var(--warm) 80%,transparent);color:var(--warm);background:transparent}
+.rbtn:hover{background:color-mix(in srgb,var(--warm) 12%,transparent);color:var(--warm)}
+.save{border-radius:999px;border-color:var(--edge2);background:color-mix(in srgb,var(--bg) 60%,transparent)}
+.save .v{border-radius:999px;border-color:var(--edge2)}
+.sense{border-radius:14px 14px 14px 6px;border-color:var(--edge2);background:color-mix(in srgb,var(--bg) 60%,transparent)}
+.sense .v{color:var(--hi);border-right-color:var(--edge2)}
+.chip{border-color:var(--edge2);border-radius:999px}
+.hp-io button{border-radius:999px}
+.ctr button{border-radius:999px;border-color:var(--edge2);color:var(--acc2)}
+.ctr button:hover{border-color:var(--edge);background:color-mix(in srgb,var(--acc2) 10%,transparent)}
+.hp-io input{border-radius:999px;border-color:var(--edge2)}
+.side{background:linear-gradient(180deg,color-mix(in srgb,var(--acc2) 7%,var(--bg2)),var(--bg2));border-left:1px solid var(--edge);box-shadow:-8px 0 30px color-mix(in srgb,var(--acc2) 7%,transparent)}
+.side-head{border-bottom-color:var(--edge2)}
+
+/* initiative / moxie rings and the armour-class lens */
+.statshape svg{filter:drop-shadow(0 0 10px color-mix(in srgb,var(--acc2) 32%,transparent))}
+.statshape:hover svg{filter:drop-shadow(0 0 16px color-mix(in srgb,var(--acc2) 50%,transparent))}
+.shapebig{fill:var(--hi)}
+
+/* portrait viewer */
+.pview{position:fixed;inset:0;z-index:3500;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(2,5,7,.84);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:pvIn .18s ease-out}
+.pview figure{display:flex;flex-direction:column;align-items:center;gap:12px;margin:0}
+.pview img{width:min(80vw,420px);max-height:74vh;object-fit:cover;border-radius:26px 26px 26px 10px;border:1px solid var(--edge);box-shadow:0 0 44px color-mix(in srgb,var(--acc2) 30%,transparent),0 20px 50px rgba(0,0,0,.6)}
+.pview figcaption{font-weight:700;font-size:17px;color:#e9f6f5;text-align:center}
+.pview figcaption small{display:block;font-weight:600;font-size:13px;color:#a5d0d2;margin-top:2px}
+.pview .pclose{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;color:#e9f6f5;border-color:rgba(233,246,245,.5)}
+@keyframes pvIn{from{opacity:0;transform:scale(.97)}}
+
+@media (max-width:520px){
+ .vtabs button{padding:6px 10px;font-size:11.5px;letter-spacing:0}
+ .abil.box{min-height:104px;padding:18px 4px 12px}
+ .abil .modbtn{font-size:26px}
+}
+@media (max-width:380px){.vtabs button{padding:6px 8px}}
+@media (prefers-reduced-motion:reduce){.box::before{animation:none;display:none}.pview{animation:none}}
 </style>
 </head>
 <body>
@@ -375,7 +466,7 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
   </div></nav>
   <header class="topbar" id="topbar">
     <div class="who" onclick="openPanel('manage')" title="Manage character">
-      <div class="portrait" id="h-portrait"></div>
+      <div class="portrait" id="h-portrait" role="button" tabindex="0" title="View portrait" onclick="openPortrait(event)" onkeydown="if(event.key==='Enter')openPortrait(event)"></div>
       <div style="min-width:0">
         <div class="cname" id="h-name"></div>
         <div class="csub" id="h-sub"></div>
@@ -422,9 +513,11 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
   <button class="fab hidden" id="fab" onclick="openPanel('log')">GAME LOG</button>
 </div>
 <div class="lightbox hidden" id="lightbox"></div>
+<div class="pview hidden" id="pview" onclick="closePortrait()"></div>
 <div class="toast" id="toast"></div>
 <script>
 const THEMES={
+  furling_lumen:{bg:'#060a0c',bg2:'#0b1a1d',bg3:'#10272b',border:'#1d4a50',border2:'#2f7a80',text:'#e9f6f5',text2:'#a5d0d2',text3:'#6f9ea1',acc:'#2f9aa3',acc2:'#7fe8ee',grn:'#2a7a55',grn2:'#6fe0a0',amber2:'#f2b467',red2:'#d2503f',statbg:'#081316',bodyBg:'#060a0c',glass:'rgba(9,20,23,.74)'},
   sgc_dark:{bg:'#0a0f1e',bg2:'#0d1525',bg3:'#111c30',border:'#1e3a5a',border2:'#2f5378',text:'#dbe6f0',text2:'#93b4d0',text3:'#5c7fa0',acc:'#4a8ab5',acc2:'#7ec1e6',grn:'#2a7a4a',grn2:'#4ab870',amber2:'#d0a040',red2:'#c04030',statbg:'#0b1828',bodyBg:'#0a0f1e'},
   tokra_dark:{bg:'#0e0818',bg2:'#140a22',bg3:'#1a102e',border:'#3a1a5a',border2:'#5a2a8a',text:'#d4b8f0',text2:'#a070d0',text3:'#6a40a0',acc:'#7a40b0',acc2:'#b070e0',grn:'#3a6a8a',grn2:'#60a8c0',amber2:'#c080e0',red2:'#a030c0',statbg:'#0e0818',bodyBg:'#0a0612'},
   goauld_dark:{bg:'#120800',bg2:'#1c1000',bg3:'#281800',border:'#5a3000',border2:'#8a5000',text:'#f0d090',text2:'#c0a050',text3:'#806020',acc:'#b07000',acc2:'#e0a030',grn:'#8a2020',grn2:'#c04030',amber2:'#e0c060',red2:'#ff2020',statbg:'#120800',bodyBg:'#0c0600'},
@@ -782,7 +875,7 @@ function newChar(){return{v:2,name:'',race:'',cls:'',level:1,origins:['',''],por
  profs:{armorLight:false,armorHeavy:false,weapons:{common:false,bows:false,sidearms:false,longarms:false,shotguns:false,martial:false,jaffa:false,gunnery:false},tools:[],languages:['English'],other:''},defenses:[],
  inv:[],kit:{},res:{},customRes:[],feats:[],eureka:0,mp:{earned:0},
  facility:{name:'',rating:1,note:''},
- bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'sgc_dark',borderStyle:'hud',bgImage:'',nightMode:false}}
+ bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'furling_lumen',borderStyle:'hud',bgImage:'',nightMode:false}}
 
 let C=newChar(), D={};
 const UI={tab:'actions',filter:'all',ffilter:'all',rollMode:'normal',pinned:true,open:true,panel:{k:'log'},log:[],addq:'',addt:'all'};
@@ -1004,12 +1097,14 @@ function renderColB(){$('col-b').innerHTML=`<div class="box"><div class="skills"
 function renderCrow(){const conds=[...C.conds];const cc=conds.map(c=>`<span class="chip bad">${esc(c)}</span>`).join('')+(C.exh?`<span class="chip bad">Exhaustion ${C.exh}</span>`:'');
  const DTL={resist:'Resist',immune:'Immune',vuln:'Vulnerable'};
  const defs=[...D.defAuto.map(x=>'Resist: '+x),...C.defenses.map(x=>`${DTL[x.type]}: ${x.dmg}${x.note?' ('+x.note+')':''}`)];
- const hexSvg=(val,id)=>`<svg width="72" height="62" viewBox="0 0 72 62"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--bg3);stop-opacity:.94"/><stop offset="1" style="stop-color:var(--bg);stop-opacity:.94"/></linearGradient></defs>
-  <polygon points="18,3 54,3 70,31 54,59 18,59 2,31" fill="url(#${id})" stroke="var(--acc2)" stroke-width="2.5"/>
-  <text x="36" y="38" text-anchor="middle" class="shapebig shapenum-sm">${esc(val)}</text></svg>`;
- const shieldSvg=(val)=>`<svg width="82" height="88" viewBox="0 0 82 88"><defs><linearGradient id="acg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--bg3);stop-opacity:.94"/><stop offset="1" style="stop-color:var(--bg);stop-opacity:.94"/></linearGradient></defs>
-  <path d="M41 3 L77 15 V41 C77 63 61 78 41 85 C21 78 5 63 5 41 V15 Z" fill="url(#acg)" stroke="var(--amber2)" stroke-width="3"/>
-  <text x="41" y="50" text-anchor="middle" class="shapebig shapenum">${esc(val)}</text></svg>`;
+ const hexSvg=(val,id)=>`<svg width="76" height="76" viewBox="0 0 104 104"><defs><radialGradient id="${id}" cx="50%" cy="45%" r="55%"><stop offset="0" style="stop-color:color-mix(in srgb,var(--acc2) 18%,var(--bg3))"/><stop offset="1" style="stop-color:var(--bg)"/></radialGradient></defs>
+  <circle cx="52" cy="52" r="47" fill="url(#${id})" style="stroke:var(--acc2)" stroke-width="2.6"/>
+  <circle cx="52" cy="52" r="39" fill="none" style="stroke:var(--acc2)" stroke-opacity=".55" stroke-width="1.6" stroke-dasharray="1.5 6"/>
+  <text x="52" y="62" text-anchor="middle" class="shapebig" style="font-size:30px">${esc(val)}</text></svg>`;
+ const shieldSvg=(val)=>`<svg width="86" height="86" viewBox="0 0 104 104"><defs><linearGradient id="acg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:color-mix(in srgb,var(--amber2) 24%,var(--bg))"/><stop offset="1" style="stop-color:var(--bg)"/></linearGradient></defs>
+  <path d="M52 2C100 24 100 80 52 102 4 80 4 24 52 2Z" fill="url(#acg)" style="stroke:var(--amber2)" stroke-width="3"/>
+  <path d="M52 13C90 31 90 73 52 91 14 73 14 31 52 13Z" fill="none" style="stroke:var(--acc2)" stroke-opacity=".6" stroke-width="1.6"/>
+  <text x="52" y="63" text-anchor="middle" class="shapebig" style="font-size:32px">${esc(val)}</text></svg>`;
  $('crow').innerHTML=`<div class="statshape" ${on('openPanel','init')}><div class="lbl">Initiative</div><button style="background:none;border:none;padding:0;cursor:pointer" ${onS('rollInit')}>${hexSvg(sgn(D.init),'hexA')}</button></div>
  <div class="statshape" ${on('openPanel','moxie')}><div class="lbl">Moxie</div><button style="background:none;border:none;padding:0;cursor:pointer" ${onS('rollMoxie')}>${hexSvg(sgn(D.moxie),'hexB')}</button></div>
  <div class="statshape" ${on('openPanel','ac')}><div class="lbl">Armour Class</div>${shieldSvg(D.ac)}</div>
@@ -1489,6 +1584,16 @@ async function uploadImages(ev){
   }catch(e){toast('Couldn\'t upload '+f.name+': '+(e.message||e))}
  }
  IMG.uploading=false;if(ok){toast(ok+(ok>1?' images':' image')+' added');renderImages()}}
+
+// ---------- portrait viewer ----------
+let PVIEW=false;
+function openPortrait(ev){if(ev)ev.stopPropagation();
+ if(!C.portrait){openPanel('manage');toast('No portrait yet. Upload one here.');return}
+ const cls=CLASSES[C.cls],race=RACES[C.race];
+ const v=$('pview');v.innerHTML=`<figure onclick="event.stopPropagation()"><img src="${esc(C.portrait)}" alt="Portrait of ${esc(C.name||'this character')}"><figcaption>${esc(C.name||'Unnamed recruit')}<small>${esc([race&&race.n,cls&&cls.n].filter(Boolean).join(' • '))}</small></figcaption></figure><button class="btn sm pclose" onclick="closePortrait()">Close</button>`;
+ v.classList.remove('hidden');PVIEW=true}
+function closePortrait(){const v=$('pview');if(v)v.classList.add('hidden');PVIEW=false}
+document.addEventListener('keydown',e=>{if(PVIEW&&e.key==='Escape')closePortrait()});
 // ============================================================
 // ACTIONS: everything that changes the character
 // ============================================================
@@ -1498,8 +1603,9 @@ function setVal(path,v){setPath(C,path,v);commit()}
 function setNum(path,v){setPath(C,path,v===''?0:+v);commit()}
 function setRollMode(m){UI.rollMode=UI.rollMode===m?'normal':m;renderRollMode()}
 function setTheme(k){C.theme=k;applyTheme(k);commit(false);if(UI.panel.k==='appearance')renderSide()}
-function applyTheme(k){const t=THEMES[k]||THEMES.sgc_dark;const r=document.documentElement.style;for(const v in t)r.setProperty('--'+v,t[v]);r.setProperty('--bodyBg',t.bodyBg||t.bg);
+function applyTheme(k){if(!THEMES[k])k='furling_lumen';const t=THEMES[k];const r=document.documentElement.style;
  r.setProperty('--glass',k.endsWith('_light')?'rgba(255,255,255,.72)':'rgba(9,13,24,.72)');
+ for(const v in t)r.setProperty('--'+v,t[v]);r.setProperty('--bodyBg',t.bodyBg||t.bg);document.body.classList.toggle('lighttheme',k.endsWith('_light'));
  r.setProperty('--glass-hi',k.endsWith('_light')?'rgba(0,0,0,.04)':'rgba(255,255,255,.05)');
  applyAppearance()}
 function applyAppearance(){document.body.className=document.body.className.replace(/\bbs-\S+/g,'').trim();
@@ -1532,7 +1638,7 @@ function applyClassDefaults(quiet){const c=CLASSES[C.cls];if(!c)return;C.savePro
  commit();if(!quiet)toast(c.n+' defaults applied')}
 function setOrigin(slot,v){C.origins[slot]=v;const o=ORIGINS[v];if(o&&o.sk&&!C.skillProf[o.sk])C.skillProf[o.sk]=1;commit()}
 function loadPortrait(ev){const f=ev.target.files[0];if(!f)return;const img=new Image();const url=URL.createObjectURL(f);
- img.onload=()=>{const s=256,cv=document.createElement('canvas');const r=Math.min(1,s/Math.max(img.width,img.height));cv.width=Math.round(img.width*r);cv.height=Math.round(img.height*r);
+ img.onload=()=>{const s=640,cv=document.createElement('canvas');const r=Math.min(1,s/Math.max(img.width,img.height));cv.width=Math.round(img.width*r);cv.height=Math.round(img.height*r);
   cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);C.portrait=cv.toDataURL('image/jpeg',.85);URL.revokeObjectURL(url);commit()};img.src=url}
 
 // HP & death
