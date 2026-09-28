@@ -22,7 +22,7 @@ input[type=checkbox]{width:16px;height:16px;accent-color:var(--acc);cursor:point
 :focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
 .hidden{display:none!important}
 .mono{font-family:var(--mono)}
-.lbl{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.3px;color:var(--text2);text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.lbl{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.3px;color:var(--text2);text-transform:uppercase}
 .muted{color:var(--text2)}
 .clk{cursor:pointer}
 .clk:hover{color:var(--acc2)}
@@ -349,11 +349,8 @@ body.lighttheme{--warm:color-mix(in srgb,var(--amber2) 62%,#000);--hi:var(--text
 body{background:radial-gradient(110% 55% at 50% 0%,color-mix(in srgb,var(--acc2) 15%,transparent),transparent 62%),radial-gradient(80% 45% at 50% 105%,color-mix(in srgb,var(--amber2) 8%,transparent),transparent 60%),var(--bodyBg);background-attachment:fixed}
 
 /* panes: lens-shaped glass with a bioluminescent edge */
-.box{background:linear-gradient(180deg,color-mix(in srgb,var(--acc2) 9%,var(--glass)),var(--glass));border:1px solid var(--edge);border-radius:26px 26px 26px 10px;overflow:hidden;
+.box{background:linear-gradient(180deg,color-mix(in srgb,var(--acc2) 9%,var(--glass)),var(--glass));border:1px solid var(--edge);border-radius:20px;overflow:hidden;
  box-shadow:0 0 22px color-mix(in srgb,var(--acc2) 12%,transparent),inset 0 0 30px color-mix(in srgb,var(--acc2) 5%,transparent),0 8px 20px rgba(0,0,0,.32)}
-.box::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 42%,color-mix(in srgb,var(--acc2) 9%,transparent) 50%,transparent 58%);transform:translateX(-130%);animation:lumenSweep 11s ease-in-out infinite}
-.box:nth-child(3n+2)::before{animation-delay:-4s}.box:nth-child(3n)::before{animation-delay:-7.5s}
-@keyframes lumenSweep{0%,60%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
 .box:hover{border-color:color-mix(in srgb,var(--acc2) 75%,transparent)}
 .lbl{color:var(--warm)}
 .boxtitle{color:var(--acc2)}
@@ -361,7 +358,7 @@ body{background:radial-gradient(110% 55% at 50% 0%,color-mix(in srgb,var(--acc2)
 .tbl td{border-bottom-color:var(--edge2)}
 
 /* ability scores: rounded pods */
-.abil.box{border-radius:50% 50% 42% 42%/56% 56% 44% 44%;padding:22px 6px 14px;min-height:118px;justify-content:center;gap:4px}
+.abil.box{padding:10px 4px 10px}
 .abil .modbtn{border:none;background:none;min-width:0;padding:0 6px;font-size:30px;font-weight:700;color:var(--hi);border-radius:12px}
 .abil .modbtn:hover{color:var(--acc2)}
 .abil .score{border-color:var(--edge2);color:var(--text2);font-weight:600}
@@ -399,7 +396,7 @@ body:not(.lighttheme) .abil .modbtn,body:not(.lighttheme) .stat .big,body:not(.l
 .rbtn:hover{background:color-mix(in srgb,var(--warm) 12%,transparent);color:var(--warm)}
 .save{border-radius:999px;border-color:var(--edge2);background:color-mix(in srgb,var(--bg) 60%,transparent)}
 .save .v{border-radius:999px;border-color:var(--edge2)}
-.sense{border-radius:14px 14px 14px 6px;border-color:var(--edge2);background:color-mix(in srgb,var(--bg) 60%,transparent)}
+.sense{border-radius:14px;border-color:var(--edge2);background:color-mix(in srgb,var(--bg) 60%,transparent)}
 .sense .v{color:var(--hi);border-right-color:var(--edge2)}
 .chip{border-color:var(--edge2);border-radius:999px}
 .hp-io button{border-radius:999px}
@@ -417,7 +414,7 @@ body:not(.lighttheme) .abil .modbtn,body:not(.lighttheme) .stat .big,body:not(.l
 /* portrait viewer */
 .pview{position:fixed;inset:0;z-index:3500;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(2,5,7,.84);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:pvIn .18s ease-out}
 .pview figure{display:flex;flex-direction:column;align-items:center;gap:12px;margin:0}
-.pview img{width:min(80vw,420px);max-height:74vh;object-fit:cover;border-radius:26px 26px 26px 10px;border:1px solid var(--edge);box-shadow:0 0 44px color-mix(in srgb,var(--acc2) 30%,transparent),0 20px 50px rgba(0,0,0,.6)}
+.pview img{width:min(80vw,420px);max-height:74vh;object-fit:cover;border-radius:22px;border:1px solid var(--edge);box-shadow:0 0 44px color-mix(in srgb,var(--acc2) 30%,transparent),0 20px 50px rgba(0,0,0,.6)}
 .pview figcaption{font-weight:700;font-size:17px;color:#e9f6f5;text-align:center}
 .pview figcaption small{display:block;font-weight:600;font-size:13px;color:#a5d0d2;margin-top:2px}
 .pview .pclose{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;color:#e9f6f5;border-color:rgba(233,246,245,.5)}
@@ -425,11 +422,10 @@ body:not(.lighttheme) .abil .modbtn,body:not(.lighttheme) .stat .big,body:not(.l
 
 @media (max-width:520px){
  .vtabs button{padding:6px 10px;font-size:11.5px;letter-spacing:0}
- .abil.box{min-height:104px;padding:18px 4px 12px}
  .abil .modbtn{font-size:26px}
 }
 @media (max-width:380px){.vtabs button{padding:6px 8px}}
-@media (prefers-reduced-motion:reduce){.box::before{animation:none;display:none}.pview{animation:none}}
+@media (prefers-reduced-motion:reduce){.pview{animation:none}}
 </style>
 </head>
 <body>
@@ -1101,10 +1097,9 @@ function renderCrow(){const conds=[...C.conds];const cc=conds.map(c=>`<span clas
   <circle cx="52" cy="52" r="47" fill="url(#${id})" style="stroke:var(--acc2)" stroke-width="2.6"/>
   <circle cx="52" cy="52" r="39" fill="none" style="stroke:var(--acc2)" stroke-opacity=".55" stroke-width="1.6" stroke-dasharray="1.5 6"/>
   <text x="52" y="62" text-anchor="middle" class="shapebig" style="font-size:30px">${esc(val)}</text></svg>`;
- const shieldSvg=(val)=>`<svg width="86" height="86" viewBox="0 0 104 104"><defs><linearGradient id="acg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:color-mix(in srgb,var(--amber2) 24%,var(--bg))"/><stop offset="1" style="stop-color:var(--bg)"/></linearGradient></defs>
-  <path d="M52 2C100 24 100 80 52 102 4 80 4 24 52 2Z" fill="url(#acg)" style="stroke:var(--amber2)" stroke-width="3"/>
-  <path d="M52 13C90 31 90 73 52 91 14 73 14 31 52 13Z" fill="none" style="stroke:var(--acc2)" stroke-opacity=".6" stroke-width="1.6"/>
-  <text x="52" y="63" text-anchor="middle" class="shapebig" style="font-size:32px">${esc(val)}</text></svg>`;
+ const shieldSvg=(val)=>`<svg width="82" height="88" viewBox="0 0 82 88"><defs><linearGradient id="acg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--bg3);stop-opacity:.94"/><stop offset="1" style="stop-color:var(--bg);stop-opacity:.94"/></linearGradient></defs>
+  <path d="M41 3 L77 15 V41 C77 63 61 78 41 85 C21 78 5 63 5 41 V15 Z" fill="url(#acg)" stroke="var(--amber2)" stroke-width="3"/>
+  <text x="41" y="50" text-anchor="middle" class="shapebig shapenum">${esc(val)}</text></svg>`;
  $('crow').innerHTML=`<div class="statshape" ${on('openPanel','init')}><div class="lbl">Initiative</div><button style="background:none;border:none;padding:0;cursor:pointer" ${onS('rollInit')}>${hexSvg(sgn(D.init),'hexA')}</button></div>
  <div class="statshape" ${on('openPanel','moxie')}><div class="lbl">Moxie</div><button style="background:none;border:none;padding:0;cursor:pointer" ${onS('rollMoxie')}>${hexSvg(sgn(D.moxie),'hexB')}</button></div>
  <div class="statshape" ${on('openPanel','ac')}><div class="lbl">Armour Class</div>${shieldSvg(D.ac)}</div>
