@@ -110,7 +110,7 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 .tgl.on{background:var(--acc);border-color:var(--acc)}.tgl.on::after{transform:translateX(15px);background:#fff}
 .condrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bg3)}
 .condrow .condmain{display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0}
-.condrow .cname{font-size:13.5px}
+.condrow .cname{font-size:13.5px;white-space:normal;overflow:visible;text-overflow:clip;max-width:none;line-height:1.3}
 .chev{width:26px;height:26px;flex-shrink:0;color:var(--text3);font-size:11px;border-radius:3px}
 .chev:hover{color:var(--acc2);background:var(--bg3)}
 .condinfo{padding:0 0 10px 44px;margin-top:-4px;font-size:12.5px;color:var(--text2);border-bottom:1px solid var(--bg3)}
@@ -272,7 +272,7 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 .logcard.fumble{border-color:var(--red2)}.logcard.fumble .tot{color:var(--red2)}
 .logcard.info .tot{font-size:15px}
 
-.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:var(--bg3);border:1px solid var(--acc);color:var(--text);padding:9px 16px;border-radius:4px;font-family:var(--sans);font-weight:600;font-size:13.5px;transition:all .2s;z-index:2000;pointer-events:none;max-width:90vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:var(--bg3);border:1px solid var(--acc);color:var(--text);padding:9px 16px;border-radius:4px;font-family:var(--sans);font-weight:600;font-size:13.5px;transition:all .2s;z-index:4000;pointer-events:none;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .fab{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:.3px;background:var(--acc);color:#fff;border-radius:22px;padding:11px 16px;box-shadow:0 4px 14px rgba(0,0,0,.4)}
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:45}
@@ -295,6 +295,37 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
  .side{width:100%}
  .fgrid{grid-template-columns:1fr}
 }
+/* WRIST DEVICE: top tabs, archive frame, image gallery, lightbox */
+.viewtabs{display:flex;gap:2px;padding:0 14px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto}
+.viewtabs button{font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.2px;text-transform:uppercase;padding:11px 16px 9px;color:var(--text2);border-bottom:2px solid transparent;white-space:nowrap}
+.viewtabs button.on{color:var(--text);border-bottom-color:var(--acc2)}
+.viewtabs button:hover{color:var(--acc2)}
+.view{display:none}
+#app[data-view="archive"] #view-archive{display:flex;flex-direction:column;height:calc(100vh - var(--chrome,110px));height:calc(100dvh - var(--chrome,110px))}
+#app[data-view="images"] #view-images{display:block}
+#app:not([data-view="sheet"]) .layout,#app:not([data-view="sheet"]) #fab,#app:not([data-view="sheet"]) #scrim{display:none!important}
+#archive-frame{flex:1;min-height:0;width:100%;border:0;background:#fff}
+.viewbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;flex-wrap:wrap}
+.viewbar .vt{font-size:16px;font-weight:700}
+.viewact{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.viewbody{padding:4px 14px 40px}
+.imggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.imgcard{display:flex;flex-direction:column;width:100%;text-align:left;padding:8px;gap:6px;cursor:pointer;color:var(--text)}
+.imgcard:hover{border-color:var(--acc2)}
+.imgthumb{display:block;aspect-ratio:4/3;background:var(--bg3);border-radius:8px;overflow:hidden}
+.imgthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.imgcap{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;font-weight:600;min-height:2.6em}
+.imgsub{font-size:11.5px;font-weight:600;color:var(--text3)}
+.lightbox{position:fixed;inset:0;z-index:3000;background:rgba(3,6,12,.98);display:flex;flex-direction:column;color:#dbe6f0}
+.lbtop{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+.lbcount{font-size:13px;font-weight:700}
+.lbstage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;padding:0 8px}
+.lbstage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+.lbnav{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:62px;display:flex;align-items:center;justify-content:center;color:#fff;background:rgba(0,0,0,.5);border-radius:10px;z-index:2}
+.lbnav.prev{left:8px}.lbnav.next{right:8px}
+.lbbar{padding:12px 14px calc(14px + env(safe-area-inset-bottom,0px));max-height:40vh;overflow-y:auto;background:var(--bg2);color:var(--text);border-top:1px solid var(--border)}
+.lbbar h3{font-family:var(--sans);font-size:13.5px;font-weight:700;color:var(--acc2);margin:12px 0 6px}
+.lbcap{font-size:14px;font-weight:600}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -324,8 +355,8 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
   </div>
 </div>
 
-<div id="app" class="hidden">
-  <header class="topbar">
+<div id="app" class="hidden" data-view="sheet">
+  <header class="topbar" id="topbar">
     <div class="who" onclick="openPanel('manage')" title="Manage character">
       <div class="portrait" id="h-portrait"></div>
       <div style="min-width:0">
@@ -343,6 +374,12 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
       <button class="btn sm" onclick="handleLogout()">Log out</button>
     </div>
   </header>
+  <nav class="viewtabs hidden" id="viewtabs"></nav>
+  <section class="view" id="view-archive">
+    <div class="viewbar"><span class="vt">Rala'Kethara Archive</span><a class="btn sm" style="text-decoration:none" href="https://realcorax.github.io/rala-kethara/" target="_blank" rel="noopener">Open in new tab</a></div>
+    <iframe id="archive-frame" title="Rala'Kethara Archive" referrerpolicy="no-referrer"></iframe>
+  </section>
+  <section class="view" id="view-images"></section>
   <div class="layout">
     <main class="sheet">
       <section class="row1" id="row1"></section>
@@ -371,6 +408,7 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
   <div class="scrim hidden" id="scrim" onclick="closeSide()"></div>
   <button class="fab hidden" id="fab" onclick="openPanel('log')">GAME LOG</button>
 </div>
+<div class="lightbox hidden" id="lightbox"></div>
 <div class="toast" id="toast"></div>
 <script>
 const THEMES={
@@ -1073,7 +1111,7 @@ function tabExtras(){const E=+C.mp.earned||0;const fac=C.facility;
 // SIDE PANEL
 // ============================================================
 function isWide(){return window.innerWidth>=1280}
-function openPanel(k,a){UI.panel={k,a};UI.open=true;applySide();renderSide();if(!isWide()||!UI.pinned)$('side-body').scrollTop=0}
+function openPanel(k,a){if(UI.view&&UI.view!=='sheet')setView('sheet');UI.panel={k,a};UI.open=true;applySide();renderSide();if(!isWide()||!UI.pinned)$('side-body').scrollTop=0}
 function closeSide(){UI.open=false;applySide()}
 function togglePin(){UI.pinned=!UI.pinned;try{localStorage.setItem('sgc-pinned',UI.pinned?'1':'0')}catch(e){}applySide()}
 function applySide(){const s=$('side'),over=!isWide()||!UI.pinned;
@@ -1093,6 +1131,7 @@ function ago(t){const s=Math.round((Date.now()-t)/1000);return s<60?'just now':s
 const PANELS={
 settings(){return`<h2>Settings</h2>
  ${isGM?`<div class="res"><div class="rn" ${on('showPicker')}><b>Characters</b><small>See or switch to any player's sheet</small></div></div>`:''}
+ ${isGM&&viewOwner?`<h3>Wrist device for this character</h3>${deviceRow('archive','Archive tab',"Shows the Rala'Kethara archive inside their sheet")}${deviceRow('images','Images tab','Their own photos, plus anything you share with them')}<h3>Sheet</h3>`:''}
  <div class="res"><div class="rn" ${on('openPanel','appearance')}><b>Change sheet appearance</b><small>Colour theme, background, night mode</small></div></div>
  <div class="res"><div class="rn" ${on('openPanel','profs')}><b>Proficiencies &amp; training</b><small>Armour, weapons, tools, languages</small></div></div>
  <div class="res"><div class="rn" ${on('setTab','extras')}><b>Backup &amp; mission points</b><small>Download/restore a backup, downtime facility</small></div></div>`},
@@ -1306,6 +1345,139 @@ function addListHtml(list){return list.length?list.map(c=>{const ex=invByCat(c.n
 function renderAddList(){const q=UI.addq.toLowerCase(),t=UI.addt;$('addlist').innerHTML=addListHtml(allCatalog().filter(c=>(t==='all'||c.t===t)&&(!q||c.n.toLowerCase().includes(q)||(c.d||'').toLowerCase().includes(q))))}
 function setAddType(t){UI.addt=t;renderSide();const q=$('addq');if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}
 // ============================================================
+// WRIST DEVICE: extra tabs (Archive, Images) + private image sharing
+// ============================================================
+const ARCHIVE_URL='https://realcorax.github.io/rala-kethara/';
+const IMG_BUCKET='player-images';
+const CHEV_L='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+const CHEV_R='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>';
+let DEVICE={archive:false,images:false},viewOwner=null,meId=null;
+let IMG={list:[],loaded:false,loading:false,uploading:false,error:'',people:[],urls:{},idx:0,open:false,tok:0,ltok:0};
+UI.view='sheet';UI.imgScope='char';
+
+function deviceOn(k){return isGM||!!DEVICE[k]}
+function initDevice(row){
+ DEVICE=Object.assign({archive:false,images:false},(row&&row.device)||{});
+ if(offline)DEVICE={archive:true,images:true};
+ viewOwner=(row&&row.owner_id)||null;
+ IMG.list=[];IMG.loaded=false;IMG.loading=false;IMG.error='';IMG.urls={};IMG.open=false;
+ const lb=$('lightbox');if(lb)lb.classList.add('hidden');
+ UI.view='sheet';UI.imgScope='char';applyView();renderViewTabs()}
+
+// ---------- tabs ----------
+function applyView(){$('app').dataset.view=UI.view}
+function sizeViews(){const h=($('topbar')?$('topbar').offsetHeight:0)+($('viewtabs')?$('viewtabs').offsetHeight:0);document.documentElement.style.setProperty('--chrome',h+'px')}
+window.addEventListener('resize',()=>{clearTimeout(window._sv);window._sv=setTimeout(sizeViews,120)});
+function renderViewTabs(){const tabs=[['sheet','Sheet']];
+ if(deviceOn('archive'))tabs.push(['archive','Archive']);
+ if(deviceOn('images'))tabs.push(['images','Images']);
+ if(!tabs.some(t=>t[0]===UI.view)){UI.view='sheet';applyView()}
+ const el=$('viewtabs');el.classList.toggle('hidden',tabs.length<2);
+ el.innerHTML=tabs.map(([k,l])=>`<button class="${UI.view===k?'on':''}" ${on('setView',k)}>${l}</button>`).join('');sizeViews()}
+function setView(v){if((v==='archive'&&!deviceOn('archive'))||(v==='images'&&!deviceOn('images')))v='sheet';
+ UI.view=v;applyView();renderViewTabs();window.scrollTo(0,0);
+ if(v==='archive')loadArchive();if(v==='images')loadImages()}
+function loadArchive(){const f=$('archive-frame');if(f&&!f.getAttribute('src'))f.setAttribute('src',ARCHIVE_URL)}
+
+// GM switch (Settings panel): which tabs this character has
+function deviceRow(k,t,s){return`<div class="condrow"><div class="condmain" ${on('toggleDevice',k)}><span class="tgl ${DEVICE[k]?'on':''}"></span><span class="cname"><b>${esc(t)}</b><br><span class="muted" style="font-size:12px;font-weight:400">${esc(s)}</span></span></div></div>`}
+async function toggleDevice(k){if(!isGM||!sb||!charId)return;const nd={...DEVICE,[k]:!DEVICE[k]};
+ const r=await sb.from('characters').update({device:nd}).eq('id',charId);
+ if(r.error)return toast('Couldn\'t update: '+r.error.message);
+ DEVICE=nd;renderViewTabs();renderSide();toast((k==='archive'?'Archive':'Images')+' tab '+(nd[k]?'on':'off')+' for this character')}
+
+// ---------- data ----------
+async function loadImages(force){
+ if(!sb){renderImages();return}
+ if(IMG.loading)return;if(IMG.loaded&&!force){renderImages();return}
+ IMG.loading=true;renderImages();
+ const r=await sb.from('character_images').select('*').order('created_at',{ascending:false});
+ IMG.loading=false;
+ if(r.error){IMG.error=r.error.message;renderImages();return}
+ IMG.error='';IMG.list=r.data||[];IMG.loaded=true;
+ if(isGM&&!IMG.people.length){const p=await sb.from('characters').select('id,owner_id,name').order('name');if(!p.error)IMG.people=p.data||[]}
+ renderImages()}
+function visibleImages(){if(isGM&&UI.imgScope==='all')return IMG.list;
+ return IMG.list.filter(i=>i.owner_id===viewOwner||(i.shared_with||[]).includes(viewOwner))}
+function personName(o){if(o===meId)return isGM?'You (GM)':'You';const p=IMG.people.find(x=>x.owner_id===o);return p?(p.name||'Unnamed'):'Someone'}
+async function signedUrls(paths){
+ const need=[...new Set(paths.filter(Boolean))].filter(p=>!(IMG.urls[p]&&IMG.urls[p].exp>Date.now()));
+ if(!need.length||!sb)return;
+ const r=await sb.storage.from(IMG_BUCKET).createSignedUrls(need,3600);
+ if(!r.error)(r.data||[]).forEach((o,i)=>{if(o&&o.signedUrl)IMG.urls[need[i]]={url:o.signedUrl,exp:Date.now()+50*60000}})}
+
+// ---------- gallery ----------
+function imgShell(inner){
+ const scope=isGM?`<div class="seg">${[['char','This character'],['all','All images']].map(([k,l])=>`<button class="${UI.imgScope===k?'on':''}" ${on('setImgScope',k)}>${l}</button>`).join('')}</div>`:'';
+ const note=isGM&&UI.imgScope==='char'?`<p class="rule" style="padding:0 14px">Images you add here are shared with ${esc(C.name||'this character')}. Switch to All images to prepare something without sharing it yet.</p>`:'';
+ return`<div class="viewbar"><span class="vt">Images</span><div class="viewact">${scope}<button class="btn sm pri" onclick="$('imgUp').click()">Add image</button><input type="file" id="imgUp" class="hidden" accept="image/*" multiple onchange="uploadImages(event)"></div></div>${note}<div class="viewbody">${inner}</div>`}
+function setImgScope(k){UI.imgScope=k;renderImages()}
+function imgCard(i,n){const u=IMG.urls[i.thumb_path||i.path];const mine=i.owner_id===meId;
+ const sub=isGM?`${esc(personName(i.owner_id))}${(i.shared_with||[]).length?' • shared with '+i.shared_with.length:''}`:(mine?'Yours':'Shared with you');
+ return`<button class="box imgcard" ${on('openLightbox',n)}><span class="imgthumb">${u?`<img loading="lazy" src="${esc(u.url)}" alt="">`:''}</span><span class="imgcap">${esc(i.caption||'')||'<span class="muted">No caption</span>'}</span><span class="imgsub">${sub}</span></button>`}
+async function renderImages(){
+ if(UI.view!=='images')return;const host=$('view-images');if(!host)return;const tok=++IMG.tok;
+ if(!sb){host.innerHTML=imgShell('<div class="empty">Images need the cloud connection, which this copy of the sheet doesn\'t have.</div>');return}
+ if(IMG.loading&&!IMG.loaded){host.innerHTML=imgShell('<div class="empty">Loading images...</div>');return}
+ if(IMG.error){host.innerHTML=imgShell(`<div class="empty">Couldn't load images: ${esc(IMG.error)}</div>`);return}
+ const list=visibleImages();await signedUrls(list.map(i=>i.thumb_path||i.path));if(tok!==IMG.tok)return;
+ host.innerHTML=imgShell(list.length?`<div class="imggrid">${list.map((i,n)=>imgCard(i,n)).join('')}</div>`:`<div class="empty">No images yet.${isGM?'':' Add your own, or ask your GM to share some with you.'}</div>`)}
+
+// ---------- lightbox ----------
+async function openLightbox(n){IMG.idx=n;await renderLightbox()}
+function closeLightbox(){IMG.open=false;IMG.ltok++;const lb=$('lightbox');if(lb)lb.classList.add('hidden')}
+function lbStep(d){const n=visibleImages().length;if(!n)return;IMG.idx=(IMG.idx+d+n)%n;renderLightbox()}
+let _tx=null;function lbTouch(e,end){const x=e.changedTouches[0].clientX;if(!end){_tx=x;return}if(_tx==null)return;const d=x-_tx;_tx=null;if(Math.abs(d)>50)lbStep(d<0?1:-1)}
+document.addEventListener('keydown',e=>{if(!IMG.open||/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||''))return;
+ if(e.key==='Escape')closeLightbox();else if(e.key==='ArrowLeft')lbStep(-1);else if(e.key==='ArrowRight')lbStep(1)});
+async function renderLightbox(){
+ const tok=++IMG.ltok;const list=visibleImages();const it=list[Math.min(IMG.idx,list.length-1)];const lb=$('lightbox');
+ if(!it){closeLightbox();return}
+ IMG.idx=list.indexOf(it);IMG.open=true;lb.classList.remove('hidden');
+ await signedUrls([it.path]);if(tok!==IMG.ltok)return;
+ const u=IMG.urls[it.path];const canEdit=isGM||it.owner_id===meId;
+ const share=isGM?`<h3>Shared with</h3><div class="kitl">${IMG.people.filter(p=>p.owner_id!==it.owner_id).map(p=>`<label><input type="checkbox" ${(it.shared_with||[]).includes(p.owner_id)?'checked':''} onchange="toggleShare('${it.id}','${p.owner_id}')"> ${esc(p.name||'Unnamed')}</label>`).join('')||'<span class="muted">No other characters yet.</span>'}</div>`:'';
+ lb.innerHTML=`<div class="lbtop"><span class="lbcount">${IMG.idx+1} / ${list.length}</span><button class="btn sm" onclick="closeLightbox()">Close</button></div>
+ <div class="lbstage" ontouchstart="lbTouch(event,0)" ontouchend="lbTouch(event,1)">${list.length>1?`<button class="lbnav prev" aria-label="Previous image" onclick="lbStep(-1)">${CHEV_L}</button>`:''}${u?`<img src="${esc(u.url)}" alt="${esc(it.caption||'')}">`:'<span class="muted">Couldn\'t load this image</span>'}${list.length>1?`<button class="lbnav next" aria-label="Next image" onclick="lbStep(1)">${CHEV_R}</button>`:''}</div>
+ <div class="lbbar">${canEdit?`<input value="${esc(it.caption||'')}" maxlength="300" placeholder="Add a caption" onchange="saveCaption('${it.id}',this.value)">`:`<div class="lbcap">${esc(it.caption||'')||'<span class="muted">No caption</span>'}</div>`}${share}${canEdit?`<div class="panel-actions"><button class="btn danger" onclick="deleteImage('${it.id}')">Delete image</button></div>`:''}</div>`}
+
+// ---------- edit / share / delete ----------
+async function saveCaption(id,v){const it=IMG.list.find(x=>x.id===id);if(!it)return;v=String(v).trim().slice(0,300);
+ const r=await sb.from('character_images').update({caption:v}).eq('id',id);if(r.error)return toast('Couldn\'t save the caption');it.caption=v;renderImages()}
+async function toggleShare(id,ownerId){const it=IMG.list.find(x=>x.id===id);if(!it||!isGM)return;
+ const cur=new Set(it.shared_with||[]);cur.has(ownerId)?cur.delete(ownerId):cur.add(ownerId);const arr=[...cur];
+ const r=await sb.from('character_images').update({shared_with:arr}).eq('id',id);if(r.error)return toast('Couldn\'t update sharing');
+ it.shared_with=arr;renderLightbox();renderImages()}
+async function deleteImage(id){const it=IMG.list.find(x=>x.id===id);if(!it)return;if(!confirm('Delete this image for good?'))return;
+ const s=await sb.storage.from(IMG_BUCKET).remove([it.path,it.thumb_path].filter(Boolean));if(s.error)return toast('Couldn\'t delete the file: '+s.error.message);
+ const r=await sb.from('character_images').delete().eq('id',id);if(r.error)return toast('Couldn\'t delete: '+r.error.message);
+ IMG.list=IMG.list.filter(x=>x.id!==id);renderLightbox();renderImages();toast('Image deleted')}
+
+// ---------- upload (compressed in the browser first, so 500 MB goes a long way) ----------
+function loadBitmap(file){return new Promise((res,rej)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{URL.revokeObjectURL(url);res(img)};img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('that file isn\'t an image this browser can read'))};img.src=url})}
+function toJpeg(img,max,q){const r=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));const w=Math.max(1,Math.round(img.naturalWidth*r)),h=Math.max(1,Math.round(img.naturalHeight*r));
+ const cv=document.createElement('canvas');cv.width=w;cv.height=h;const cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,w,h);cx.drawImage(img,0,0,w,h);
+ return new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('couldn\'t compress it')),'image/jpeg',q))}
+async function makeImageBlobs(file){if(file.size>25*1024*1024)throw new Error('over 25 MB');const img=await loadBitmap(file);return{full:await toJpeg(img,1600,.82),thumb:await toJpeg(img,360,.75)}}
+async function uploadImages(ev){
+ const files=[...ev.target.files];ev.target.value='';if(!files.length||!sb||!meId||IMG.uploading)return;
+ IMG.uploading=true;let ok=0;
+ for(const f of files){
+  try{
+   toast('Uploading '+(ok+1)+' of '+files.length+'...');
+   const{full,thumb}=await makeImageBlobs(f);
+   const base=meId+'/'+((window.crypto&&crypto.randomUUID)?crypto.randomUUID():uid()+uid());
+   const p1=base+'.jpg',p2=base+'_t.jpg',store=sb.storage.from(IMG_BUCKET);
+   let r=await store.upload(p1,full,{contentType:'image/jpeg',upsert:false});if(r.error)throw r.error;
+   r=await store.upload(p2,thumb,{contentType:'image/jpeg',upsert:false});if(r.error){await store.remove([p1]);throw r.error}
+   const shared=(isGM&&UI.imgScope==='char'&&viewOwner&&viewOwner!==meId)?[viewOwner]:[];
+   const ins=await sb.from('character_images').insert({owner_id:meId,path:p1,thumb_path:p2,caption:'',shared_with:shared}).select().single();
+   if(ins.error){await store.remove([p1,p2]);throw ins.error}
+   IMG.list.unshift(ins.data);ok++;
+  }catch(e){toast('Couldn\'t upload '+f.name+': '+(e.message||e))}
+ }
+ IMG.uploading=false;if(ok){toast(ok+(ok>1?' images':' image')+' added');renderImages()}}
+// ============================================================
 // ACTIONS: everything that changes the character
 // ============================================================
 function setPath(o,path,v){const ks=path.split('.');let t=o;ks.slice(0,-1).forEach(k=>{if(t[k]==null)t[k]={};t=t[k]});t[ks[ks.length-1]]=v}
@@ -1474,10 +1646,10 @@ async function handleSignup(){if(!sb)return loginMsg('This copy of the file isn\
 async function handleLogout(){if(started)await saveNow();if(sb)await sb.auth.signOut();else location.reload()}
 
 function startApp(row){C=migrate(row?row.sheet_data:null);if(!C.inv.length&&(!row||!row.sheet_data))C.inv=starterKit();applyTheme(C.theme);D=derive();
- $('login-screen').classList.add('hidden');$('picker-screen').classList.add('hidden');$('app').classList.remove('hidden');started=true;UI.open=isWide();UI.tab='actions';UI.panel={k:'log'};
+ $('login-screen').classList.add('hidden');$('picker-screen').classList.add('hidden');$('app').classList.remove('hidden');started=true;UI.open=isWide();UI.tab='actions';UI.panel={k:'log'};initDevice(row);
  renderMain();applySide();renderSide();setSaveStat(offline?'Offline':'Saved');loadCampaignItems()}
 
-async function enterSheetFor(user){if(started||entering)return;entering=true;loginMsg('Checking your access...');
+async function enterSheetFor(user){if(started||entering)return;entering=true;meId=user.id;loginMsg('Checking your access...');
  const prof=await sb.from('profiles').select('role').eq('id',user.id).single();
  isGM=!prof.error&&prof.data&&prof.data.role==='gm';
  if(isGM){showPicker();return}
