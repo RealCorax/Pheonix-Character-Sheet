@@ -333,6 +333,9 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 .adr{padding:14px 16px 10px;display:flex;flex-direction:column;gap:9px}
 .adr-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .adr-name{font-size:17px;font-weight:700;color:var(--hi);margin-right:2px}
+.adr-nick{font-size:17px;font-weight:700;color:var(--hi);background:none;border:none;border-bottom:1px dashed var(--edge2);border-radius:0;padding:0 0 2px;flex:1;min-width:120px}
+.adr-nick:focus{border-bottom-color:var(--acc2)}
+.adr-nick::placeholder{color:var(--text3);font-weight:600}
 .adr-glyphs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) 1px minmax(0,1fr);align-items:center;gap:6px;padding:10px 10px;border-radius:16px;background:color-mix(in srgb,var(--bg) 60%,transparent);border:1px solid var(--edge2)}
 .adr-g{min-width:0;aspect-ratio:1;color:var(--acc2);display:block}
 .adr-g svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 3px)}
@@ -1691,7 +1694,7 @@ addfeat(cat){if(!UI.featf)UI.featf=cat||'General';const q=UI.featq.toLowerCase()
 featinfo(name){const f=FEATS.find(x=>x.n===name);if(!f)return'';const n=C.feats.filter(x=>x.name===name).length;
  return`<h2>${esc(f.n)}</h2><p class="rule">${esc(f.cat)} • ${f.mp} MP • ${{action:'Action',bonus:'Bonus action',reaction:'Reaction',other:'Passive'}[f.t]}</p>
  <div class="kv"><span>Requirement</span><b>${esc(f.req)}</b></div><p style="margin-top:10px">${esc(f.d)}</p>
- <div class="panel-actions">${n?`<span class="chip">Known ×${n}</span>`:''}<button class="btn pri" ${on('learnFeat',f.n)}>${n?'Learn again':'Learn this feat'}</button></div>`}
+ <div class="panel-actions"><button class="btn sm" ${on('openPanel','addfeat',f.cat)}>← Back to list</button>${n?`<span class="chip">Known ×${n}</span>`:''}<button class="btn pri" ${on('learnFeat',f.n)}>${n?'Learn again':'Learn this feat'}</button></div>`}
 };
 function renderFeatList(){const q=UI.featq.toLowerCase(),fc=UI.featf||'General';const known={};C.feats.forEach(f=>{known[f.name]=(known[f.name]||0)+1});
  const list=FEATS.filter(f=>(fc==='All'||f.cat===fc)&&(!q||f.n.toLowerCase().includes(q)||f.d.toLowerCase().includes(q)));
@@ -1872,7 +1875,7 @@ async function loadAddresses(force){
  const r=await sb.from('portal_addresses').select('id,name,symbols,origin,player_info,tag,audience,shared_with,sort_order,created_at').order('sort_order',{ascending:true}).order('created_at',{ascending:true});
  if(r.error){ADR.loading=false;ADR.error=r.error.message;renderAddresses();return}
  ADR.list=r.data||[];
- const n=await sb.from('portal_address_notes').select('id,address_id,owner_id,note');
+ const n=await sb.from('portal_address_notes').select('id,address_id,owner_id,note,nickname');
  ADR.notes={};(n.data||[]).forEach(x=>{if(x.owner_id===viewOwner)ADR.notes[x.address_id]=x});
  ADR.gm={};ADR.email='';
  if(isGM){
@@ -1899,11 +1902,17 @@ function addrCard(a){
  const syms=a.symbols||[],ori=a.origin?pgById(a.origin):null,note=ADR.notes[a.id],open=!!ADR.open[a.id];
  const sounds=syms.map(i=>(pgById(i)||{}).sound||'?').join("'"),poetic=syms.map(i=>((pgById(i)||{}).meaning||'').split(',')[0]).join(' · ');
  const canNote=viewOwner===meId,gm=isGM?ADR.gm[a.id]:null;
+ const playerView=!isGM||UI.adrScope==='char'; // true whenever this is (or exactly simulates) a player's own view
+ const nickname=note&&note.nickname?note.nickname:'';
+ const nameBlock=playerView
+  ?(canNote?`<input class="adr-nick" placeholder="Name this address" maxlength="80" value="${esc(nickname)}" onchange="saveAddrNickname('${a.id}',this.value)">`
+            :`<span class="adr-name">${esc(nickname||'Not named yet')}</span>`)
+  :`<span class="adr-name">${esc(a.name)}</span>`;
  return`<article class="box adr">
- <div class="adr-top"><span class="adr-name">${esc(a.name)}</span>${a.tag?`<span class="chip">${esc(a.tag)}</span>`:''}${isGM?audBadge(a):''}</div>
+ <div class="adr-top">${nameBlock}${a.tag?`<span class="chip">${esc(a.tag)}</span>`:''}${!playerView?audBadge(a):''}</div>
  <div class="adr-glyphs">${syms.map(i=>`<span class="adr-g">${pgSvg(i)}</span>`).join('')}${ori?`<span class="adr-sep"></span><span class="adr-g adr-o" title="Point of origin">${pgSvg(ori.id)}</span>`:''}</div>
- <div class="adr-snd">${esc(sounds)}${ori?` <span class="adr-from">from ${esc(ori.sound)}</span>`:''}</div>
- <div class="adr-poetic">${esc(poetic)}</div>
+ ${playerView?'':`<div class="adr-snd">${esc(sounds)}${ori?` <span class="adr-from">from ${esc(ori.sound)}</span>`:''}</div>
+ <div class="adr-poetic">${esc(poetic)}</div>`}
  ${a.player_info?`<p class="adr-info">${esc(a.player_info)}</p>`:''}
  ${gm&&(gm.notes||gm.visited)?`<div class="adr-gm"><b>GM notes</b>${gm.visited?' • visited '+esc(gm.visited):''}<br>${esc(gm.notes||'')}</div>`:''}
  <button class="adr-nt ${open?'open':''}" ${on('toggleAddrNotes',a.id)}>${CHEV_D}<span>${canNote?'My notes':'Player\'s notes'}${note&&note.note?' •':''}</span></button>
@@ -1932,9 +1941,17 @@ function toggleAddrNotes(id){ADR.open[id]=!ADR.open[id];renderAddrList()}
 async function saveAddrNote(id,val){
  if(!sb||!meId||viewOwner!==meId)return;val=String(val).slice(0,2000);
  if(!val.trim()&&!ADR.notes[id])return;
- const r=await sb.from('portal_address_notes').upsert({address_id:id,owner_id:meId,note:val,updated_at:new Date().toISOString()},{onConflict:'address_id,owner_id'}).select().single();
+ const keep=ADR.notes[id]||{};
+ const r=await sb.from('portal_address_notes').upsert({address_id:id,owner_id:meId,note:val,nickname:keep.nickname||'',updated_at:new Date().toISOString()},{onConflict:'address_id,owner_id'}).select().single();
  if(r.error)return toast('Couldn\'t save that note');
  ADR.notes[id]=r.data;toast('Note saved');renderAddrList()}
+
+async function saveAddrNickname(id,val){
+ if(!sb||!meId||viewOwner!==meId)return;val=String(val).trim().slice(0,80);
+ const keep=ADR.notes[id]||{};
+ const r=await sb.from('portal_address_notes').upsert({address_id:id,owner_id:meId,nickname:val,note:keep.note||'',updated_at:new Date().toISOString()},{onConflict:'address_id,owner_id'}).select().single();
+ if(r.error)return toast('Couldn\'t save that name');
+ ADR.notes[id]=r.data;toast('Name saved');renderAddrList()}
 // ============================================================
 // ACTIONS: everything that changes the character
 // ============================================================
