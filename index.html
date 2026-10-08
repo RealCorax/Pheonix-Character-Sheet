@@ -500,7 +500,7 @@ body:not(.lighttheme) .abil .modbtn,body:not(.lighttheme) .stat .big,body:not(.l
     </div>
   </header>
   <section class="view" id="view-archive">
-    <div class="viewbar"><span class="vt">Rala'Kethara Archive</span><a class="btn sm" style="text-decoration:none" href="https://realcorax.github.io/rala-kethara/" target="_blank" rel="noopener">Open in new tab</a></div>
+        <div class="viewbar"><a class="btn sm" style="text-decoration:none" href="https://realcorax.github.io/rala-kethara/" target="_blank" rel="noopener">Open in new tab</a></div>
     <iframe id="archive-frame" title="Rala'Kethara Archive" referrerpolicy="no-referrer"></iframe>
   </section>
   <section class="view" id="view-addresses"></section>
@@ -1738,12 +1738,12 @@ function initDevice(row){
 function applyView(){$('app').dataset.view=UI.view}
 function sizeViews(){const h=($('topbar')?$('topbar').offsetHeight:0)+($('viewtabs')?$('viewtabs').offsetHeight:0);document.documentElement.style.setProperty('--chrome',h+'px')}
 window.addEventListener('resize',()=>{clearTimeout(window._sv);window._sv=setTimeout(sizeViews,120)});
-function renderViewTabs(){const tabs=[['sheet','Sheet']];
- if(deviceOn('addresses'))tabs.push(['addresses','Addresses']);
- if(deviceOn('archive'))tabs.push(['archive','Archive']);
+function renderViewTabs(){const tabs=[['sheet',C.name||'Character']];
+ if(deviceOn('addresses'))tabs.push(['addresses',"Venath'kela"]);
+ if(deviceOn('archive'))tabs.push(['archive',"Rala'Kethara"]);
  if(deviceOn('images'))tabs.push(['images','Images']);
  if(!tabs.some(t=>t[0]===UI.view)){UI.view='sheet';applyView()}
- $('vtabs').innerHTML=tabs.length<2?'':tabs.map(([k,l])=>`<button class="${UI.view===k?'on':''}" ${on('setView',k)}>${l}</button>`).join('');sizeViews()}
+  $('vtabs').innerHTML=tabs.length<2?'':tabs.map(([k,l])=>`<button class="${UI.view===k?'on':''}" ${on('setView',k)}>${esc(l)}</button>`).join('');sizeViews()}
 function setView(v){if((v==='archive'&&!deviceOn('archive'))||(v==='images'&&!deviceOn('images'))||(v==='addresses'&&!deviceOn('addresses')))v='sheet';
  UI.view=v;applyView();renderViewTabs();window.scrollTo(0,0);
  if(v==='archive')loadArchive();if(v==='images')loadImages();if(v==='addresses')loadAddresses()}
@@ -1932,10 +1932,9 @@ function renderAddresses(){
  else if(ADR.loading&&!ADR.loaded)body='<div class="empty">Loading addresses...</div>';
  else if(ADR.error)body=`<div class="empty">Couldn't load addresses: ${esc(ADR.error)}${isGM?'<br>Has the Phase 5 SQL been run yet?':''}</div>`;
  else body=`${ADR.list.length>6?`<input class="adr-search" placeholder="Search addresses" value="${esc(ADR.q)}" oninput="ADR.q=this.value;renderAddrList()">`:''}<div id="adr-list"></div>`;
- if(!isGM)note='Addresses your wrist device can dial remotely. You can always dial any gate by hand.';
- else if(UI.adrScope==='char')note=`Showing what ${esc(C.name||'this character')} sees${ADR.email?' ('+esc(ADR.email)+')':''}.${viewOwner&&!ADR.email?' Their login email couldn\'t be read, so addresses shared with specific players are hidden here.':''}`;
- else note='Showing every address, including GM only ones.';
- host.innerHTML=`<div class="viewbar"><span class="vt">Portal addresses</span><div class="viewact">${scope}</div></div><p class="rule" style="padding:0 14px">${note}</p><div class="viewbody">${body}</div>`;
+ if(isGM){if(UI.adrScope==='char')note=`Showing what ${esc(C.name||'this character')} sees${ADR.email?' ('+esc(ADR.email)+')':''}.${viewOwner&&!ADR.email?' Their login email couldn\'t be read, so addresses shared with specific players are hidden here.':''}`;
+ else note='Showing every address, including GM only ones.';}
+ host.innerHTML=`${isGM?`<div class="viewbar"><div class="viewact">${scope}</div></div>`:''}${note?`<p class="rule" style="padding:0 14px">${note}</p>`:''}<div class="viewbody">${body}</div>`;
  renderAddrList()}
 function setAdrScope(k){UI.adrScope=k;renderAddresses()}
 function toggleAddrNotes(id){ADR.open[id]=!ADR.open[id];renderAddrList()}
