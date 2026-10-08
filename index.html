@@ -1872,7 +1872,7 @@ async function loadAddresses(force){
  if(!sb){renderAddresses();return}
  if(ADR.loading)return;if(ADR.loaded&&!force){renderAddresses();return}
  ADR.loading=true;ADR.error='';renderAddresses();
- const r=await sb.from('portal_addresses').select('id,name,symbols,origin,player_info,tag,audience,shared_with,sort_order,created_at').order('sort_order',{ascending:true}).order('created_at',{ascending:true});
+ const r=await sb.from('portal_addresses').select('id,name,symbols,origin,player_info,tag,audience,shared_with,sort_order,created_at,color').order('sort_order',{ascending:true}).order('created_at',{ascending:true});
  if(r.error){ADR.loading=false;ADR.error=r.error.message;renderAddresses();return}
  ADR.list=r.data||[];
  const n=await sb.from('portal_address_notes').select('id,address_id,owner_id,note,nickname');
@@ -1908,9 +1908,11 @@ function addrCard(a){
   ?(canNote?`<input class="adr-nick" placeholder="Name this address" maxlength="80" value="${esc(nickname)}" onchange="saveAddrNickname('${a.id}',this.value)">`
             :`<span class="adr-name">${esc(nickname||'Not named yet')}</span>`)
   :`<span class="adr-name">${esc(a.name)}</span>`;
- return`<article class="box adr">
- <div class="adr-top">${nameBlock}${a.tag?`<span class="chip">${esc(a.tag)}</span>`:''}${!playerView?audBadge(a):''}</div>
- <div class="adr-glyphs">${syms.map(i=>`<span class="adr-g">${pgSvg(i)}</span>`).join('')}${ori?`<span class="adr-sep"></span><span class="adr-g adr-o" title="Point of origin">${pgSvg(ori.id)}</span>`:''}</div>
+ const ADR_COLORS={red:'#d9524a',orange:'#e08a3c',green:'#4caf6e'};
+const glyphBorder=ADR_COLORS[a.color]?` style="border:2px solid ${ADR_COLORS[a.color]}"`:'';
+return`<article class="box adr">
+<div class="adr-top">${nameBlock}${a.tag?`<span class="chip">${esc(a.tag)}</span>`:''}${!playerView?audBadge(a):''}</div>
+<div class="adr-glyphs"${glyphBorder}>${syms.map(i=>`<span class="adr-g">${pgSvg(i)}</span>`).join('')}${ori?`<span class="adr-sep"></span><span class="adr-g adr-o" title="Point of origin">${pgSvg(ori.id)}</span>`:''}</div>
  ${playerView?'':`<div class="adr-snd">${esc(sounds)}${ori?` <span class="adr-from">from ${esc(ori.sound)}</span>`:''}</div>
  <div class="adr-poetic">${esc(poetic)}</div>`}
  ${a.player_info?`<p class="adr-info">${esc(a.player_info)}</p>`:''}
