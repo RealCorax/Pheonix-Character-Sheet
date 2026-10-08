@@ -1118,7 +1118,7 @@ function newChar(){return{v:2,name:'',race:'',cls:'',level:1,origins:['',''],por
  bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'furling_lumen',borderStyle:'hud',bgImage:'',nightMode:false}}
 
 let C=newChar(), D={};
-const UI={tab:'actions',filter:'all',ffilter:'all',rollMode:'normal',pinned:true,open:true,panel:{k:'log'},log:[],addq:'',addt:'all',featq:'',featf:''};
+const UI={tab:'actions',filter:'all',ffilter:'all',rollMode:'normal',pinned:true,open:true,panel:{k:'log'},log:[],addq:'',addt:'all',featq:'',featf:'',lastInit:null,lastMoxie:null};
 function featType(f){if(f.t)return f.t;const b=FEATS.find(x=>x.n===f.name);return b?b.t:'other'}
 try{UI.pinned=localStorage.getItem('sgc-pinned')!=='0'}catch(e){}
 
@@ -1345,8 +1345,8 @@ function renderCrow(){const conds=[...C.conds];const cc=conds.map(c=>`<span clas
  const shieldSvg=(val)=>`<svg width="82" height="88" viewBox="0 0 82 88"><defs><linearGradient id="acg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--bg3);stop-opacity:.94"/><stop offset="1" style="stop-color:var(--bg);stop-opacity:.94"/></linearGradient></defs>
   <path d="M41 3 L77 15 V41 C77 63 61 78 41 85 C21 78 5 63 5 41 V15 Z" fill="url(#acg)" stroke="var(--amber2)" stroke-width="3"/>
   <text x="41" y="50" text-anchor="middle" class="shapebig shapenum">${esc(val)}</text></svg>`;
- $('crow').innerHTML=`<div class="statshape" ${on('openPanel','init')}><div class="lbl">Initiative</div><button style="background:none;border:none;padding:0;cursor:pointer" ${onS('rollInit')}>${hexSvg(sgn(D.init),'hexA')}</button></div>
- <div class="statshape" ${on('openPanel','moxie')}><div class="lbl">Moxie</div><button style="background:none;border:none;padding:0;cursor:pointer" ${onS('rollMoxie')}>${hexSvg(sgn(D.moxie),'hexB')}</button></div>
+ $('crow').innerHTML=`<div class="statshape" ${on('openPanel','init')}><div class="lbl">Initiative</div><button style="background:none;border:none;padding:0;cursor:pointer" ${onS('rollInit')}>${hexSvg(UI.lastInit!=null?UI.lastInit:sgn(D.init),'hexA')}</button></div>
+ <div class="statshape" ${on('openPanel','moxie')}><div class="lbl">Moxie</div><button style="background:none;border:none;padding:0;cursor:pointer" ${onS('rollMoxie')}>${hexSvg(UI.lastMoxie!=null?UI.lastMoxie:sgn(D.moxie),'hexB')}</button></div>
  <div class="statshape" ${on('openPanel','ac')}><div class="lbl">Armour Class</div>${shieldSvg(D.ac)}</div>
  <div class="box defbox"><div class="defcond">
   <div ${on('openPanel','defenses')}><div class="lbl">Defences</div><div class="val">${defs.length||D.immune.length?[...D.immune.map(x=>'Immune: '+x),...defs].map(x=>`<span class="chip ${/^Vulnerable/.test(x)?'bad':''}">${esc(x)}</span>`).join(''):'Resistances, immunities, or vulnerabilities'}</div></div>
@@ -2092,8 +2092,8 @@ function removeFeat(id){C.feats=C.feats.filter(x=>x.id!==id);UI.panel={k:'log'};
 function rollAbility(k){rollD20(ABN(k),'check',D.m[k],{ab:k})}
 function rollSave(k){rollD20(ABN(k),'save',D.saves[k],{ab:k})}
 function rollSkill(n){const s=D.skills[n];rollD20(n,'check',s.v,{ab:n==='Stealth'?'stealth':s.ab})}
-function rollInit(){rollD20('Initiative','check',D.init,{ab:'dex'})}
-function rollMoxie(){rollD20('Moxie','check',D.moxie,{ab:'int'})}
+function rollInit(){const r=rollD20('Initiative','check',D.init,{ab:D.m.dex>=D.m.wis?'dex':'wis'});UI.lastInit=r.total;renderCrow()}
+function rollMoxie(){const r=rollD20('Moxie','check',D.moxie,{ab:D.m.int>=D.m.cha?'int':'cha'});UI.lastMoxie=r.total;renderCrow()}
 function rollTD(){const r=rollExpr('TD');logRoll('Tension die ('+C.tension+')','',r.total,r.text,'')}
 function rollPlain(title,expr){const r=rollExpr(expr);logRoll(title,'',r.total,r.text,'')}
 function rollAttack(id,mi){const it=C.inv.find(i=>i.id===id);const s=modeStats(it,mi);if(it.w.cap){if((it.ammo??it.w.cap)<=0)toast('Out of ammo. Reload first.');else it.ammo=(it.ammo??it.w.cap)-1}
