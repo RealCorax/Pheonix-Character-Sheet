@@ -450,6 +450,12 @@ body:not(.lighttheme) .abil .modbtn,body:not(.lighttheme) .stat .big,body:not(.l
 }
 @media (max-width:380px){.vtabs button{padding:6px 8px}}
 @media (prefers-reduced-motion:reduce){.pview{animation:none}}
+.ntabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;-webkit-overflow-scrolling:touch}
+.ntabs button{flex:0 0 auto;font-family:var(--sans);font-size:12.5px;font-weight:700;padding:7px 13px;border:1px solid var(--edge2);border-radius:999px;color:var(--text2);background:transparent;white-space:nowrap}
+.ntabs button.on{background:var(--edge2);color:var(--hi)}
+.nmenu{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.nmenu .btn[disabled]{opacity:.4;pointer-events:none}
+.notearea{height:62vh;min-height:280px;resize:none;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -1440,7 +1446,21 @@ function tabFeatures(){const F=UI.filter;let h=filters([['all','All'],['class','
 
 function ta(path,label,ph,rows=5){const v=path.split('.').reduce((o,k)=>o?.[k],C)||'';return`<div class="sec">${label}</div><textarea rows="${rows}" placeholder="${esc(ph)}" oninput="setField('${path}',this.value)">${esc(v)}</textarea>`}
 function tabBackground(){return ta('bg.traits','Personality traits','How do they act? What do people notice first?',3)+ta('bg.ideals','Ideals','What do they believe in?',2)+ta('bg.bonds','Bonds','Who or what do they care about?',2)+ta('bg.flaws','Flaws','Weaknesses, vices, blind spots.',2)+ta('bg.appearance','Appearance','Physical description and distinguishing features.',3)+ta('bg.allies','Allies & organisations','Contacts, factions, standing.',3)+ta('bg.story','Backstory','Where did they come from? Why the Phoenix Site?',6)}
-function tabNotes(){return ta('notes.session','Session notes','Discoveries, open questions, gate addresses, names to remember.',10)+ta('notes.general','Other notes','Anything else.',6)}
+function notesUpgrade(){const N=C.notes=C.notes||{};if(Array.isArray(N.tabs)&&N.tabs.length)return;
+ N.tabs=[];if(N.session)N.tabs.push({id:uid(),t:'Session notes',b:N.session});if(N.general)N.tabs.push({id:uid(),t:'Other notes',b:N.general});
+ if(!N.tabs.length)N.tabs.push({id:uid(),t:'Notes',b:''});delete N.session;delete N.general}
+function noteCur(){const a=C.notes.tabs;return a.find(x=>x.id===UI.noteTab)||a[0]}
+function tabNotes(){notesUpgrade();const a=C.notes.tabs,cur=noteCur(),i=a.indexOf(cur);
+ return`<div class="ntabs">${a.map(x=>`<button class="${x.id===cur.id?'on':''}" ${on('noteSel',x.id)}>${esc(x.t||'Untitled')}</button>`).join('')}<button ${on('noteAdd')} title="New note tab">+</button></div>
+ ${UI.noteMenu?`<div class="nmenu"><button class="btn sm" ${on('noteRename')}>Rename</button><button class="btn sm" ${on('noteMove',-1)} ${i===0?'disabled':''}>Move left</button><button class="btn sm" ${on('noteMove',1)} ${i===a.length-1?'disabled':''}>Move right</button><button class="btn sm" ${on('noteDelete')}>Delete</button></div>`:''}
+ <textarea class="notearea" placeholder="Discoveries, open questions, gate addresses, names to remember." oninput="noteInput(this.value)">${esc(cur.b)}</textarea>`}
+function noteSel(id){if(noteCur().id===id)UI.noteMenu=!UI.noteMenu;else{UI.noteTab=id;UI.noteMenu=false}renderTabs()}
+function noteInput(v){noteCur().b=v;scheduleSave()}
+function noteAdd(){const n=prompt('Name for the new tab','');if(n===null)return;const t={id:uid(),t:n.trim()||'Notes',b:''};C.notes.tabs.push(t);UI.noteTab=t.id;UI.noteMenu=false;scheduleSave();renderTabs()}
+function noteRename(){const c=noteCur(),n=prompt('Rename tab',c.t);if(n===null)return;c.t=n.trim()||c.t;UI.noteMenu=false;scheduleSave();renderTabs()}
+function noteMove(d){const a=C.notes.tabs,c=noteCur(),i=a.indexOf(c),j=i+d;if(j<0||j>=a.length)return;a.splice(i,1);a.splice(j,0,c);scheduleSave();renderTabs()}
+function noteDelete(){const a=C.notes.tabs,c=noteCur();if(a.length<2)return toast('You need at least one tab');
+ if(c.b.trim()&&!confirm('Delete "'+c.t+'" and everything in it?'))return;const i=a.indexOf(c);a.splice(i,1);UI.noteTab=a[Math.max(0,i-1)].id;UI.noteMenu=false;scheduleSave();renderTabs()}
 
 function tabExtras(){const E=+C.mp.earned||0;const fac=C.facility;
  let h=`<div class="sec">Mission points</div><div class="fgrid"><div><div class="lbl">MP earned (total)</div><input type="number" min="0" value="${E}" onchange="setNum('mp.earned',this.value)"></div>
