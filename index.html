@@ -462,7 +462,13 @@ body:not(.lighttheme) .abil .modbtn,body:not(.lighttheme) .stat .big,body:not(.l
 .d20ico .ico{width:24px;height:24px}
 .tbsep{align-self:stretch;flex:0 0 1px;width:1px;min-height:22px;background:var(--edge2);margin:0 8px}
 @media (max-width:760px){.tbsep{flex:0 0 100%;width:auto;height:0;min-height:0;margin:0}}
-
+#app[data-view="shield"] #view-shield{display:flex;align-items:center;justify-content:center;padding:20px;min-height:calc(100vh - var(--chrome,110px));min-height:calc(100dvh - var(--chrome,110px))}
+.shrow{display:flex;gap:clamp(12px,4vw,28px);justify-content:center;width:100%}
+.shbtn{flex:0 0 auto;width:min(26vw,130px);aspect-ratio:1;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;color:var(--text2)}
+.shbtn svg{width:88%;height:88%;overflow:visible;transition:color .15s,filter .15s}
+.shbtn:hover{color:var(--text)}
+.shbtn.on{color:#ff7a1a}
+.shbtn.on svg{filter:drop-shadow(0 0 8px rgba(255,122,26,.55))}
 </style>
 </head>
 <body>
@@ -519,6 +525,7 @@ body:not(.lighttheme) .abil .modbtn,body:not(.lighttheme) .stat .big,body:not(.l
         <div class="viewbar"><a class="btn sm" style="text-decoration:none" href="https://realcorax.github.io/rala-kethara/" target="_blank" rel="noopener">Open in new tab</a></div>
     <iframe id="archive-frame" title="Rala'Kethara Archive" referrerpolicy="no-referrer"></iframe>
   </section>
+    <section class="view" id="view-shield"></section>
   <section class="view" id="view-addresses"></section>
   <section class="view" id="view-images"></section>
   <div class="layout">
@@ -1510,7 +1517,7 @@ function ago(t){const s=Math.round((Date.now()-t)/1000);return s<60?'just now':s
 const PANELS={
 settings(){return`<h2>Settings</h2>
  ${isGM?`<div class="res"><div class="rn" ${on('showPicker')}><b>Characters</b><small>See or switch to any player's sheet</small></div></div>`:''}
- ${isGM&&viewOwner?`<h3>Wrist device for this character</h3>${deviceRow('addresses','Addresses tab','Portal addresses their wrist device can dial (on by default)')}${deviceRow('archive','Archive tab',"Shows the Rala'Kethara archive inside their sheet")}${deviceRow('images','Images tab','Their own photos, plus anything you share with them')}<h3>Sheet</h3>`:''}
+ ${isGM&&viewOwner?`<h3>Wrist device for this character</h3>${deviceRow('addresses','Addresses tab','Portal addresses their wrist device can dial (on by default)')}${deviceRow('archive','Archive tab',"Shows the Rala'Kethara archive inside their sheet")}${deviceRow('shield',"Oma'thala tab",'Furling armshield: three symbol buttons')}${deviceRow('images','Images tab','Their own photos, plus anything you share with them')}<h3>Sheet</h3>`:''}
  <div class="res"><div class="rn" ${on('openPanel','appearance')}><b>Change sheet appearance</b><small>Colour theme, background, night mode</small></div></div>
  <div class="res"><div class="rn" ${on('openPanel','profs')}><b>Proficiencies &amp; training</b><small>Armour, weapons, tools, languages</small></div></div>
  <div class="res"><div class="rn" ${on('setTab','extras')}><b>Backup &amp; mission points</b><small>Download/restore a backup, downtime facility</small></div></div>`},
@@ -1756,8 +1763,8 @@ UI.view='sheet';UI.imgScope='char';
 const devOn=k=>k==='addresses'?DEVICE[k]!==false:!!DEVICE[k];
 function deviceOn(k){return isGM||devOn(k)}
 function initDevice(row){
- DEVICE=Object.assign({archive:false,images:false,addresses:true},(row&&row.device)||{});
- if(offline)DEVICE={archive:true,images:true,addresses:true};
+ DEVICE=Object.assign({archive:false,images:false,shield:false,addresses:true},(row&&row.device)||{});
+if(offline)DEVICE={archive:true,images:true,shield:true,addresses:true};
  resetAddresses();
  viewOwner=(row&&row.owner_id)||null;
  IMG.list=[];IMG.loaded=false;IMG.loading=false;IMG.error='';IMG.urls={};IMG.open=false;
@@ -1771,12 +1778,21 @@ window.addEventListener('resize',()=>{clearTimeout(window._sv);window._sv=setTim
 function renderViewTabs(){const tabs=[['sheet',C.name||'Character']];
  if(deviceOn('addresses'))tabs.push(['addresses',"Venath'kela"]);
  if(deviceOn('archive'))tabs.push(['archive',"Rala'Kethara"]);
+  if(deviceOn('shield'))tabs.push(['shield',"Oma'thala"]);
  if(deviceOn('images'))tabs.push(['images','Images']);
  if(!tabs.some(t=>t[0]===UI.view)){UI.view='sheet';applyView()}
   $('vtabs').innerHTML=tabs.length<2?'':tabs.map(([k,l])=>`<button class="${UI.view===k?'on':''}" ${on('setView',k)}>${esc(l)}</button>`).join('');sizeViews()}
-function setView(v){if((v==='archive'&&!deviceOn('archive'))||(v==='images'&&!deviceOn('images'))||(v==='addresses'&&!deviceOn('addresses')))v='sheet';
+function setView(v){if((v==='archive'&&!deviceOn('archive'))||(v==='images'&&!deviceOn('images'))||(v==='addresses'&&!deviceOn('addresses'))||(v==='shield'&&!deviceOn('shield')))v='sheet';
  UI.view=v;applyView();renderViewTabs();window.scrollTo(0,0);
- if(v==='archive')loadArchive();if(v==='images')loadImages();if(v==='addresses')loadAddresses()}
+ if(v==='archive')loadArchive();if(v==='images')loadImages();if(v==='addresses')loadAddresses();if(v==='shield')renderShield()}
+ // ---------- Oma'thala: Furling armshield ----------
+const SHIELD_ICONS=[
+ '<svg viewBox="2 2 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M10.2 4V20M13.8 4V20"/></svg>',
+ '<svg viewBox="2 2 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 16A8 8 0 0 1 20 16M7.5 16A4.5 4.5 0 0 1 16.5 16"/></svg>',
+ '<svg viewBox="2 2 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 4A8 8 0 0 1 8 20M8 7.5A4.5 4.5 0 0 1 8 16.5"/></svg>'];
+function renderShield(){const h=$('view-shield');if(!h)return;
+ h.innerHTML='<div class="shrow">'+SHIELD_ICONS.map((s,i)=>`<button class="box shbtn ${UI.shield===i?'on':''}" aria-pressed="${UI.shield===i}" aria-label="Symbol ${i+1}" ${on('pressShield',i)}>${s}</button>`).join('')+'</div>'}
+function pressShield(i){UI.shield=UI.shield===i?null:i;renderShield()}
 function loadArchive(){const f=$('archive-frame');if(f&&!f.getAttribute('src'))f.setAttribute('src',ARCHIVE_URL)}
 
 // GM switch (Settings panel): which tabs this character has
@@ -1784,7 +1800,7 @@ function deviceRow(k,t,s){return`<div class="condrow"><div class="condmain" ${on
 async function toggleDevice(k){if(!isGM||!sb||!charId)return;const nd={...DEVICE,[k]:!devOn(k)};
  const r=await sb.from('characters').update({device:nd}).eq('id',charId);
  if(r.error)return toast('Couldn\'t update: '+r.error.message);
- DEVICE=nd;renderViewTabs();renderSide();toast(({archive:'Archive',images:'Images',addresses:'Addresses'})[k]+' tab '+(devOn(k)?'on':'off')+' for this character')}
+ DEVICE=nd;renderViewTabs();renderSide();toast(({archive:'Archive',images:'Images',shield:"Oma'thala",addresses:'Addresses'})[k]+' tab '+(devOn(k)?'on':'off')+' for this character')}
 
 // ---------- data ----------
 async function loadImages(force){
