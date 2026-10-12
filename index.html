@@ -827,7 +827,7 @@ const CAT=[
  // Common weapons (TL1)
  {n:'Blade',t:'weapon',src:'Common',tl:1,b:1,w:{modes:[['Strike','melee','1d6','Slashing & Piercing','',1]],pc:'common',sp:'Finesse'},d:'One-handed blades: arming sword, battle axe, sickle.'},
  {n:'Bludgeon',t:'weapon',src:'Common',tl:1,b:1,w:{modes:[['Strike','melee','1d4','Bludgeoning','',0]],pc:'common'},d:'Clubs, maces and warhammers.'},
- {n:'Bow',t:'weapon',src:'Common',tl:1,b:1,w:{modes:[['Shoot','ranged','1d6','Piercing','50m/200m',0]],pc:'bows'},d:'An early ranged weapon that uses tension to launch an arrow.'},
+ {n:'Bow',t:'weapon',src:'Common',tl:1,b:1,w:{modes:[['Shoot','ranged','1d6','Piercing','50m/200m',0]],cap:20,reload:'1 action',pc:'bows'},d:'An early ranged weapon that uses tension to launch an arrow.'},
  {n:'Crossbow',t:'weapon',src:'Common',tl:1,b:2,w:{modes:[['Shoot','ranged','1d8','Piercing','40m/150m',0]],pc:'bows'},d:'A bow design that lays the string horizontal to the user.'},
  {n:'Greatblade',t:'weapon',src:'Common',tl:1,b:2,w:{modes:[['Strike','melee','1d8','Slashing','',0]],pc:'common'},d:'Two-handed swords and axes.'},
  {n:'Greathammer',t:'weapon',src:'Common',tl:1,b:2,w:{modes:[['Strike','melee','1d6','Bludgeoning','',0]],pc:'common',sp:'Knockdown (crits knock the target prone)'},d:'A heavy weight on a shaft that can knock a foe off their feet.'},
@@ -1157,6 +1157,7 @@ function normalise(c){const n=newChar();const o=Object.assign(n,c||{});
  o.hp.ds=Object.assign({s:0,f:0},o.hp.ds||{});
  if(!Array.isArray(o.origins))o.origins=['',''];while(o.origins.length<2)o.origins.push('');
  ['inv','conds','feats','customRes','defenses'].forEach(k=>{if(!Array.isArray(o[k]))o[k]=[]});
+  o.inv.forEach(it=>{if(it&&it.n==='Bow'&&it.w&&!it.w.cap){it.w.cap=20;it.w.reload='1 action';if(it.ammo==null)it.ammo=20}});
  o.profs=upgradeProfs((c||{}).profs);
  return o}
 
