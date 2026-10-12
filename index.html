@@ -1407,7 +1407,7 @@ function tabActions(){const F=UI.filter;let h=filters([['all','All'],['attack','
     <td class="mono" style="font-size:12px">${esc(s.rng||'1m')}</td>
     <td><button class="rbtn" ${onS('rollAttack',it.id,mi)}>${sgn(s.hit)}</button></td>
     <td>${s.dmgExpr==='0'?'<span class="muted">Special</span>':`<button class="rbtn" ${onS('rollWeaponDmg',it.id,mi,false)}>${esc(s.dmgExpr)}</button>`}<div class="sub2">${esc(s.dt)}</div></td>
-    <td class="hidem" style="font-size:12px;color:var(--text2);max-width:220px">${it.w.cap?`<span class="mono" style="white-space:nowrap">Ammo <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,-1)}>−</button> ${it.ammo??it.w.cap}/${it.w.cap} <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,0)} title="Reload">↻</button></span><br>`:''}${esc(short(it.w.sp))}</td></tr>`}));
+    <td class="hidem" style="font-size:12px;color:var(--text2);max-width:220px">${it.w.cap?`<span class="mono" style="white-space:nowrap">Ammo <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,-1)}>−</button> ${it.ammo??it.w.cap}${it.w.pc==='bows'?'':'/'+it.w.cap} <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,1)}>+</button> <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,0)} title="Reload">↻</button></span><br>`:''}${esc(short(it.w.sp))}</td></tr>`}));
   unarmed().forEach(u=>{h+=`<tr class="clkrow" ${on('openPanel','action','Unarmed')}><td><b>${u.n}</b><div class="sub2">${u.sub}</div></td><td class="mono" style="font-size:12px">${u.rng}</td>
    <td><button class="rbtn" ${onS('rollUnarmedHit',u.n,u.hit)}>${sgn(u.hit)}</button></td><td><button class="rbtn" ${onS('rollUnarmedDmg',u.n,u.dmg)}>${esc(u.dmg)}</button></td><td class="muted hidem" style="font-size:12px">Always proficient</td></tr>`});
   h+=`</tbody></table></div>`;if(!eqw.length)h+=`<div class="empty">No weapons equipped. Tick the box beside a weapon in Inventory to show it here.</div>`}
@@ -2124,7 +2124,7 @@ function setItemW(id,k,v){const it=C.inv.find(i=>i.id===id);if(it&&it.w){it.w[k]
 function setMode(id,mi,idx,v){const it=C.inv.find(i=>i.id===id);if(it&&it.w){it.w.modes[mi][idx]=v;commit()}}
 function removeItem(id){C.inv=C.inv.filter(i=>i.id!==id);UI.panel={k:'log'};commit()}
 function toggleKit(k){C.kit[k]=C.kit[k]===false;commit(false)}
-function ammo(id,d){const it=C.inv.find(i=>i.id===id);if(!it||!it.w.cap)return;it.ammo=d===0?it.w.cap:clamp((it.ammo??it.w.cap)+d,0,it.w.cap);commit(false)}
+function ammo(id,d){const it=C.inv.find(i=>i.id===id);if(!it||!it.w.cap)return;const bw=it.w.pc==='bows',cur=it.ammo??it.w.cap;it.ammo=d===0?(bw?Math.max(it.w.cap,cur):it.w.cap):clamp(cur+d,0,bw?9999:it.w.cap);commit(false)}
 
 // feats
 function addFeat(){const n=$('nf-n').value.trim();if(!n)return toast('Give the feat a name');C.feats.push({id:uid(),name:n,cat:$('nf-c').value,mp:+$('nf-m').value||0,desc:$('nf-d').value});
