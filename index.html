@@ -1467,25 +1467,27 @@ function eurekaHtml(){if(!D.hasEureka)return'';const mx=D.eurekaMax,cur=Math.min
   ${mx?`<div class="boxes" style="justify-content:flex-start;max-width:none;margin:6px 0">${[...Array(mx)].map((_,i)=>`<button class="ubox ${i<cur?'used':''}" style="width:26px;height:26px" ${onS('setEureka',i+1)} aria-label="Set Eureka to ${i+1}"></button>`).join('')}</div>`:`<div class="empty">Your INT and WIS modifiers are 0 or less, so you can't hold Eureka points yet.</div>`}
   <div class="filters"><button ${on('adjEureka',1)}>+1 Failed an INT or WIS check</button><button ${on('adjEureka',-1)}>Spent 1</button></div>`}
 function setEureka(n){const cur=Math.min(C.eureka||0,D.eurekaMax);C.eureka=clamp(cur===n?n-1:n,0,D.eurekaMax);commit()}
-const SUB_L={action:'Actions',bonus:'Bonus actions',reaction:'Reactions',limited:'Limited use',pass:'Always on'};
+const SUB_L={all:'All',action:'Actions',bonus:'Bonus actions',reaction:'Reactions',limited:'Limited use',pass:'Always on'};
 function subOf(e){return e.rk&&D.res.some(x=>x.key===e.rk)?'limited':e.type}
-function tabAbilities(){const list=abilityList(),F=UI.filter==='all'?'action':UI.filter;
- const live=list.filter(e=>!e.locked),cnt=k=>live.filter(e=>subOf(e)===k).length+(k==='limited'?(D.hasEureka?1:0)+D.res.filter(r=>r.src==='Custom').length:0);
+function limitedHtml(live){
+ let h=`<div class="sec"><span>Limited use</span><span style="display:flex;gap:6px"><button class="btn sm" ${on('openPanel','addres')}>Add tracker</button><button class="btn sm" ${on('openPanel','newmission')}>New mission</button></span></div>`+eurekaHtml();
+ const g=live.filter(e=>subOf(e)==='limited'),cu=D.res.filter(r=>r.src==='Custom');
+ h+=g.map(abRow).join('');
+ if(cu.length)h+=`<div class="sec">Your trackers</div>`+cu.map(resRow).join('');
+ if(!g.length&&!cu.length&&!D.hasEureka)h+=`<div class="empty">Nothing with limited uses yet. Add your own with Add tracker.</div>`;
+ return h}
+function tabAbilities(){const list=abilityList(),F=UI.filter&&SUB_L[UI.filter]?UI.filter:'all';
+ const live=list.filter(e=>!e.locked),cnt=k=>k==='all'?0:live.filter(e=>subOf(e)===k).length+(k==='limited'?(D.hasEureka?1:0)+D.res.filter(r=>r.src==='Custom').length:0);
  let h=filters(Object.keys(SUB_L).map(k=>[k,SUB_L[k]+(cnt(k)?' ('+cnt(k)+')':'')]),F,'setFilter');
  if(!list.length&&!C.customRes.length&&!D.hasEureka)return h+`<div class="empty">No abilities yet. Choose a class and race in Manage.</div>`;
- if(F==='limited'){
-  h+=`<div class="sec"><span>Use then rest</span><span style="display:flex;gap:6px"><button class="btn sm" ${on('openPanel','addres')}>Add tracker</button><button class="btn sm" ${on('openPanel','newmission')}>New mission</button></span></div>`;
-  h+=eurekaHtml();
-  const g=live.filter(e=>subOf(e)==='limited');
-  if(g.length)h+=`<div class="sec">Abilities with uses</div>`+g.map(abRow).join('');
-  const cu=D.res.filter(r=>r.src==='Custom');if(cu.length)h+=`<div class="sec">Your trackers</div>`+cu.map(resRow).join('');
-  if(!g.length&&!cu.length&&!D.hasEureka)h+=`<div class="empty">Nothing with limited uses yet. Add your own with Add tracker.</div>`}
- else{
-  const g=live.filter(e=>subOf(e)===F);
-  h+=g.length?g.map(abRow).join(''):`<div class="empty">Nothing here yet.</div>`;
-  const lk=list.filter(e=>e.locked&&subOf(e)===F);
-  if(lk.length)h+=`<div class="sec">Unlocks later</div>`+lk.map(e=>`<div class="feat" style="opacity:.55" ${on('openPanel',e.pk,e.pa)}><div class="fn">${esc(e.n)}</div><div class="fs">Level ${e.lvl}</div></div>`).join('')}
- return h}
+ const lockedOf=k=>{const lk=list.filter(e=>e.locked&&(k==='all'||subOf(e)===k));return lk.length?`<div class="sec">Unlocks later</div>`+lk.map(e=>`<div class="feat" style="opacity:.55" ${on('openPanel',e.pk,e.pa)}><div class="fn">${esc(e.n)}</div><div class="fs">Level ${e.lvl}</div></div>`).join(''):''};
+ if(F==='limited')return h+limitedHtml(live);
+ if(F==='all'){h+=limitedHtml(live);
+  ['action','bonus','reaction','pass'].forEach(t=>{const g=live.filter(e=>subOf(e)===t);if(g.length)h+=`<div class="sec">${SUB_L[t]}</div>`+g.map(abRow).join('')});
+  return h+lockedOf('all')}
+ const g=live.filter(e=>subOf(e)===F);
+ return h+(g.length?g.map(abRow).join(''):`<div class="empty">Nothing here yet.</div>`)+lockedOf(F)}
+
 
 
 function featItem(f){return`<div class="feat" ${on('openPanel','feat',f.id)}><div class="fn">${esc(f.name)}</div><div class="fs">${esc(f.cat)}${+f.mp?' • '+f.mp+' MP':''}</div><div class="fd">${esc(f.desc||'')}</div></div>`}
