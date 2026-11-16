@@ -1467,14 +1467,26 @@ function eurekaHtml(){if(!D.hasEureka)return'';const mx=D.eurekaMax,cur=Math.min
   ${mx?`<div class="boxes" style="justify-content:flex-start;max-width:none;margin:6px 0">${[...Array(mx)].map((_,i)=>`<button class="ubox ${i<cur?'used':''}" style="width:26px;height:26px" ${onS('setEureka',i+1)} aria-label="Set Eureka to ${i+1}"></button>`).join('')}</div>`:`<div class="empty">Your INT and WIS modifiers are 0 or less, so you can't hold Eureka points yet.</div>`}
   <div class="filters"><button ${on('adjEureka',1)}>+1 Failed an INT or WIS check</button><button ${on('adjEureka',-1)}>Spent 1</button></div>`}
 function setEureka(n){const cur=Math.min(C.eureka||0,D.eurekaMax);C.eureka=clamp(cur===n?n-1:n,0,D.eurekaMax);commit()}
-function tabAbilities(){let h=eurekaHtml();
- const list=abilityList(),live=list.filter(e=>!e.locked);
- h+=`<div class="sec"><span>Abilities</span><span style="display:flex;gap:6px"><button class="btn sm" ${on('openPanel','addres')}>Add tracker</button><button class="btn sm" ${on('openPanel','newmission')}>New mission</button></span></div>`;
- if(!list.length&&!C.customRes.length)h+=`<div class="empty">No abilities yet. Choose a class and race in Manage.</div>`;
- ['action','bonus','reaction','pass'].forEach(t=>{const g=live.filter(e=>e.type===t);if(g.length)h+=`<div class="sec">${TYPE_L[t]}</div>`+g.map(abRow).join('')});
- const cu=D.res.filter(r=>r.src==='Custom');if(cu.length)h+=`<div class="sec">Your trackers</div>`+cu.map(resRow).join('');
- const lk=list.filter(e=>e.locked);if(lk.length)h+=`<div class="sec">Unlocks later</div>`+lk.map(e=>`<div class="feat" style="opacity:.55" ${on('openPanel',e.pk,e.pa)}><div class="fn">${esc(e.n)}</div><div class="fs">Level ${e.lvl} • ${TYPE_L[e.type]}</div></div>`).join('');
+const SUB_L={action:'Actions',bonus:'Bonus actions',reaction:'Reactions',limited:'Limited use',pass:'Always on'};
+function subOf(e){return e.rk&&D.res.some(x=>x.key===e.rk)?'limited':e.type}
+function tabAbilities(){const list=abilityList(),F=UI.filter==='all'?'action':UI.filter;
+ const live=list.filter(e=>!e.locked),cnt=k=>live.filter(e=>subOf(e)===k).length+(k==='limited'?(D.hasEureka?1:0)+D.res.filter(r=>r.src==='Custom').length:0);
+ let h=filters(Object.keys(SUB_L).map(k=>[k,SUB_L[k]+(cnt(k)?' ('+cnt(k)+')':'')]),F,'setFilter');
+ if(!list.length&&!C.customRes.length&&!D.hasEureka)return h+`<div class="empty">No abilities yet. Choose a class and race in Manage.</div>`;
+ if(F==='limited'){
+  h+=`<div class="sec"><span>Use then rest</span><span style="display:flex;gap:6px"><button class="btn sm" ${on('openPanel','addres')}>Add tracker</button><button class="btn sm" ${on('openPanel','newmission')}>New mission</button></span></div>`;
+  h+=eurekaHtml();
+  const g=live.filter(e=>subOf(e)==='limited');
+  if(g.length)h+=`<div class="sec">Abilities with uses</div>`+g.map(abRow).join('');
+  const cu=D.res.filter(r=>r.src==='Custom');if(cu.length)h+=`<div class="sec">Your trackers</div>`+cu.map(resRow).join('');
+  if(!g.length&&!cu.length&&!D.hasEureka)h+=`<div class="empty">Nothing with limited uses yet. Add your own with Add tracker.</div>`}
+ else{
+  const g=live.filter(e=>subOf(e)===F);
+  h+=g.length?g.map(abRow).join(''):`<div class="empty">Nothing here yet.</div>`;
+  const lk=list.filter(e=>e.locked&&subOf(e)===F);
+  if(lk.length)h+=`<div class="sec">Unlocks later</div>`+lk.map(e=>`<div class="feat" style="opacity:.55" ${on('openPanel',e.pk,e.pa)}><div class="fn">${esc(e.n)}</div><div class="fs">Level ${e.lvl}</div></div>`).join('')}
  return h}
+
 
 function featItem(f){return`<div class="feat" ${on('openPanel','feat',f.id)}><div class="fn">${esc(f.name)}</div><div class="fs">${esc(f.cat)}${+f.mp?' • '+f.mp+' MP':''}</div><div class="fd">${esc(f.desc||'')}</div></div>`}
 
@@ -1493,52 +1505,15 @@ function tabInventory(){const cap=D.loadCap,b=D.bulk,pct=cap?Math.min(100,b/cap*
  h+=`<div class="kitl" style="margin-top:8px">${extra.map(k=>`<label><input type="checkbox" ${C.kit[k]!==false?'checked':''} ${on('toggleKit',k)}> ${esc(k)}</label>`).join('')}</div>`;
  return h}
 
-const AB_K={strength:'str',dexterity:'dex',constitution:'con',intelligence:'int',wisdom:'wis',charisma:'cha'};
-function hasAbil(n){if(D.cls&&D.cls.f.some(f=>f[1]===n&&f[0]<=D.lvl))return true;if(C.feats.some(f=>f.name===n))return true;return Object.entries(ADV_ABIL).some(([k,a])=>a===n&&advOf(k))}
-function reqPart(p){let m;p=String(p).trim();
- if(/^none$/i.test(p))return true;
- if(m=p.match(/^level\s+(\d+)$/i))return D.lvl>=+m[1];
- if(m=p.match(/^((?:strength|dexterity|constitution|intelligence|wisdom|charisma)(?:\s+or\s+(?:strength|dexterity|constitution|intelligence|wisdom|charisma))*)\s+(\d+)\+?$/i))return m[1].toLowerCase().split(/\s+or\s+/).some(a=>(+C.scores[AB_K[a]]||0)>=+m[2]);
- const sk=p.split(/\s+or\s+/);
- if(sk.every(x=>SKILLS.some(y=>y.n.toLowerCase()===x.toLowerCase())))return sk.some(x=>{const y=SKILLS.find(z=>z.n.toLowerCase()===x.toLowerCase());return !!(+C.skillProf[y.n]||0)});
- if(m=p.match(/^(.+?)\s+ability$/i))return hasAbil(m[1].trim());
- if(m=p.match(/^Attack (Specialist|Veteran|Ace)\b(.*)$/i)){const need={specialist:5,veteran:11,ace:17}[m[1].toLowerCase()];if(D.lvl<need)return false;return C.atkGrp?true:null}
- if(m=p.match(/^(.+?)\s+proficiency$/i)){const n=m[1].trim().toLowerCase();const g=Object.entries(WEAPON_GROUPS).find(([k,l])=>l.toLowerCase().replace(/ weapons$/,'')===n);
-  if(g)return !!C.profs.weapons[g[0]];return null}
- if(FEATS.some(f=>f.n.toLowerCase()===p.toLowerCase())||hasAbil(p))return hasAbil(p);
- return null}
-// true = you qualify, false = you don't (why says what's missing), null = can't tell, check the wording
-function featStatus(f){const req=String(f.req||'').replace(/\([^)]*\)/g,'');let unk=false;
- for(const p of req.split(/,| and /).map(x=>x.trim()).filter(Boolean)){const r=reqPart(p);if(r===false)return{ok:false,why:'Needs '+p};if(r===null)unk=true}
- return{ok:unk?null:true}}
-function featRepeat(f){return /(multiple times|up to (?:two|three|\d) times|choose up to \d times)/i.test((f.d||'')+' '+(f.req||''))}
-function buyFeat(name){const f=FEATS.find(x=>x.n===name);if(!f)return;
- if((+C.mp.earned||0)<20)return toast('You can buy feats with MP once you reach level 5 (20 MP earned).');
- if(f.mp>D.mpAvail)return toast('Not enough MP for '+f.n+'.');learnFeat(name)}
-function toggleAfford(){UI.fall=UI.fall===false;renderTabs()}
 function grpToggle(k,o){UI.go=UI.go||{};UI.go[k]=o}
 function grp(k,title,count,body,def){const o=UI.go&&UI.go[k]!==undefined?UI.go[k]:def;
  return`<details class="grp" ${o?'open':''} ontoggle="grpToggle('${k}',this.open)"><summary class="sec"><span>${title}</span><span class="muted">${count}</span></summary>${body}</details>`}
-function tabFeats(){const F=UI.filter,E=+C.mp.earned||0,canBuy=E>=20,avail=Math.max(0,D.mpAvail),classCat=D.cls?D.cls.feat:'';
- const pool=FEATS.map(f=>({f,st:featStatus(f),own:C.feats.filter(x=>x.name===f.n).length})).filter(x=>!x.own||featRepeat(x.f));
- const ok=pool.filter(x=>x.st.ok!==false),lock=pool.filter(x=>x.st.ok===false);
- let h=filters([['all','Mine ('+C.feats.length+')'],['avail','Available ('+ok.length+')'],['locked','Locked ('+lock.length+')']],F,'setFilter');
- h+=`<div class="kv"><span>${canBuy?'MP to spend on feats':'Feats can be bought from level 5 (20 MP earned)'}</span><b>${canBuy?avail:E+' / 20'}</b></div>`;
- if(F==='all'){
-  h+=`<div class="sec"><span>My feats</span><button class="btn sm" ${on('openPanel','addfeat',classCat||'General')}>Add / custom</button></div>`+atkFeatsHtml();
-  if(!C.feats.length&&D.lvl<5)h+=`<div class="empty">No feats recorded yet.</div>`;
-  const cats=[...FEAT_CATS,...new Set(C.feats.map(f=>f.cat).filter(c=>!FEAT_CATS.includes(c)))];
-  cats.forEach(c=>{const v=C.feats.filter(f=>f.cat===c);if(v.length)h+=grp('m-'+c,esc(c),v.length,v.map(featItem).join(''),C.feats.length<=10)})}
- if(F==='avail'){const only=UI.fall!==false&&canBuy,shown=only?ok.filter(x=>x.f.mp<=avail):ok;
-  if(canBuy)h+=`<label class="frow" style="margin-bottom:8px"><input type="checkbox" ${only?'checked':''} ${on('toggleAfford')}> Only show feats I can afford now</label>`;
-  if(!shown.length)h+=`<div class="empty">${canBuy?'Nothing you can afford right now. Untick the box to see everything you qualify for.':'Nothing to show.'}</div>`;
-  FEAT_CATS.forEach(c=>{const v=shown.filter(x=>x.f.cat===c).sort((a,b)=>a.f.mp-b.f.mp||a.f.n.localeCompare(b.f.n));if(!v.length)return;
-   h+=grp('a-'+c,esc(c)+(c===classCat?' (your class)':''),v.length,v.map(({f,st,own})=>{const need=f.mp-avail,dis=!canBuy||need>0;
-    return`<div class="res"><div class="rn" ${on('openPanel','featinfo',f.n)}><b>${esc(f.n)} <span class="muted">${f.mp} MP${own?' • have x'+own:''}</span></b><small>${st.ok===null?'Check requirement: '+esc(f.req):(canBuy&&need>0?need+' more MP needed':'')}</small><span class="rd">${esc(f.d)}</span></div><button class="btn sm ${dis?'':'pri'}" ${dis?'disabled':''} ${onS('buyFeat',f.n)}>Buy</button></div>`}).join(''),c===classCat)})}
- if(F==='locked'){if(!lock.length)h+=`<div class="empty">Nothing locked.</div>`;
-  lock.sort((a,b)=>a.f.mp-b.f.mp||a.f.n.localeCompare(b.f.n)).forEach(({f,st})=>{h+=`<div class="feat" style="opacity:.7" ${on('openPanel','featinfo',f.n)}><div class="fn">${esc(f.n)} <span class="muted">${f.mp} MP</span></div><div class="fs">${esc(st.why)}</div></div>`})}
+function tabFeats(){const classCat=D.cls?D.cls.feat:'';
+ let h=`<div class="sec"><span>My feats</span><button class="btn sm pri" ${on('openPanel','addfeat',classCat||'General')}>Add feat</button></div>`+atkFeatsHtml();
+ if(!C.feats.length&&D.lvl<5)h+=`<div class="empty">No feats yet. Use Add feat to browse the list and pick one.</div>`;
+ const cats=[...FEAT_CATS,...new Set(C.feats.map(f=>f.cat).filter(c=>!FEAT_CATS.includes(c)))];
+ cats.forEach(c=>{const v=C.feats.filter(f=>f.cat===c);if(v.length)h+=grp('m-'+c,esc(c),v.length,v.map(featItem).join(''),C.feats.length<=10)});
  return h}
-
 
 function ta(path,label,ph,rows=5){const v=path.split('.').reduce((o,k)=>o?.[k],C)||'';return`<div class="sec">${label}</div><textarea rows="${rows}" placeholder="${esc(ph)}" oninput="setField('${path}',this.value)">${esc(v)}</textarea>`}
 function tabBackground(){return ta('bg.traits','Personality traits','How do they act? What do people notice first?',3)+ta('bg.ideals','Ideals','What do they believe in?',2)+ta('bg.bonds','Bonds','Who or what do they care about?',2)+ta('bg.flaws','Flaws','Weaknesses, vices, blind spots.',2)+ta('bg.appearance','Appearance','Physical description and distinguishing features.',3)+ta('bg.allies','Allies & organisations','Contacts, factions, standing.',3)+ta('bg.story','Backstory','Where did they come from? Why the Phoenix Site?',6)}
