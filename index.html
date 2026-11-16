@@ -474,6 +474,15 @@ details.grp>summary{cursor:pointer;list-style:none;justify-content:space-between
 details.grp>summary::-webkit-details-marker{display:none}
 details.grp>summary::before{content:'▸';margin-right:6px}
 details.grp[open]>summary::before{content:'▾'}
+.nbar{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-bottom:6px}
+.nbar .nb{min-width:32px;height:30px;padding:0 9px;border:1px solid var(--edge2);border-radius:999px;background:transparent;color:var(--text);font-family:var(--sans);font-size:13px}
+.nbar .nb:hover{border-color:var(--acc2)}
+.nbar .nc{min-width:22px;width:22px;height:22px;padding:0;border-radius:50%}
+.nbar .nsep{width:1px;height:20px;background:var(--edge2);margin:0 3px}
+.noteed{display:block;width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:3px;padding:8px 10px;line-height:1.5;outline:none;white-space:pre-wrap;word-break:break-word}
+.noteed:empty:before{content:attr(data-ph);color:var(--text3)}
+.noteed ul,.noteed ol{margin:4px 0;padding-left:22px;white-space:normal}
+
 </style>
 </head>
 <body>
@@ -1526,9 +1535,24 @@ function noteCur(){const a=C.notes.tabs;return a.find(x=>x.id===UI.noteTab)||a[0
 function tabNotes(){notesUpgrade();const a=C.notes.tabs,cur=noteCur(),i=a.indexOf(cur);
  return`<div class="ntabs">${a.map(x=>`<button class="${x.id===cur.id?'on':''}" ${on('noteSel',x.id)}>${esc(x.t||'Untitled')}</button>`).join('')}<button ${on('noteAdd')} title="New note tab">+</button></div>
  ${UI.noteMenu?`<div class="nmenu"><button class="btn sm" ${on('noteRename')}>Rename</button><button class="btn sm" ${on('noteMove',-1)} ${i===0?'disabled':''}>Move left</button><button class="btn sm" ${on('noteMove',1)} ${i===a.length-1?'disabled':''}>Move right</button><button class="btn sm" ${on('noteDelete')}>Delete</button></div>`:''}
- <textarea class="notearea" placeholder="Discoveries, open questions, gate addresses, names to remember." oninput="noteInput(this.value)">${esc(cur.b)}</textarea>`}
+ ${noteBar()}<div id="noteed" class="notearea noteed" contenteditable="true" data-ph="Discoveries, open questions, gate addresses, names to remember." oninput="noteInput()" onpaste="notePaste(event)">${noteHtml(cur)}</div>`}
 function noteSel(id){if(noteCur().id===id)UI.noteMenu=!UI.noteMenu;else{UI.noteTab=id;UI.noteMenu=false}renderTabs()}
-function noteInput(v){noteCur().b=v;scheduleSave()}
+const NOTE_COLS=[['#e05555','Red'],['#e8a33d','Orange'],['#5bbd72','Green'],['#4aa3e0','Blue'],['#b07be0','Purple']];
+function noteBar(){const b=(l,cmd,t,st)=>`<button type="button" class="nb" style="${st||''}" title="${t}" onmousedown="event.preventDefault()" onclick="noteCmd('${cmd}')">${l}</button>`;
+ return`<div class="nbar">${b('B','bold','Bold','font-weight:800')}${b('I','italic','Italic','font-style:italic')}${b('U','underline','Underline','text-decoration:underline')}${b('&bull; List','insertUnorderedList','Bullet points')}${b('1. List','insertOrderedList','Numbered list')}<span class="nsep"></span>${NOTE_COLS.map(c=>`<button type="button" class="nb nc" style="background:${c[0]}" title="${c[1]} text" aria-label="${c[1]} text" onmousedown="event.preventDefault()" onclick="noteCmd('foreColor','${c[0]}')"></button>`).join('')}${b('Clear','removeFormat','Clear formatting on the selected text')}</div>`}
+function noteCmd(cmd,val){const el=$('noteed');if(!el)return;el.focus();try{document.execCommand('styleWithCSS',false,false)}catch(e){}document.execCommand(cmd,false,val||null);noteInput()}
+function notePaste(e){e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData('text/plain');document.execCommand('insertText',false,t)}
+function noteInput(){const el=$('noteed'),c=noteCur();if(!el||!c)return;c.h=el.innerHTML;c.b=el.innerText;scheduleSave()}
+// older notes are plain text; new ones are saved as simple HTML. Always cleaned before showing.
+function noteHtml(c){return c.h!==undefined?noteClean(c.h):esc(c.b).replace(/\n/g,'<br>')}
+function noteClean(html){const t=document.createElement('template');t.innerHTML=html;const ok={B:1,STRONG:1,I:1,EM:1,U:1,UL:1,OL:1,LI:1,BR:1,DIV:1,P:1,SPAN:1,FONT:1};
+ const col=v=>/^(#[0-9a-f]{3,8}|rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\))$/i.test(String(v).trim());
+ (function w(n){[...n.childNodes].forEach(c=>{if(c.nodeType===3)return;if(c.nodeType!==1||!ok[c.tagName]){c.remove();return}
+  [...c.attributes].forEach(a=>{if(!((a.name==='color'&&c.tagName==='FONT')||(a.name==='style'&&c.tagName==='SPAN')))c.removeAttribute(a.name)});
+  if(c.hasAttribute('color')&&!col(c.getAttribute('color')))c.removeAttribute('color');
+  if(c.hasAttribute('style')){const m=c.getAttribute('style').match(/(?:^|;)\s*color:\s*([^;]+)/i);if(m&&col(m[1]))c.setAttribute('style','color:'+m[1].trim());else c.removeAttribute('style')}
+  w(c)})})(t.content);return t.innerHTML}
+
 function noteAdd(){const n=prompt('Name for the new tab','');if(n===null)return;const t={id:uid(),t:n.trim()||'Notes',b:''};C.notes.tabs.push(t);UI.noteTab=t.id;UI.noteMenu=false;scheduleSave();renderTabs()}
 function noteRename(){const c=noteCur(),n=prompt('Rename tab',c.t);if(n===null)return;c.t=n.trim()||c.t;UI.noteMenu=false;scheduleSave();renderTabs()}
 function noteMove(d){const a=C.notes.tabs,c=noteCur(),i=a.indexOf(c),j=i+d;if(j<0||j>=a.length)return;a.splice(i,1);a.splice(j,0,c);scheduleSave();renderTabs()}
