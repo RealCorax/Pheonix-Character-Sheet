@@ -469,6 +469,60 @@ body:not(.lighttheme) .abil .modbtn,body:not(.lighttheme) .stat .big,body:not(.l
 .shbtn:hover{color:var(--text)}
 .shbtn.on{color:#ff7a1a}
 .shbtn.on svg{filter:drop-shadow(0 0 8px rgba(255,122,26,.55))}
+/* ===== v24 layout: Weapons / Abilities / Feats ===== */
+:root{--rea:#b794f6}
+.acc2{border:1px solid var(--border);border-radius:14px;background:var(--bg2);margin:0 0 9px;overflow:hidden}
+.ah2{width:100%;display:flex;align-items:center;gap:10px;padding:12px 14px;background:transparent;border:0;color:var(--text);font:inherit;font-weight:600;text-align:left;cursor:pointer}
+.ah2 em{margin-left:auto;font-style:normal;font-weight:500;font-size:12px;color:var(--text2)}
+.ah2:after{content:"";width:7px;height:7px;border-right:2px solid var(--text2);border-bottom:2px solid var(--text2);transform:rotate(45deg);margin:-3px 2px 0 4px}
+.acc2.open .ah2:after{transform:rotate(-135deg);margin-top:4px}
+.ab2{padding:2px 12px 12px;border-top:1px solid var(--bg3)}
+.stdchips{display:flex;flex-wrap:wrap;gap:7px;padding-top:10px}
+.stdchips button{background:var(--bg3);border:1px solid var(--border);border-radius:999px;padding:8px 13px;font-size:13px;color:var(--text);cursor:pointer}
+.stdchips p{width:100%;margin:6px 0 0;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3)}
+.wc{border:1px solid var(--border);border-radius:14px;background:var(--bg2);margin-bottom:10px;overflow:hidden}
+.wh2{display:flex;align-items:center;gap:10px;padding:12px 14px 8px}
+.wn{cursor:pointer;min-width:0;flex:1}.wn b{font-size:16px}.wn small{display:block;font-size:12px;color:var(--text2)}
+.ammo2{display:flex;align-items:center;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:999px;padding:2px;flex:none}
+.ammo2 button{width:30px;height:30px;border-radius:50%;border:0;background:transparent;color:var(--text2);font-size:16px;cursor:pointer}
+.ammo2 span{min-width:42px;text-align:center;font-weight:700;font-size:13px}
+.wm{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--bg3)}
+.wmn{flex:1;min-width:0}.wmn b{font-size:14px;font-weight:600}.wmn small{display:block;font-size:11.5px;color:var(--text2)}
+.roll2{border:1px solid var(--border);background:var(--bg3);border-radius:12px;padding:7px 11px;min-width:66px;text-align:center;font-weight:700;font-size:15px;line-height:1.1;color:var(--text);cursor:pointer}
+.roll2 small{display:block;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);font-weight:600;margin-top:2px}
+.roll2.hit{color:var(--acc2)}
+.wnote{padding:0 14px 10px;font-size:11.5px;color:var(--text3)}
+.tag2{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;margin-left:7px;vertical-align:2px;background:var(--bg3)}
+.tag2.sp{color:var(--amber2);border-color:var(--amber2)}
+.abc{display:flex;gap:12px;align-items:center;background:var(--bg2);border:1px solid var(--border);border-left:4px solid var(--c,var(--border));border-radius:14px;padding:11px 12px 11px 14px;margin-bottom:8px;cursor:pointer}
+.abc.pas{padding:9px 12px 9px 14px}
+.abc.spent{opacity:.55}
+.abt{flex:1;min-width:0}.abn{font-weight:600;font-size:15px;line-height:1.2}.abc.pas .abn{font-weight:500;font-size:14px}
+.abd{font-size:12.5px;color:var(--text2);margin-top:2px}
+.pips2{display:flex;align-items:center;gap:5px;margin-top:8px;font-size:11.5px;color:var(--text2);flex-wrap:wrap}
+.pips2 span{margin-left:5px}
+.aba{display:flex;flex-direction:column;gap:6px;flex:none}
+.sec .tydot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:7px}
+.sec small{font-weight:500;text-transform:none;letter-spacing:0;color:var(--text2);font-size:11.5px;margin-left:6px}
+.eur{border:1px solid var(--amber2);border-radius:16px;background:var(--bg2);padding:13px 14px;margin-bottom:12px}
+.eh{display:flex;align-items:center;gap:10px}.en{flex:1;cursor:pointer}.en b{font-size:16px}.en small{display:block;font-size:12px;color:var(--text2);margin-top:2px}
+.ecount{font-size:30px;font-weight:700;line-height:1;color:var(--amber2)}.ecount span{font-size:14px;color:var(--text2);font-weight:500;margin-left:3px}
+.epips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.epip{width:30px;height:30px;border-radius:50%;border:2px solid var(--amber2);background:transparent;cursor:pointer;padding:0}
+.epip.full{background:var(--amber2)}
+.ebtns{display:flex;gap:8px;flex-wrap:wrap}.ebtns .btn{flex:1;min-width:130px;padding:11px 10px}
+.mpbox{display:flex;align-items:center;gap:14px;border:1px solid var(--grn2);border-radius:16px;padding:13px 15px;margin-bottom:12px;background:var(--bg2)}
+.mpbox b{font-size:32px;line-height:1;color:var(--amber2)}.mpbox span{font-size:12.5px;color:var(--text2);line-height:1.35;flex:1}
+.seg2{display:flex;border:1px solid var(--border);border-radius:999px;padding:4px;margin-bottom:12px;background:var(--bg2)}
+.seg2 button{flex:1;border:0;background:transparent;color:var(--text2);padding:9px 4px;border-radius:999px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.seg2 button.on{background:var(--bg3);color:var(--text);box-shadow:inset 0 0 0 1px var(--border2)}
+.fr2{display:flex;align-items:center;gap:10px;padding:11px 2px;border-top:1px solid var(--bg3)}
+.fr2:first-child{border-top:0}
+.fm{flex:1;min-width:0;cursor:pointer}.fm .n{font-weight:600;font-size:14px}.fm .d{font-size:12px;color:var(--text2);margin-top:1px}
+.cost2{font-weight:700;color:var(--amber2);font-size:12.5px;white-space:nowrap;margin-left:8px}
+.why{font-size:11.5px;margin-top:2px;color:var(--red2)}.why.soon{color:var(--amber2)}.why.chk{color:var(--text2)}
+.fchips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.ebtns .btn{flex:1;white-space:normal;text-align:center}
 </style>
 </head>
 <body>
@@ -1141,7 +1195,7 @@ function newChar(){return{v:2,name:'',race:'',cls:'',level:1,origins:['',''],por
  bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'furling_lumen',borderStyle:'hud',bgImage:'',nightMode:false}}
 
 let C=newChar(), D={};
-const UI={tab:'actions',filter:'all',ffilter:'all',rollMode:'normal',pinned:true,open:true,panel:{k:'log'},log:[],addq:'',addt:'all',featq:'',featf:'',lastInit:null,lastMoxie:null};
+const UI={tab:'weapons',filter:'all',ffilter:'all',rollMode:'normal',pinned:true,open:true,panel:{k:'log'},log:[],addq:'',addt:'all',featq:'',featf:'',lastInit:null,lastMoxie:null};
 function featType(f){if(f.t)return f.t;const b=FEATS.find(x=>x.n===f.name);return b?b.t:'other'}
 try{UI.pinned=localStorage.getItem('sgc-pinned')!=='0'}catch(e){}
 
@@ -1157,7 +1211,7 @@ function normalise(c){const n=newChar();const o=Object.assign(n,c||{});
  o.hp.ds=Object.assign({s:0,f:0},o.hp.ds||{});
  if(!Array.isArray(o.origins))o.origins=['',''];while(o.origins.length<2)o.origins.push('');
  ['inv','conds','feats','customRes','defenses'].forEach(k=>{if(!Array.isArray(o[k]))o[k]=[]});
-  o.inv.forEach(it=>{if(it&&it.n==='Bow'&&it.w&&!it.w.cap){it.w.cap=20;it.w.reload='1 action';if(it.ammo==null)it.ammo=20}});
+ o.inv.forEach(it=>{if(it&&it.n==='Bow'&&it.w&&!it.w.cap){it.w.cap=20;it.w.reload='1 action';if(it.ammo==null)it.ammo=20}});
  o.profs=upgradeProfs((c||{}).profs);
  return o}
 
@@ -1237,8 +1291,9 @@ function derive(){const d={};const lvl=d.lvl=clamp(+C.level||1,1,20);const P=d.p
   d.skills[s.n]={ab,pl,half,v:m[ab]+(pl?P*pl:half),alt:cand.length>1}});
  d.pass={Perception:10+d.skills.Perception.v,Investigation:10+d.skills.Investigation.v,Insight:10+d.skills.Insight.v};
  d.feats=cls?cls.f.filter(f=>f[0]<=lvl):[];
- d.inspDie=C.cls==='diplomat'?(lvl>=5?'1d8':'1d6'):null;
- d.eurekaMax=C.cls==='scientist'?Math.max(0,Math.max(m.int,m.wis)):0;
+ d.inspDie=(C.cls==='diplomat'||advOf('Diplomat'))?(lvl>=5?'1d8':'1d6'):null;
+ d.hasEureka=C.cls==='scientist'||advOf('Scientist');
+ d.eurekaMax=d.hasEureka?Math.max(0,Math.max(m.int,m.wis)):0;
  d.res=computeRes(d);
  // defences (auto + custom)
  const df=[];d.origins.forEach(o=>{if(o.res)df.push(o.res+' ('+o.n+')')});
@@ -1253,17 +1308,20 @@ function derive(){const d={};const lvl=d.lvl=clamp(+C.level||1,1,20);const P=d.p
 
 function computeRes(d){const L=d.lvl,P=d.prof,m=d.m,r=[];
  const add=(key,name,max,reset,src,desc)=>r.push({key,name,max:Math.max(0,max),reset,src,desc});
- const cf=n=>(CLASSES[C.cls]?.f.find(f=>f[1]===n)||[])[3]||'';
- if(C.cls==='diplomat'){add('inspire','Inspire ('+d.inspDie+')',1,'long','Class',cf('Inspire'));if(L>=2)add('peptalk','Pep Talk',1,'mission','Class',cf('Pep Talk'))}
+ const cf=(n,k)=>(CLASSES[k||C.cls]?.f.find(f=>f[1]===n)||[])[3]||'';
+ if(C.cls==='diplomat'||advOf('Diplomat'))add('inspire','Inspire ('+d.inspDie+')',1,'long',C.cls==='diplomat'?'Class':'Feat',cf('Inspire','diplomat'));
+ if(C.cls==='diplomat'&&L>=2)add('peptalk','Pep Talk',1,'mission','Class',cf('Pep Talk'));
  if(C.cls==='scientist'&&L>=2)add('apt','Apt Analogy',1,'short','Class',cf('Apt Analogy'));
  if(C.cls==='scout'&&L>=2)add('traps','Trap Parts',P,'long','Class',cf('Trap Rigging'));
- if(C.cls==='soldier'){add('tflex','Tactical Flexibility',1,'long','Class',cf('Tactical Flexibility'));if(L>=2){add('surge','Surge',1,'short','Class',cf('Surge'));add('rally','Rally',1,'long','Class',cf('Rally'))}}
+ if(C.cls==='soldier'||advOf('Soldier'))add('tflex','Tactical Flexibility',1,'long',C.cls==='soldier'?'Class':'Feat',cf('Tactical Flexibility','soldier'));
+ if(C.cls==='soldier'&&L>=2){add('surge','Surge',1,'short','Class',cf('Surge'));add('rally','Rally',1,'long','Class',cf('Rally'))}
  const rt=n=>(d.race?.tr.find(t=>t[0]===n)||[])[1]||'';
  if(C.race==='aturen_pacifist')add('invis','Invisibility',P,'long','Race',rt('Invisibility'));
  if(C.race==='jaffa')add('symb','Symbiote',Math.max(1,P),'long','Race',rt('Symbiote'));
  if(C.race==='tokra')add('ssymb','Synergistic Symbiote',Math.max(1,m.wis),'long','Race',rt('Synergistic Symbiote'));
  if(C.race==='unas'||C.race==='unas_unchained')add('imres','Impressive Resilience',1,'long','Race',rt('Impressive Resilience'));
  d.origins.forEach(o=>{if(o.use)add('o_'+o.n,o.use.n,o.use.max,o.use.r,'Origin',o.t)});
+ C.feats.forEach(f=>{const u=featUse(f);if(u&&!r.some(x=>x.name===f.name))add('f_'+f.id,f.name,1,u,'Feat',f.desc||'')});
  C.customRes.forEach(x=>add('c_'+x.id,x.name,+x.max||1,x.reset,'Custom',x.desc||''));
  r.forEach(x=>x.used=clamp(+C.res[x.key]||0,0,x.max));return r}
 
@@ -1377,12 +1435,14 @@ function renderCrow(){const conds=[...C.conds];const cc=conds.map(c=>`<span clas
   <div ${on('openPanel','conditions')}><div class="lbl">Conditions</div><div class="val">${cc||'Add active conditions'}</div></div></div></div>`}
 
 // ---------- TABS ----------
-const TABS=[['actions','Actions'],['abilities','Abilities'],['inventory','Inventory'],['features','Features & Traits'],['background','Background'],['notes','Notes'],['extras','Extras']];
+const TABS=[['weapons','Weapons'],['abilities','Abilities'],['inventory','Inventory'],['feats','Feats'],['background','Background'],['notes','Notes'],['extras','Extras']];
 function setTab(t){UI.tab=t;UI.filter='all';renderTabs()}
 function renderTabs(){$('tabnav').innerHTML=TABS.map(([k,l])=>`<button class="${UI.tab===k?'on':''}" ${on('setTab',k)}>${esc(l)}</button>`).join('');
- const f={actions:tabActions,abilities:tabAbilities,inventory:tabInventory,features:tabFeatures,background:tabBackground,notes:tabNotes,extras:tabExtras}[UI.tab];$('tabbody').innerHTML=f()}
+ const f={weapons:tabWeapons,abilities:tabAbilities,inventory:tabInventory,feats:tabFeats,background:tabBackground,notes:tabNotes,extras:tabExtras}[UI.tab];$('tabbody').innerHTML=f()}
 function filters(list,cur,fn){return`<div class="filters">${list.map(([k,l])=>`<button class="${cur===k?'on':''}" ${on(fn,k)}>${l}</button>`).join('')}</div>`}
 function setFilter(k){UI.filter=k;renderTabs()}
+
+// weapon maths
 // ---------- Free level feats: Attack Specialist (5), Veteran (11), Ace (17) ----------
 function atkMult(pc){if(!C.atkGrp||C.atkGrp!==pc)return 1;return D.lvl>=17?4:D.lvl>=11?3:D.lvl>=5?2:1}
 const ATK_FREE=[[5,'Attack Specialist','twice'],[11,'Attack Veteran','three times'],[17,'Attack Ace','four times']];
@@ -1392,7 +1452,6 @@ function atkFeatsHtml(){if(D.lvl<5)return'';
  ATK_FREE.forEach(([lv,n,w])=>{if(D.lvl>=lv)h+=`<div class="feat"><div class="fn">${n}${gl?': '+gl:''}</div><div class="fs">Level ${lv} bonus feat \u2022 free</div><div class="fd">${gl?`You roll ${w} as many weapon damage dice with ${gl}. Static modifiers and bonus dice from other sources are not multiplied.`:'Choose a weapon proficiency above.'}</div></div>`});
  return h}
 function setAtkGrp(v){C.atkGrp=v;commit()}
-// weapon maths
 function modeStats(it,mi){const md=it.w.modes[mi];const[mn,kind,dmg,dt,rng,fin]=md;const m=D.m;
  let ab=kind==='melee'?'str':'dex';if(fin||/throw/i.test(mn)||(C.origins.includes("Student of Bra'tac")&&/ma'tok/i.test(it.n)))ab=m.str>=m.dex?'str':'dex';
  const prof=it.prof==='auto'?weaponProf(it.w.pc):it.prof==='yes';const fac=C.facility||{},fr=+fac.rating||0;
@@ -1407,29 +1466,28 @@ function unarmed(){const ma=C.profs.weapons.martial;let die=ma?(C.cls==='soldier
  const rows=[{n:ma?'Martial Arts':'Unarmed Strike',sub:'Melee • Bludgeoning',hit:s+D.prof,dmg:ma?die+(s?(s>0?'+':'')+s:''):String(Math.max(0,1+s)),rng:'1m'}];
  if(C.race==='unas'||C.race==='unas_unchained')rows.push({n:'Claws',sub:'Melee • Natural weapon',hit:s+D.prof,dmg:'1d6'+(s?(s>0?'+':'')+s:''),rng:'1m'});return rows}
 
-function tabActions(){const F=UI.filter;let h=filters([['all','All'],['attack','Attack'],['action','Action'],['bonus','Bonus action'],['reaction','Reaction'],['limited','Limited use']],F,'setFilter');
- const show=k=>F==='all'||F===k;
- if(show('attack')){const eqw=C.inv.filter(i=>i.w&&i.eq);
-  h+=`<div class="sec"><span>Attacks</span><button class="btn sm" ${on('setTab','inventory')}>Manage weapons</button></div><div class="tblwrap"><table class="tbl"><thead><tr><th>Attack</th><th>Range</th><th>Hit</th><th>Damage</th><th class="hidem">Notes</th></tr></thead><tbody>`;
-  eqw.forEach(it=>it.w.modes.forEach((md,mi)=>{const s=modeStats(it,mi);
-   h+=`<tr class="clkrow" ${on('openPanel','item',it.id)}><td><b>${esc(it.n)}</b><div class="sub2">${esc(md[0])} • ${s.kind==='melee'?'Melee':'Ranged'}${s.prof?'':' • not proficient'}</div></td>
-    <td class="mono" style="font-size:12px">${esc(s.rng||'1m')}</td>
-    <td><button class="rbtn" ${onS('rollAttack',it.id,mi)}>${sgn(s.hit)}</button></td>
-    <td>${s.dmgExpr==='0'?'<span class="muted">Special</span>':`<button class="rbtn" ${onS('rollWeaponDmg',it.id,mi,false)}>${esc(s.dmgExpr)}</button>`}<div class="sub2">${esc(s.dt)}</div></td>
-    <td class="hidem" style="font-size:12px;color:var(--text2);max-width:220px">${it.w.cap?`<span class="mono" style="white-space:nowrap">Ammo <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,-1)}>−</button> ${it.ammo??it.w.cap}/${it.w.cap} <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,0)} title="Reload">↻</button></span><br>`:''}${esc(short(it.w.sp))}</td></tr>`}));
-  unarmed().forEach(u=>{h+=`<tr class="clkrow" ${on('openPanel','action','Unarmed')}><td><b>${u.n}</b><div class="sub2">${u.sub}</div></td><td class="mono" style="font-size:12px">${u.rng}</td>
-   <td><button class="rbtn" ${onS('rollUnarmedHit',u.n,u.hit)}>${sgn(u.hit)}</button></td><td><button class="rbtn" ${onS('rollUnarmedDmg',u.n,u.dmg)}>${esc(u.dmg)}</button></td><td class="muted hidem" style="font-size:12px">Always proficient</td></tr>`});
-  h+=`</tbody></table></div>`;if(!eqw.length)h+=`<div class="empty">No weapons equipped. Tick the box beside a weapon in Inventory to show it here.</div>`}
- const byType=t=>D.feats.filter(f=>f[2]===t),purchByType=t=>C.feats.filter(f=>featType(f)===t);
- if(show('action')){h+=`<div class="sec">Actions in combat</div><div class="plist">${ACTIONS.filter(a=>a.g==='action').map(a=>`<a ${on('openPanel','action',a.n)}>${a.n}</a>`).join(', ')}</div>
-  <div class="sec">Combat contests</div><div class="plist">${ACTIONS.filter(a=>a.g==='contest').map(a=>`<a ${on('openPanel','action',a.n)}>${a.n}</a>`).join(', ')}</div>`;
-  const fa=byType('action'),pa=purchByType('action');if(fa.length||pa.length)h+=`<div class="sec">Class actions</div>`+fa.map(featRow).join('')+pa.map(purchFeatRow).join('');
-  if(C.race==='aturen_pacifist')h+=traitRow('Invisibility')}
- if(show('bonus')){const fb=byType('bonus'),pb=purchByType('bonus');h+=`<div class="sec">Bonus actions</div>`+(fb.length||pb.length?fb.map(featRow).join('')+pb.map(purchFeatRow).join(''):`<div class="empty">No bonus actions from your class or feats at this level.</div>`)}
- if(show('reaction')){const fr=byType('reaction'),pr=purchByType('reaction');h+=`<div class="sec">Reactions</div><div class="plist"><a ${on('openPanel','action','Opportunity Attack')}>Opportunity Attack</a></div>`+fr.map(featRow).join('')+pr.map(purchFeatRow).join('');
-  if(C.race==='unas'||C.race==='unas_unchained')h+=traitRow('Impressive Resilience');if(C.origins.includes('Terraformed'))h+=`<div class="feat" ${on('openPanel','origin','Terraformed')}><div class="fn">Strange World</div><div class="fs">Origin • Reaction</div><div class="fd">${esc(ORIGINS.Terraformed.t)}</div></div>`}
- if(show('limited')){h+=`<div class="sec">Limited use</div>`+(D.res.length?D.res.map(resRow).join(''):`<div class="empty">No limited-use abilities.</div>`)}
+// ================= WEAPONS tab (was Actions) =================
+function accOpen(k,def){return UI.acc&&UI.acc[k]!==undefined?UI.acc[k]:!!def}
+function accTog(k,def){UI.acc=UI.acc||{};UI.acc[k]=!accOpen(k,def);renderTabs()}
+function accHtml(k,title,meta,body,def){const o=accOpen(k,def);return`<div class="acc2 ${o?'open':''}"><button class="ah2" ${on('accTog',k,!!def)}><span>${title}</span><em>${meta||''}</em></button>${o?`<div class="ab2">${body}</div>`:''}</div>`}
+function oneLine(t,n){n=n||110;t=String(t||'').replace(/\s+/g,' ').trim();const m=t.match(/^.*?[.!?](?=\s|$)/);const s=m?m[0]:t;return s.length>n?s.slice(0,n-1).trim()+'…':s}
+function atkTag(it){const m=atkMult(it.w.pc);return m>1?`<span class="tag2 sp">${{2:'Attack Specialist x2',3:'Attack Veteran x3',4:'Attack Ace x4'}[m]}</span>`:''}
+function weaponCard(it){const bw=it.w.pc==='bows';
+ const ammoH=it.w.cap?`<div class="ammo2"><button ${onS('ammo',it.id,-1)} aria-label="Use one round">−</button><span>${it.ammo??it.w.cap}${bw?'':'/'+it.w.cap}</span><button ${onS('ammo',it.id,1)} aria-label="Add one round">+</button><button ${onS('ammo',it.id,0)} title="Reload" aria-label="Reload">↻</button></div>`:'';
+ let h=`<div class="wc"><div class="wh2"><div class="wn" ${on('openPanel','item',it.id)}><b>${esc(it.n)}</b>${atkTag(it)}<small>${esc(it.t==='weapon'?'Tap for weapon details':'')}</small></div>${ammoH}</div>`;
+ it.w.modes.forEach((md,mi)=>{const s=modeStats(it,mi);
+  h+=`<div class="wm"><div class="wmn"><b>${esc(md[0])}</b><small>${s.kind==='melee'?'Melee':'Ranged'} • ${esc(s.rng||'1m')}${s.prof?'':' • not proficient'}</small></div><button class="roll2 hit" ${onS('rollAttack',it.id,mi)}>${sgn(s.hit)}<small>To hit</small></button>${s.dmgExpr==='0'?'<span class="muted">Special</span>':`<button class="roll2" ${onS('rollWeaponDmg',it.id,mi,false)}>${esc(s.dmgExpr)}<small>${esc(s.dt)}</small></button>`}</div>`});
+ if(it.w.sp)h+=`<div class="wnote">${esc(short(it.w.sp))}</div>`;
+ return h+'</div>'}
+function tabWeapons(){const eqw=C.inv.filter(i=>i.w&&i.eq);
+ let h=`<div class="sec"><span>Attacks</span><button class="btn sm" ${on('setTab','inventory')}>Manage weapons</button></div>`;
+ eqw.forEach(it=>{h+=weaponCard(it)});
+ unarmed().forEach(u=>{h+=`<div class="wc"><div class="wh2"><div class="wn" ${on('openPanel','action','Unarmed')}><b>${esc(u.n)}</b><small>${esc(u.sub)}</small></div></div><div class="wm"><div class="wmn"><b>Strike</b><small>${esc(u.rng)} • always proficient</small></div><button class="roll2 hit" ${onS('rollUnarmedHit',u.n,u.hit)}>${sgn(u.hit)}<small>To hit</small></button><button class="roll2" ${onS('rollUnarmedDmg',u.n,u.dmg)}>${esc(u.dmg)}<small>Damage</small></button></div></div>`});
+ if(!eqw.length)h+=`<div class="empty">No weapons equipped. Tick the box beside a weapon in Inventory to show it here.</div>`;
+ const chips=g=>ACTIONS.filter(a=>a.g===g).map(a=>`<button ${on('openPanel','action',a.n)}>${esc(a.n)}</button>`).join('');
+ h+=accHtml('std','Standard actions','Dash, Dodge, Help...',`<div class="stdchips">${chips('action')}<p>Combat contests</p>${chips('contest')}<p>Reaction</p>${chips('reaction')}</div>`,false);
  return h}
+
 function short(t){t=String(t||'').split(/[.(]/)[0].trim();return t.length>48?t.slice(0,46)+'...':t}
 function featRow(f){const i=D.cls.f.indexOf(f);return`<div class="feat" ${on('openPanel','feature',i)}><div class="fn">${esc(f[1])}</div><div class="fs">${D.cls.n} ${f[0]} • ${{action:'Action',bonus:'Bonus action',reaction:'Reaction',other:'Feature'}[f[2]]}</div><div class="fd">${esc(f[3])}</div></div>`}
 function purchFeatRow(f){return`<div class="feat" ${on('openPanel','feat',f.id)}><div class="fn">${esc(f.name)}</div><div class="fs">Feat • ${esc(f.cat)}</div><div class="fd">${esc(f.desc||'')}</div></div>`}
@@ -1438,15 +1496,60 @@ const RESET_L={short:'Short rest',long:'Long rest',mission:'Per mission',none:'M
 function resRow(r){return`<div class="res"><div class="rn" ${on('openPanel','res',r.key)}><b>${esc(r.name)}</b><small>${r.src} • ${RESET_L[r.reset]} • ${r.max-r.used} of ${r.max} left</small></div>
  <div class="boxes">${[...Array(r.max)].map((_,i)=>`<button class="ubox ${i<r.used?'used':''}" ${on('toggleUse',r.key,i)} aria-label="Use ${esc(r.name)}"></button>`).join('')}</div></div>`}
 
-function tabAbilities(){let h='';
- if(C.cls==='scientist')h+=`<div class="sec">Eureka points</div><div class="res"><div class="rn" ${on('openPanel','feature',0)}><b>Eureka</b><small>Gain one when you fail an INT or WIS check. Spend for advantage. Max ${D.eurekaMax}.</small></div>
-  <div class="ctr"><button ${on('adjEureka',-1)}>−</button><span class="mono" style="font-size:20px;min-width:52px;text-align:center">${Math.min(C.eureka,D.eurekaMax)}/${D.eurekaMax}</span><button ${on('adjEureka',1)}>+</button></div></div>`;
- if(C.cls==='diplomat')h+=`<div class="sec">Inspire die</div><div class="res"><div class="rn"><b>Inspire die: ${D.inspDie}</b><small>Temporary HP granted by Inspire and Word In An Ear</small></div><button class="rbtn" ${on('rollPlain','Inspire die',D.inspDie)}>Roll ${D.inspDie}</button></div>`;
- h+=`<div class="sec"><span>Limited-use abilities</span><span style="display:flex;gap:6px"><button class="btn sm" ${on('openPanel','addres')}>Add tracker</button><button class="btn sm" ${on('openPanel','newmission')}>New mission</button></span></div>`;
- h+=D.res.length?D.res.map(resRow).join(''):`<div class="empty">No limited-use abilities yet. Choose a class and race in Manage, or add your own tracker.</div>`;
- if(D.cls){const sf=C.feats.filter(f=>f.cat===D.cls.feat);h+=`<div class="sec"><span>${D.cls.feat} feats</span><button class="btn sm" ${on('openPanel','addfeat',D.cls.feat)}>Add ${D.cls.feat}</button></div>`;
-  h+=sf.length?sf.map(featItem).join(''):`<div class="empty">Your class chooses ${D.cls.feat} feats as it levels. Add the ones you've picked here.</div>`}
+// ================= ABILITIES tab: class + race + origin + usable feats =================
+const TYPE_L={action:'Main action',bonus:'Bonus action',reaction:'Reaction',pass:'Always on'};
+const TYPE_C={action:'var(--amber2)',bonus:'var(--acc2)',reaction:'var(--rea)',pass:'var(--text3)'};
+const RESKEY_CLASS={'Inspire':'inspire','Pep Talk':'peptalk','Apt Analogy':'apt','Trap Rigging':'traps','Tactical Flexibility':'tflex','Surge':'surge','Rally':'rally'};
+const RESKEY_RACE={'Invisibility':'invis','Symbiote':'symb','Synergistic Symbiote':'ssymb','Impressive Resilience':'imres'};
+const ADV_ABIL={Diplomat:'Inspire',Engineer:'Jury Rig',Medic:'First Aid',Scientist:'Eureka',Scout:'Survivalist',Soldier:'Tactical Flexibility'};
+function advOf(k){return C.feats.some(f=>f.name==='Advanced Training: '+k)}
+function typeFromText(t){t=String(t||'');return /as an action/i.test(t)?'action':/bonus action/i.test(t)?'bonus':/(use your reaction|as a reaction)/i.test(t)?'reaction':'pass'}
+// feats that say "once per short/long rest/mission" get a use counter automatically
+function featUse(f){const m=String(f.desc||'').match(/once per (short rest|long rest|mission|day|infiltration encounter|diplomatic function)/i);if(!m)return null;const k=m[1].toLowerCase();return k==='short rest'?'short':(k==='long rest'||k==='day')?'long':'mission'}
+function abilityList(){const L=[],seen={};
+ const add=e=>{const k=e.n.toLowerCase();if(e.src==='Feat'&&seen[k])return;seen[k]=1;L.push(e)};
+ if(D.cls)D.cls.f.forEach((f,i)=>{if(f[1]==='Ability Score Improvement')return;if(f[1]==='Eureka'&&D.hasEureka)return;
+  add({id:'c'+i,n:f[1],src:'Class',type:f[2]==='other'?'pass':f[2],d:f[3],lvl:f[0],rk:RESKEY_CLASS[f[1]],locked:f[0]>D.lvl,die:/^(Inspire|Word In An Ear)$/.test(f[1])&&D.inspDie})});
+ Object.entries(ADV_ABIL).forEach(([k,ab])=>{if(!advOf(k)||C.cls===k.toLowerCase()||ab==='Eureka')return;const f=CLASSES[k.toLowerCase()].f.find(x=>x[1]===ab);if(!f)return;
+  add({id:'g'+k,n:ab,src:'Feat',type:f[2]==='other'?'pass':f[2],d:f[3],rk:RESKEY_CLASS[ab],die:ab==='Inspire'&&D.inspDie})});
+ if(D.race)D.race.tr.forEach((t,i)=>{if(t[0]==='Claws')return;add({id:'r'+i,n:t[0],src:'Race',type:typeFromText(t[1]),d:t[1],rk:RESKEY_RACE[t[0]]})});
+ D.origins.forEach(o=>add({id:'o'+o.n,n:o.ab,src:'Origin',type:typeFromText(o.t),d:o.t,rk:o.use?'o_'+o.n:undefined}));
+ C.feats.forEach(f=>{const ty=featType(f),u=featUse(f);if(ty==='other'&&!u)return;add({id:'f'+f.id,n:f.name,src:'Feat',type:ty==='other'?'pass':ty,d:f.desc||'',rk:u?'f_'+f.id:undefined,fid:f.id})});
+ D.res.forEach(r=>{if(r.key.startsWith('c_')||L.some(e=>e.rk===r.key))return;add({id:'x'+r.key,n:r.name,src:r.src,type:'pass',d:r.desc||'',rk:r.key})});
+ if(D.hasEureka){const sf=CLASSES.scientist.f.find(x=>x[1]==='Eureka');L.push({id:'eureka',n:'Eureka',src:C.cls==='scientist'?'Class':'Feat',type:'pass',d:sf?sf[3]:'',hidden:true})}
+ return L}
+function eurekaCard(){if(!D.hasEureka)return'';const mx=D.eurekaMax,cur=Math.min(C.eureka||0,mx);
+ const pips=mx?[...Array(mx)].map((_,i)=>`<button class="epip ${i<cur?'full':''}" ${onS('setEureka',i+1)} aria-label="Set Eureka to ${i+1}"></button>`).join(''):`<span class="muted">Your INT and WIS modifiers are 0 or less, so you can't hold Eureka points yet.</span>`;
+ return`<div class="eur"><div class="eh"><div class="en" ${on('openPanel','abil','eureka')}><b>Eureka</b><span class="tag2">${C.cls==='scientist'?'Class':'Feat'}</span><small>Spend 1 for advantage on an INT or WIS check. Tap a circle to set your total.</small></div><div class="ecount">${cur}<span>/ ${mx}</span></div></div>
+ <div class="epips">${pips}</div>
+ <div class="ebtns"><button class="btn" ${onS('adjEureka',-1)} ${cur>0?'':'disabled'}>Spent 1</button><button class="btn pri" ${onS('adjEureka',1)} ${cur<mx?'':'disabled'}>+1 Failed check</button></div></div>`}
+function setEureka(n){const cur=Math.min(C.eureka||0,D.eurekaMax);C.eureka=clamp(cur===n?n-1:n,0,D.eurekaMax);commit()}
+function abilityCard(e){const r=e.rk&&D.res.find(x=>x.key===e.rk),left=r?r.max-r.used:0,spent=!!r&&left<=0;
+ const pips=r?`<div class="pips2">${[...Array(r.max)].map((_,i)=>`<button class="ubox ${i<r.used?'used':''}" ${onS('toggleUse',r.key,i)} aria-label="Use ${esc(e.n)}"></button>`).join('')}<span>${left} of ${r.max} left • ${RESET_L[r.reset]}</span></div>`:'';
+ const acts=[];
+ if(e.die)acts.push(`<button class="btn sm" ${onS('rollPlain',e.n==='Inspire'?'Inspire die':'Inspire die (Word In An Ear)',D.inspDie)}>Roll ${D.inspDie}</button>`);
+ if(r)acts.push(`<button class="btn sm ${spent?'':'pri'}" ${onS('useRes',r.key,spent?-1:1)}>${spent?'Undo':'Use'}</button>`);
+ return`<div class="abc ${e.type==='pass'?'pas':''} ${spent?'spent':''}" style="--c:${TYPE_C[e.type]}" ${on('openPanel','abil',e.id)}><div class="abt"><div class="abn">${esc(e.n)}<span class="tag2">${esc(e.src)}</span></div><div class="abd">${esc(oneLine(e.d))}</div>${pips}</div>${acts.length?`<div class="aba">${acts.join('')}</div>`:''}</div>`}
+function tabAbilities(){
+ if(!D.cls&&!D.race&&!D.origins.length&&!C.feats.length)return`<div class="empty">Choose a class and race in Manage and your abilities will show up here.</div>`;
+ const list=abilityList().filter(e=>!e.hidden);
+ let h=`<div class="sec"><span>Abilities</span><span style="display:flex;gap:6px"><button class="btn sm" ${on('openPanel','addres')}>Add tracker</button><button class="btn sm" ${on('openPanel','newmission')}>New mission</button></span></div>`;
+ h+=eurekaCard();
+ ['action','bonus','reaction','pass'].forEach(t=>{const g=list.filter(e=>e.type===t&&!e.locked);if(!g.length)return;
+  h+=`<div class="sec"><span><i class="tydot" style="background:${TYPE_C[t]}"></i>${TYPE_L[t]}${t==='pass'?'<small>nothing to press, or triggered</small>':''}</span></div>`+g.map(abilityCard).join('')});
+ const cu=D.res.filter(r=>r.src==='Custom');if(cu.length)h+=`<div class="sec"><span>Your trackers</span></div>`+cu.map(resRow).join('');
+ const lk=list.filter(e=>e.locked);
+ if(lk.length)h+=accHtml('abLocked','Unlocks at higher levels',lk.length,lk.map(e=>`<div class="fr2"><div class="fm" ${on('openPanel','abil',e.id)}><div class="n">${esc(e.n)}</div><div class="d">Level ${e.lvl} • ${TYPE_L[e.type]}</div></div></div>`).join(''),false);
  return h}
+function regAbil(){PANEL_T.abil='Ability';
+PANELS.abil=function(id){const e=abilityList().find(x=>x.id===id);if(!e)return'';const r=e.rk&&D.res.find(x=>x.key===e.rk);
+ let h=`<h2>${esc(e.n)}</h2><p class="rule">${esc(e.src)} • ${TYPE_L[e.type]}${e.lvl?' • level '+e.lvl:''}${r?' • '+RESET_L[r.reset]+' • '+(r.max-r.used)+' of '+r.max+' left':''}</p><p>${esc(e.d)}</p>`;
+ const b=[];if(r){b.push(btn('Use one','useRes',[r.key,1],'btn pri'));b.push(btn('Restore one','useRes',[r.key,-1]))}
+ if(e.die)b.push(btn('Roll '+D.inspDie,'rollPlain',[e.n==='Inspire'?'Inspire die':'Inspire die (Word In An Ear)',D.inspDie]));
+ if(e.fid)b.push(btn('Feat settings','openPanel',['feat',e.fid]));
+ if(e.id==='eureka'){b.push(btn('Spent 1','adjEureka',[-1]));b.push(btn('+1 Failed a check','adjEureka',[1],'btn pri'))}
+ return h+(b.length?`<div class="panel-actions">${b.join('')}</div>`:'')};}
+
 function featItem(f){return`<div class="feat" ${on('openPanel','feat',f.id)}><div class="fn">${esc(f.name)}</div><div class="fs">${esc(f.cat)}${+f.mp?' • '+f.mp+' MP':''}</div><div class="fd">${esc(f.desc||'')}</div></div>`}
 
 function tabInventory(){const cap=D.loadCap,b=D.bulk,pct=cap?Math.min(100,b/cap*100):b?100:0;
@@ -1464,14 +1567,60 @@ function tabInventory(){const cap=D.loadCap,b=D.bulk,pct=cap?Math.min(100,b/cap*
  h+=`<div class="kitl" style="margin-top:8px">${extra.map(k=>`<label><input type="checkbox" ${C.kit[k]!==false?'checked':''} ${on('toggleKit',k)}> ${esc(k)}</label>`).join('')}</div>`;
  return h}
 
-function tabFeatures(){const F=UI.filter;let h=filters([['all','All'],['class','Class'],['race','Race'],['origins','Origins'],['feats','Feats']],F,'setFilter');const show=k=>F==='all'||F===k;
- if(show('class')){h+=`<div class="sec">${D.cls?D.cls.n+' features':'Class features'}</div>`;h+=D.cls?D.cls.f.map((f,i)=>`<div class="feat" ${on('openPanel','feature',i)} style="${f[0]>D.lvl?'opacity:.45':''}"><div class="fn">${esc(f[1])}</div><div class="fs">Level ${f[0]}${f[0]>D.lvl?' • not yet':''}</div><div class="fd">${esc(f[3])}</div></div>`).join(''):`<div class="empty">Choose a class in Manage.</div>`}
- if(show('race')){h+=`<div class="sec">${D.race?esc(D.race.n)+' traits':'Racial traits'}</div>`;h+=D.race?`<div class="kv"><span>Hit point bonus</span><b>+${D.race.hp}</b></div><div class="kv"><span>Ability score increase</span><b>${esc(D.race.asi)}</b></div><div class="kv"><span>Proficiencies</span><b>${esc(D.race.prof)}</b></div>`+D.race.tr.map((t,i)=>`<div class="feat" ${on('openPanel','trait',i)}><div class="fn">${esc(t[0])}</div><div class="fd">${esc(t[1])}</div></div>`).join(''):`<div class="empty">Choose a race in Manage.</div>`}
- if(show('origins')){h+=`<div class="sec"><span>Origins</span><button class="btn sm" ${on('openPanel','manage')}>Change</button></div>`;h+=D.origins.length?D.origins.map(o=>`<div class="feat" ${on('openPanel','origin',o.n)}><div class="fn">${esc(o.n)}: ${esc(o.ab)}</div><div class="fs">${o.c} origin • ${esc(o.a)}</div><div class="fd">${esc(o.t)}</div></div>`).join(''):`<div class="empty">Choose two origins from different categories (Biome, Background, Racial) in Manage.</div>`}
- if(show('feats')){h+=`<div class="sec"><span>Feats</span><button class="btn sm" ${on('openPanel','addfeat','General')}>Add feat</button></div>`;h+=atkFeatsHtml()+(C.feats.length?C.feats.map(featItem).join(''):(D.lvl>=5?'':`<div class="empty">No feats recorded yet.</div>`))}
+// ================= FEATS tab (was Features & Traits) =================
+const AB_K={strength:'str',dexterity:'dex',constitution:'con',intelligence:'int',wisdom:'wis',charisma:'cha'};
+function hasAbil(n){if(D.cls&&D.cls.f.some(f=>f[1]===n&&f[0]<=D.lvl))return true;if(C.feats.some(f=>f.name===n))return true;return Object.entries(ADV_ABIL).some(([k,a])=>a===n&&advOf(k))}
+// returns true (met), false (definitely not met) or null (can't tell, player should check)
+function reqPart(p){let m;p=String(p).trim();
+ if(/^none$/i.test(p))return true;
+ if(m=p.match(/^level\s+(\d+)$/i))return D.lvl>=+m[1];
+ if(m=p.match(/^((?:strength|dexterity|constitution|intelligence|wisdom|charisma)(?:\s+or\s+(?:strength|dexterity|constitution|intelligence|wisdom|charisma))*)\s+(\d+)\+?$/i))return m[1].toLowerCase().split(/\s+or\s+/).some(a=>(+C.scores[AB_K[a]]||0)>=+m[2]);
+ const sk=p.split(/\s+or\s+/);
+ if(sk.every(x=>SKILLS.some(y=>y.n.toLowerCase()===x.toLowerCase())))return sk.some(x=>{const y=SKILLS.find(z=>z.n.toLowerCase()===x.toLowerCase());return !!(+C.skillProf[y.n]||0)});
+ if(m=p.match(/^(.+?)\s+ability$/i))return hasAbil(m[1].trim());
+ if(m=p.match(/^Attack (Specialist|Veteran|Ace)\b(.*)$/i)){const need={specialist:5,veteran:11,ace:17}[m[1].toLowerCase()];if(D.lvl<need)return false;const tail=m[2].trim();if(!C.atkGrp)return null;if(!tail||/chosen/i.test(tail))return true;
+  const keys=Object.entries(WEAPON_GROUPS).filter(([k,l])=>new RegExp(l.replace(/ weapons$/i,''),'i').test(tail)).map(([k])=>k);return keys.length?keys.includes(C.atkGrp):null}
+ if(m=p.match(/^(.+?)\s+proficiency$/i)){const n=m[1].trim().toLowerCase();const g=Object.entries(WEAPON_GROUPS).find(([k,l])=>l.toLowerCase().replace(/ weapons$/,'')===n);
+  if(g)return !!C.profs.weapons[g[0]];if(n==='light armor')return !!C.profs.armorLight;if(n==='med kit')return C.profs.tools.includes('Med Kit');return null}
+ if(FEATS.some(f=>f.n.toLowerCase()===p.toLowerCase())||hasAbil(p))return hasAbil(p);
+ return null}
+function featStatus(f){const req=String(f.req||'').replace(/\([^)]*\)/g,'');let unk=false;
+ for(const p of req.split(/,| and /).map(x=>x.trim()).filter(Boolean)){const r=reqPart(p);if(r===false)return{ok:false,why:'Needs '+p};if(r===null)unk=true}
+ return{ok:unk?null:true}}
+function featRepeat(f){return /(multiple times|up to (?:two|three|\d) times|choose up to \d times)/i.test((f.d||'')+' '+(f.req||''))}
+function setFeatSeg(k){UI.fseg=k;renderTabs()}
+function toggleAfford(){UI.fall=!UI.fall;renderTabs()}
+function buyFeat(name){const f=FEATS.find(x=>x.n===name);if(!f)return;const E=+C.mp.earned||0;
+ if(E<20)return toast('You can buy feats with MP once you reach level 5 (20 MP earned).');
+ if(f.mp>D.mpAvail)return toast('Not enough MP for '+f.n+'.');learnFeat(name)}
+function tabFeats(){
+ const E=+C.mp.earned||0,canBuy=E>=20,avail=Math.max(0,D.mpAvail),seg=UI.fseg||'mine';
+ const cats=[...FEAT_CATS];const classCat=D.cls?D.cls.feat:'';
+ const pool=FEATS.map(f=>({f,st:featStatus(f),own:C.feats.filter(x=>x.name===f.n).length})).filter(x=>!x.own||featRepeat(x.f));
+ const ok=pool.filter(x=>x.st.ok!==false),lock=pool.filter(x=>x.st.ok===false);
+ const onlyAfford=UI.fall!==false&&canBuy;
+ const shown=onlyAfford?ok.filter(x=>x.f.mp<=avail):ok;
+ let h=`<div class="mpbox"><b>${canBuy?avail:'–'}</b><span>${canBuy?'MP to spend on feats':'You can spend MP on feats once you reach level 5 (20 MP earned).'}<br>Level ${D.mpLevel}${canBuy?'':' • '+E+' of 20 MP earned'}</span><button class="btn sm" ${on('openPanel','addfeat',classCat||'General')}>Search / custom</button></div>
+ <div class="seg2"><button class="${seg==='mine'?'on':''}" ${on('setFeatSeg','mine')}>Mine (${C.feats.length}${D.lvl>=5?'+3':''})</button><button class="${seg==='avail'?'on':''}" ${on('setFeatSeg','avail')}>Available (${ok.length})</button><button class="${seg==='lock'?'on':''}" ${on('setFeatSeg','lock')}>Locked (${lock.length})</button></div>`;
+ if(seg==='mine'){
+  h+=atkFeatsHtml();
+  if(!C.feats.length)h+=`<div class="empty">${D.lvl>=5?'No bought feats yet. Check the Available list to see what you can learn.':'No feats yet. Your class picks some at levels 1 and 4: use Search / custom to add them.'}</div>`;
+  const open=C.feats.length<=10;
+  cats.forEach(c=>{const v=C.feats.filter(f=>f.cat===c);if(!v.length)return;
+   h+=accHtml('fm-'+c,esc(c),v.length,v.map(f=>`<div class="fr2"><div class="fm" ${on('openPanel','feat',f.id)}><div class="n">${esc(f.name)}</div><div class="d">${esc(oneLine(f.desc,90))}</div></div><span class="cost2">${+f.mp?f.mp+' MP':'Free'}</span></div>`).join(''),open)});
+  const other=C.feats.filter(f=>!cats.includes(f.cat));
+  if(other.length)h+=accHtml('fm-other','Other',other.length,other.map(f=>`<div class="fr2"><div class="fm" ${on('openPanel','feat',f.id)}><div class="n">${esc(f.name)}</div><div class="d">${esc(oneLine(f.desc,90))}</div></div></div>`).join(''),true)}
+ if(seg==='avail'){
+  if(canBuy)h+=`<div class="fchips"><div class="filters" style="margin:0"><button class="${onlyAfford?'on':''}" ${on('toggleAfford')}>Only what I can afford now</button></div></div>`;
+  if(!shown.length)h+=`<div class="empty">${canBuy?'Nothing you can afford right now. Earn more MP, or untick the filter to see everything you qualify for.':'Nothing to show.'}</div>`;
+  cats.forEach(c=>{const v=shown.filter(x=>x.f.cat===c).sort((a,b)=>a.f.mp-b.f.mp||a.f.n.localeCompare(b.f.n));if(!v.length)return;
+   h+=accHtml('fa-'+c,esc(c)+(c===classCat?' ★':''),v.length,v.map(({f,st,own})=>{const need=f.mp-avail,dis=!canBuy||need>0;
+    return`<div class="fr2"><div class="fm" ${on('openPanel','featinfo',f.n)}><div class="n">${esc(f.n)}<span class="cost2">${f.mp} MP</span>${own?`<span class="tag2">Have x${own}</span>`:''}</div><div class="d">${esc(oneLine(f.d,90))}</div>${st.ok===null?`<div class="why chk">Check requirement: ${esc(f.req)}</div>`:''}${canBuy&&need>0?`<div class="why soon">${need} more MP</div>`:''}</div><button class="btn sm ${dis?'':'pri'}" ${dis?'disabled':''} ${onS('buyFeat',f.n)}>Buy</button></div>`}).join(''),c===classCat)})}
+ if(seg==='lock'){
+  if(!lock.length)h+=`<div class="empty">Nothing locked.</div>`;
+  lock.sort((a,b)=>a.f.mp-b.f.mp||a.f.n.localeCompare(b.f.n)).forEach(({f,st})=>{h+=`<div class="abc pas" style="--c:var(--border2);opacity:.85" ${on('openPanel','featinfo',f.n)}><div class="abt"><div class="abn">${esc(f.n)}<span class="cost2">${f.mp} MP</span></div><div class="why">${esc(st.why)}</div></div></div>`})}
  return h}
 
-function ta(path,label,ph,rows=5){const v=path.split('.').reduce((o,k)=>o?.[k],C)||'';return`<div class="sec">${label}</div><textarea rows="${rows}" placeholder="${esc(ph)}" oninput="setField('${path}',this.value)">${esc(v)}</textarea>`}
 function tabBackground(){return ta('bg.traits','Personality traits','How do they act? What do people notice first?',3)+ta('bg.ideals','Ideals','What do they believe in?',2)+ta('bg.bonds','Bonds','Who or what do they care about?',2)+ta('bg.flaws','Flaws','Weaknesses, vices, blind spots.',2)+ta('bg.appearance','Appearance','Physical description and distinguishing features.',3)+ta('bg.allies','Allies & organisations','Contacts, factions, standing.',3)+ta('bg.story','Backstory','Where did they come from? Why the Phoenix Site?',6)}
 function notesUpgrade(){const N=C.notes=C.notes||{};if(Array.isArray(N.tabs)&&N.tabs.length)return;
  N.tabs=[];if(N.session)N.tabs.push({id:uid(),t:'Session notes',b:N.session});if(N.general)N.tabs.push({id:uid(),t:'Other notes',b:N.general});
@@ -2133,7 +2282,7 @@ function setItemW(id,k,v){const it=C.inv.find(i=>i.id===id);if(it&&it.w){it.w[k]
 function setMode(id,mi,idx,v){const it=C.inv.find(i=>i.id===id);if(it&&it.w){it.w.modes[mi][idx]=v;commit()}}
 function removeItem(id){C.inv=C.inv.filter(i=>i.id!==id);UI.panel={k:'log'};commit()}
 function toggleKit(k){C.kit[k]=C.kit[k]===false;commit(false)}
-function ammo(id,d){const it=C.inv.find(i=>i.id===id);if(!it||!it.w.cap)return;it.ammo=d===0?it.w.cap:clamp((it.ammo??it.w.cap)+d,0,it.w.cap);commit(false)}
+function ammo(id,d){const it=C.inv.find(i=>i.id===id);if(!it||!it.w.cap)return;const bw=it.w.pc==='bows',cur=it.ammo??it.w.cap;it.ammo=d===0?(bw?Math.max(it.w.cap,cur):it.w.cap):clamp(cur+d,0,bw?9999:it.w.cap);commit(false)}
 
 // feats
 function addFeat(){const n=$('nf-n').value.trim();if(!n)return toast('Give the feat a name');C.feats.push({id:uid(),name:n,cat:$('nf-c').value,mp:+$('nf-m').value||0,desc:$('nf-d').value});
@@ -2182,7 +2331,7 @@ async function handleSignup(){if(!sb)return loginMsg('This copy of the file isn\
 async function handleLogout(){if(started)await saveNow();if(sb)await sb.auth.signOut();else location.reload()}
 
 function startApp(row){C=migrate(row?row.sheet_data:null);if(!C.inv.length&&(!row||!row.sheet_data))C.inv=starterKit();applyTheme(C.theme);D=derive();
- $('login-screen').classList.add('hidden');$('picker-screen').classList.add('hidden');$('app').classList.remove('hidden');started=true;UI.open=isWide();UI.tab='actions';UI.panel={k:'log'};initDevice(row);
+ $('login-screen').classList.add('hidden');$('picker-screen').classList.add('hidden');$('app').classList.remove('hidden');started=true;UI.open=isWide();UI.tab='weapons';UI.panel={k:'log'};initDevice(row);
  renderMain();applySide();renderSide();setSaveStat(offline?'Offline':'Saved');loadCampaignItems()}
 
 async function enterSheetFor(user){if(started||entering)return;entering=true;meId=user.id;loginMsg('Checking your access...');
@@ -2233,5 +2382,6 @@ async function removeCampaignItem(id){if(sb&&isGM){const del=await sb.from('camp
 if(sb){sb.auth.onAuthStateChange((ev,session)=>{if(session&&session.user)enterSheetFor(session.user);else if(ev==='SIGNED_OUT')location.reload()})}
 else{loginMsg(window.supabase?'The cloud key hasn\'t been added to this file yet.<br><button class="btn" style="margin-top:8px" onclick="offlineStart()">Continue on this device only</button>'
  :'Can\'t reach the server right now.<br><button class="btn" style="margin-top:8px" onclick="offlineStart()">Continue on this device only</button>')}
+regAbil();
 </script>
 </body></html>
