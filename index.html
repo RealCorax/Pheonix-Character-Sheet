@@ -1383,18 +1383,27 @@ function renderTabs(){$('tabnav').innerHTML=TABS.map(([k,l])=>`<button class="${
  const f={actions:tabActions,abilities:tabAbilities,inventory:tabInventory,features:tabFeatures,background:tabBackground,notes:tabNotes,extras:tabExtras}[UI.tab];$('tabbody').innerHTML=f()}
 function filters(list,cur,fn){return`<div class="filters">${list.map(([k,l])=>`<button class="${cur===k?'on':''}" ${on(fn,k)}>${l}</button>`).join('')}</div>`}
 function setFilter(k){UI.filter=k;renderTabs()}
-
+// ---------- Free level feats: Attack Specialist (5), Veteran (11), Ace (17) ----------
+function atkMult(pc){if(!C.atkGrp||C.atkGrp!==pc)return 1;return D.lvl>=17?4:D.lvl>=11?3:D.lvl>=5?2:1}
+const ATK_FREE=[[5,'Attack Specialist','twice'],[11,'Attack Veteran','three times'],[17,'Attack Ace','four times']];
+function atkFeatsHtml(){if(D.lvl<5)return'';
+ const g=C.atkGrp||'',gl=WEAPON_GROUPS[g]||'',opts=Object.entries(WEAPON_GROUPS).filter(([k])=>C.profs.weapons[k]);
+ let h=`<div class="feat"><div class="fn">Attack training</div><div class="fs">Free bonus feats at levels 5, 11 and 17</div><div class="fd"><select onchange="setAtkGrp(this.value)"><option value="">Choose a weapon proficiency</option>${opts.map(([k,l])=>`<option value="${k}" ${g===k?'selected':''}>${l}</option>`).join('')}</select>${opts.length?'':'<br>Tick a weapon proficiency in Manage first.'}</div></div>`;
+ ATK_FREE.forEach(([lv,n,w])=>{if(D.lvl>=lv)h+=`<div class="feat"><div class="fn">${n}${gl?': '+gl:''}</div><div class="fs">Level ${lv} bonus feat \u2022 free</div><div class="fd">${gl?`You roll ${w} as many weapon damage dice with ${gl}. Static modifiers and bonus dice from other sources are not multiplied.`:'Choose a weapon proficiency above.'}</div></div>`});
+ return h}
+function setAtkGrp(v){C.atkGrp=v;commit()}
 // weapon maths
 function modeStats(it,mi){const md=it.w.modes[mi];const[mn,kind,dmg,dt,rng,fin]=md;const m=D.m;
  let ab=kind==='melee'?'str':'dex';if(fin||/throw/i.test(mn)||(C.origins.includes("Student of Bra'tac")&&/ma'tok/i.test(it.n)))ab=m.str>=m.dex?'str':'dex';
  const prof=it.prof==='auto'?weaponProf(it.w.pc):it.prof==='yes';const fac=C.facility||{},fr=+fac.rating||0;
  let hit=m[ab]+(prof?D.prof:(C.race==='jaffa_free'?Math.floor(D.prof/2):0))+(kind==='ranged'&&fac.name==='Firing Range'?fr:0);
  let dm=String(dmg);if(C.cls==='soldier'&&D.lvl>=3&&kind==='melee')dm=dm.replace(/^(\d*)d(4|6)\b/,'$1d8');
+ const am=atkMult(it.w.pc);if(am>1)dm=dm.replace(/^(\d*)d(\d+)/,(x,n,z)=>((+n||1)*am)+'d'+z);
  let bonus=m[ab]+(kind==='ranged'&&fac.name==='Armory'?fr:0)+(kind==='melee'&&fac.name==='Gym'?fr:0);
  const dmgExpr=dm==='0'?'0':dm+(bonus?(bonus>0?'+':'')+bonus:'');
  const critOn=(C.cls==='soldier'&&D.lvl>=3&&(C.impCrit||'')===it.w.pc)?19:20;
  return{mn,kind,dt,rng,ab,prof,hit,dmgExpr,critOn}}
-function unarmed(){const ma=C.profs.weapons.martial;let die=ma?(C.cls==='soldier'&&D.lvl>=3?'1d8':'1d6'):'';const s=D.m.str;
+function unarmed(){const ma=C.profs.weapons.martial;let die=ma?(C.cls==='soldier'&&D.lvl>=3?'1d8':'1d6'):'';if(die)die=die.replace(/^(\d*)d(\d+)/,(x,n,z)=>((+n||1)*atkMult('martial'))+'d'+z);const s=D.m.str;
  const rows=[{n:ma?'Martial Arts':'Unarmed Strike',sub:'Melee • Bludgeoning',hit:s+D.prof,dmg:ma?die+(s?(s>0?'+':'')+s:''):String(Math.max(0,1+s)),rng:'1m'}];
  if(C.race==='unas'||C.race==='unas_unchained')rows.push({n:'Claws',sub:'Melee • Natural weapon',hit:s+D.prof,dmg:'1d6'+(s?(s>0?'+':'')+s:''),rng:'1m'});return rows}
 
@@ -1407,7 +1416,7 @@ function tabActions(){const F=UI.filter;let h=filters([['all','All'],['attack','
     <td class="mono" style="font-size:12px">${esc(s.rng||'1m')}</td>
     <td><button class="rbtn" ${onS('rollAttack',it.id,mi)}>${sgn(s.hit)}</button></td>
     <td>${s.dmgExpr==='0'?'<span class="muted">Special</span>':`<button class="rbtn" ${onS('rollWeaponDmg',it.id,mi,false)}>${esc(s.dmgExpr)}</button>`}<div class="sub2">${esc(s.dt)}</div></td>
-    <td class="hidem" style="font-size:12px;color:var(--text2);max-width:220px">${it.w.cap?`<span class="mono" style="white-space:nowrap">Ammo <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,-1)}>−</button> ${it.ammo??it.w.cap}${it.w.pc==='bows'?'':'/'+it.w.cap} <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,1)}>+</button> <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,0)} title="Reload">↻</button></span><br>`:''}${esc(short(it.w.sp))}</td></tr>`}));
+    <td class="hidem" style="font-size:12px;color:var(--text2);max-width:220px">${it.w.cap?`<span class="mono" style="white-space:nowrap">Ammo <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,-1)}>−</button> ${it.ammo??it.w.cap}/${it.w.cap} <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,0)} title="Reload">↻</button></span><br>`:''}${esc(short(it.w.sp))}</td></tr>`}));
   unarmed().forEach(u=>{h+=`<tr class="clkrow" ${on('openPanel','action','Unarmed')}><td><b>${u.n}</b><div class="sub2">${u.sub}</div></td><td class="mono" style="font-size:12px">${u.rng}</td>
    <td><button class="rbtn" ${onS('rollUnarmedHit',u.n,u.hit)}>${sgn(u.hit)}</button></td><td><button class="rbtn" ${onS('rollUnarmedDmg',u.n,u.dmg)}>${esc(u.dmg)}</button></td><td class="muted hidem" style="font-size:12px">Always proficient</td></tr>`});
   h+=`</tbody></table></div>`;if(!eqw.length)h+=`<div class="empty">No weapons equipped. Tick the box beside a weapon in Inventory to show it here.</div>`}
@@ -1459,7 +1468,7 @@ function tabFeatures(){const F=UI.filter;let h=filters([['all','All'],['class','
  if(show('class')){h+=`<div class="sec">${D.cls?D.cls.n+' features':'Class features'}</div>`;h+=D.cls?D.cls.f.map((f,i)=>`<div class="feat" ${on('openPanel','feature',i)} style="${f[0]>D.lvl?'opacity:.45':''}"><div class="fn">${esc(f[1])}</div><div class="fs">Level ${f[0]}${f[0]>D.lvl?' • not yet':''}</div><div class="fd">${esc(f[3])}</div></div>`).join(''):`<div class="empty">Choose a class in Manage.</div>`}
  if(show('race')){h+=`<div class="sec">${D.race?esc(D.race.n)+' traits':'Racial traits'}</div>`;h+=D.race?`<div class="kv"><span>Hit point bonus</span><b>+${D.race.hp}</b></div><div class="kv"><span>Ability score increase</span><b>${esc(D.race.asi)}</b></div><div class="kv"><span>Proficiencies</span><b>${esc(D.race.prof)}</b></div>`+D.race.tr.map((t,i)=>`<div class="feat" ${on('openPanel','trait',i)}><div class="fn">${esc(t[0])}</div><div class="fd">${esc(t[1])}</div></div>`).join(''):`<div class="empty">Choose a race in Manage.</div>`}
  if(show('origins')){h+=`<div class="sec"><span>Origins</span><button class="btn sm" ${on('openPanel','manage')}>Change</button></div>`;h+=D.origins.length?D.origins.map(o=>`<div class="feat" ${on('openPanel','origin',o.n)}><div class="fn">${esc(o.n)}: ${esc(o.ab)}</div><div class="fs">${o.c} origin • ${esc(o.a)}</div><div class="fd">${esc(o.t)}</div></div>`).join(''):`<div class="empty">Choose two origins from different categories (Biome, Background, Racial) in Manage.</div>`}
- if(show('feats')){h+=`<div class="sec"><span>Feats</span><button class="btn sm" ${on('openPanel','addfeat','General')}>Add feat</button></div>`;h+=C.feats.length?C.feats.map(featItem).join(''):`<div class="empty">No feats recorded yet.</div>`}
+ if(show('feats')){h+=`<div class="sec"><span>Feats</span><button class="btn sm" ${on('openPanel','addfeat','General')}>Add feat</button></div>`;h+=atkFeatsHtml()+(C.feats.length?C.feats.map(featItem).join(''):(D.lvl>=5?'':`<div class="empty">No feats recorded yet.</div>`))}
  return h}
 
 function ta(path,label,ph,rows=5){const v=path.split('.').reduce((o,k)=>o?.[k],C)||'';return`<div class="sec">${label}</div><textarea rows="${rows}" placeholder="${esc(ph)}" oninput="setField('${path}',this.value)">${esc(v)}</textarea>`}
@@ -2124,7 +2133,7 @@ function setItemW(id,k,v){const it=C.inv.find(i=>i.id===id);if(it&&it.w){it.w[k]
 function setMode(id,mi,idx,v){const it=C.inv.find(i=>i.id===id);if(it&&it.w){it.w.modes[mi][idx]=v;commit()}}
 function removeItem(id){C.inv=C.inv.filter(i=>i.id!==id);UI.panel={k:'log'};commit()}
 function toggleKit(k){C.kit[k]=C.kit[k]===false;commit(false)}
-function ammo(id,d){const it=C.inv.find(i=>i.id===id);if(!it||!it.w.cap)return;const bw=it.w.pc==='bows',cur=it.ammo??it.w.cap;it.ammo=d===0?(bw?Math.max(it.w.cap,cur):it.w.cap):clamp(cur+d,0,bw?9999:it.w.cap);commit(false)}
+function ammo(id,d){const it=C.inv.find(i=>i.id===id);if(!it||!it.w.cap)return;it.ammo=d===0?it.w.cap:clamp((it.ammo??it.w.cap)+d,0,it.w.cap);commit(false)}
 
 // feats
 function addFeat(){const n=$('nf-n').value.trim();if(!n)return toast('Give the feat a name');C.feats.push({id:uid(),name:n,cat:$('nf-c').value,mp:+$('nf-m').value||0,desc:$('nf-d').value});
