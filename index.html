@@ -1430,32 +1430,43 @@ function atkFeatsHtml(){if(D.lvl<5)return'';
  ATK_FREE.forEach(([lv,n,w])=>{if(D.lvl>=lv)h+=`<div class="feat"><div class="fn">${n}${gl?': '+gl:''}</div><div class="fs">Level ${lv} bonus feat \u2022 free</div><div class="fd">${gl?`You roll ${w} as many weapon damage dice with ${gl}. Static modifiers and bonus dice from other sources are not multiplied.`:'Choose a weapon proficiency above.'}</div></div>`});
  return h}
 function setAtkGrp(v){C.atkGrp=v;commit()}
+// ---------- Weapon Specialization feat: +1 to hit and damage per rank, chosen by weapon type ----------
+function wsPts(){return C.feats.filter(f=>f.name==='Weapon Specialization').length}
+function wsCap(){return D.lvl>=17?5:D.lvl>=14?4:D.lvl>=11?3:D.lvl>=8?2:1}
+function wsRank(pc){return clamp((C.wspec||{})[pc]||0,0,wsCap())}
+function wsUsed(){return Object.keys(C.wspec||{}).reduce((a,k)=>a+wsRank(k),0)}
+function wsAdj(pc,d){C.wspec=C.wspec||{};const r=wsRank(pc);
+ if(d>0&&(r>=wsCap()||wsUsed()>=wsPts()))return toast(r>=wsCap()?'That weapon type is at its maximum for your level.':'No Weapon Specialization picks left. Buy the feat in the Feats tab.');
+ C.wspec[pc]=clamp(r+d,0,5);if(!C.wspec[pc])delete C.wspec[pc];commit()}
+function wsChip(pc){if(!wsPts())return'';const r=wsRank(pc);
+ return`<div class="sub2">Specialised <button class="rbtn" style="padding:0 6px" ${onS('wsAdj',pc,-1)} aria-label="Less specialisation">\u2212</button> <b>${r?'+'+r:'none'}</b> <button class="rbtn" style="padding:0 6px" ${onS('wsAdj',pc,1)} aria-label="More specialisation">+</button></div>`}
+
 // weapon maths
 function modeStats(it,mi){const md=it.w.modes[mi];const[mn,kind,dmg,dt,rng,fin]=md;const m=D.m;
  let ab=kind==='melee'?'str':'dex';if(fin||/throw/i.test(mn)||(C.origins.includes("Student of Bra'tac")&&/ma'tok/i.test(it.n)))ab=m.str>=m.dex?'str':'dex';
  const prof=it.prof==='auto'?weaponProf(it.w.pc):it.prof==='yes';const fac=C.facility||{},fr=+fac.rating||0;
- let hit=m[ab]+(prof?D.prof:(C.race==='jaffa_free'?Math.floor(D.prof/2):0))+(kind==='ranged'&&fac.name==='Firing Range'?fr:0);
+ let hit=wsRank(it.w.pc)+m[ab]+(prof?D.prof:(C.race==='jaffa_free'?Math.floor(D.prof/2):0))+(kind==='ranged'&&fac.name==='Firing Range'?fr:0);
  let dm=String(dmg);if(C.cls==='soldier'&&D.lvl>=3&&kind==='melee')dm=dm.replace(/^(\d*)d(4|6)\b/,'$1d8');
  const am=atkMult(it.w.pc);if(am>1)dm=dm.replace(/^(\d*)d(\d+)/,(x,n,z)=>((+n||1)*am)+'d'+z);
- let bonus=m[ab]+(kind==='ranged'&&fac.name==='Armory'?fr:0)+(kind==='melee'&&fac.name==='Gym'?fr:0);
+ let bonus=wsRank(it.w.pc)+m[ab]+(kind==='ranged'&&fac.name==='Armory'?fr:0)+(kind==='melee'&&fac.name==='Gym'?fr:0);
  const dmgExpr=dm==='0'?'0':dm+(bonus?(bonus>0?'+':'')+bonus:'');
  const critOn=(C.cls==='soldier'&&D.lvl>=3&&(C.impCrit||'')===it.w.pc)?19:20;
  return{mn,kind,dt,rng,ab,prof,hit,dmgExpr,critOn}}
 function unarmed(){const ma=C.profs.weapons.martial;let die=ma?(C.cls==='soldier'&&D.lvl>=3?'1d8':'1d6'):'';if(die)die=die.replace(/^(\d*)d(\d+)/,(x,n,z)=>((+n||1)*atkMult('martial'))+'d'+z);const s=D.m.str;
- const rows=[{n:ma?'Martial Arts':'Unarmed Strike',sub:'Melee • Bludgeoning',hit:s+D.prof,dmg:ma?die+(s?(s>0?'+':'')+s:''):String(Math.max(0,1+s)),rng:'1m'}];
+ const rows=[{n:ma?'Martial Arts':'Unarmed Strike',sub:'Melee • Bludgeoning',hit:s+D.prof+(ma?wsRank('martial'):0),dmg:ma?die+((s+wsRank('martial'))?(s+wsRank('martial')>0?'+':'')+(s+wsRank('martial')):''):String(Math.max(0,1+s)),rng:'1m',pc:ma?'martial':''}];
  if(C.race==='unas'||C.race==='unas_unchained')rows.push({n:'Claws',sub:'Melee • Natural weapon',hit:s+D.prof,dmg:'1d6'+(s?(s>0?'+':'')+s:''),rng:'1m'});return rows}
 
 function tabWeapons(){let h='';const eqw=C.inv.filter(i=>i.w&&i.eq);
  h+=`<div class="sec"><span>Attacks</span><button class="btn sm" ${on('setTab','inventory')}>Manage weapons</button></div><div class="tblwrap"><table class="tbl"><thead><tr><th>Attack</th><th>Range</th><th>Hit</th><th>Damage</th><th class="hidem">Notes</th></tr></thead><tbody>`;
  eqw.forEach(it=>it.w.modes.forEach((md,mi)=>{const s=modeStats(it,mi);const bw=it.w.pc==='bows';
-  h+=`<tr class="clkrow" ${on('openPanel','item',it.id)}><td><b>${esc(it.n)}</b><div class="sub2">${esc(md[0])} • ${s.kind==='melee'?'Melee':'Ranged'}${s.prof?'':' • not proficient'}</div></td>
+  h+=`<tr class="clkrow" ${on('openPanel','item',it.id)}><td><b>${esc(it.n)}</b><div class="sub2">${esc(md[0])} • ${s.kind==='melee'?'Melee':'Ranged'}${s.prof?'':' • not proficient'}</div>${wsChip(it.w.pc)}</td>
    <td class="mono" style="font-size:12px">${esc(s.rng||'1m')}</td>
    <td><button class="rbtn" ${onS('rollAttack',it.id,mi)}>${sgn(s.hit)}</button></td>
    <td>${s.dmgExpr==='0'?'<span class="muted">Special</span>':`<button class="rbtn" ${onS('rollWeaponDmg',it.id,mi,false)}>${esc(s.dmgExpr)}</button>`}<div class="sub2">${esc(s.dt)}</div></td>
    <td class="hidem" style="font-size:12px;color:var(--text2);max-width:220px">${it.w.cap?`<span class="mono" style="white-space:nowrap">Ammo <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,-1)}>−</button> ${it.ammo??it.w.cap}${bw?'':'/'+it.w.cap} <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,1)}>+</button> <button class="rbtn" style="padding:0 6px" ${onS('ammo',it.id,0)} title="Reload">↻</button></span><br>`:''}${esc(short(it.w.sp))}</td></tr>`}));
- unarmed().forEach(u=>{h+=`<tr class="clkrow" ${on('openPanel','action','Unarmed')}><td><b>${u.n}</b><div class="sub2">${u.sub}</div></td><td class="mono" style="font-size:12px">${u.rng}</td>
+ unarmed().forEach(u=>{h+=`<tr class="clkrow" ${on('openPanel','action','Unarmed')}><td><b>${u.n}</b><div class="sub2">${u.sub}</div>${u.pc?wsChip(u.pc):''}</td><td class="mono" style="font-size:12px">${u.rng}</td>
   <td><button class="rbtn" ${onS('rollUnarmedHit',u.n,u.hit)}>${sgn(u.hit)}</button></td><td><button class="rbtn" ${onS('rollUnarmedDmg',u.n,u.dmg)}>${esc(u.dmg)}</button></td><td class="muted hidem" style="font-size:12px">Always proficient</td></tr>`});
- h+=`</tbody></table></div>`;if(!eqw.length)h+=`<div class="empty">No weapons equipped. Tick the box beside a weapon in Inventory to show it here.</div>`;
+h+=`</tbody></table></div>`;if(wsPts())h+=`<p class="lhint">Weapon Specialization: ${wsUsed()} of ${wsPts()} picks used. Each rank adds +1 to hit and damage for that weapon type (maximum +${wsCap()} at your level).</p>`;if(!eqw.length)h+=`<div class="empty">No weapons equipped. Tick the box beside a weapon in Inventory to show it here.</div>`;
  h+=`<div class="sec">Actions in combat</div><div class="plist">${ACTIONS.filter(a=>a.g==='action').map(a=>`<a ${on('openPanel','action',a.n)}>${a.n}</a>`).join(', ')}</div>
   <div class="sec">Combat contests</div><div class="plist">${ACTIONS.filter(a=>a.g==='contest').map(a=>`<a ${on('openPanel','action',a.n)}>${a.n}</a>`).join(', ')}</div>
   <div class="sec">Reactions</div><div class="plist"><a ${on('openPanel','action','Opportunity Attack')}>Opportunity Attack</a></div>`;
@@ -1883,7 +1894,7 @@ function setEureka(n){const cur=Math.min(C.eureka||0,D.eurekaMax);C.eureka=clamp
 function tabAbilities(){const mode=sortGet('abil'),list=abilityList(),live=list.filter(e=>!e.locked);let h=eurekaHtml();
  h+=`<div class="sec"><span>Abilities</span><span style="display:flex;gap:6px"><button class="btn sm" ${on('openPanel','addres')}>Add tracker</button><button class="btn sm" ${on('openPanel','newmission')}>New mission</button></span></div>`;
  if(!list.length&&!C.customRes.length)return h+`<div class="empty">No abilities yet. Choose a class and race in Manage.</div>`;
- h+=filters([['type','When you use it'],['az','A to Z'],['custom','My order']],mode,'setSortAbil');
+ h+=filters([['type','Action type'],['az','A to Z'],['custom','My order']],mode,'setSortAbil');
  h+=`<p class="lhint">${mode==='custom'?'Use the arrows, or drag a row, to put things in your own order. Favourites always stay at the top.':'Tap the star to pin a favourite to the top. Tap an ability to read the full rules in the game log.'}</p>`;
  const items=live.map((e,i)=>({key:e.n,n:e.n,type:e.type,pos:i,e})),{fav,rest}=listSort('abil',items,mode,[]),cust=mode==='custom',grp=mode==='type';
  if(fav.length){h+=`<div class="sec">Favourites</div>`+fav.map((x,i)=>abRow(x.e,fav,i,cust)).join('');if(!grp&&rest.length)h+=`<div class="sec">Everything else</div>`}
@@ -1915,12 +1926,12 @@ function tabFeats(){const mode=sortGet('feat'),classCat=D.cls?D.cls.feat:'';
  let h=`<div class="sec"><span>My feats</span><button class="btn sm pri" ${on('openPanel','addfeat',classCat||'General')}>Add feat</button></div>`+atkFeatsHtml();
  if(!C.feats.length)return h+`<div class="empty">${D.lvl>=5?'No bought feats yet. Use Add feat to browse the list.':'No feats yet. Use Add feat to browse the list and pick one.'}</div>`;
  const cats=[...FEAT_CATS,...new Set(C.feats.map(f=>f.cat).filter(c=>!FEAT_CATS.includes(c)))];
- h+=filters([['cat','Category'],['az','A to Z'],['custom','My order']],mode,'setSortFeat');
+h+=filters([['type','Action type'],['cat','Category'],['az','A to Z'],['custom','My order']],mode,'setSortFeat');
  h+=`<p class="lhint">${mode==='custom'?'Use the arrows, or drag a row, to put things in your own order. Favourites always stay at the top.':'Tap the star to pin a favourite to the top. Tap a feat to read the full rules in the game log.'}</p>`;
- const items=C.feats.map((f,i)=>{const t=featType(f);return{key:f.id,n:f.name,type:mt('F',f.name,t==='other'?'pass':t),cat:f.cat,pos:i,f}}),{fav,rest}=listSort('feat',items,mode,cats),cust=mode==='custom',grp=mode==='cat';
+ const items=C.feats.map((f,i)=>{const t=featType(f);return{key:f.id,n:f.name,type:mt('F',f.name,t==='other'?'pass':t),cat:f.cat,pos:i,f}}),{fav,rest}=listSort('feat',items,mode,cats),cust=mode==='custom',grp=mode==='cat',byT=mode==='type';
  const row=(x,i,arr)=>listRow('feat',{key:x.key,n:x.n,type:x.type,d:x.f.desc||'',src:grp?'':x.f.cat,pk:'feat',pa:x.f.id,extra:pipsFor('f_'+x.f.id,x.n,false)},i,arr,cust);
- if(fav.length){h+=`<div class="sec">Favourites</div>`+fav.map((x,i)=>row(x,i,fav)).join('');if(!grp&&rest.length)h+=`<div class="sec">Everything else</div>`}
- let last=null;rest.forEach((x,i)=>{if(grp&&x.cat!==last){h+=`<div class="sec">${esc(x.cat)}</div>`;last=x.cat}h+=row(x,i,rest)});
+ if(fav.length){h+=`<div class="sec">Favourites</div>`+fav.map((x,i)=>row(x,i,fav)).join('');if(!grp&&!byT&&rest.length)h+=`<div class="sec">Everything else</div>`}
+ let last=null;rest.forEach((x,i)=>{const gk=byT?x.type:x.cat;if((grp||byT)&&gk!==last){h+=`<div class="sec">${esc(byT?TYL[x.type]:x.cat)}</div>`;last=gk}h+=row(x,i,rest)});
  return h}
 
 
