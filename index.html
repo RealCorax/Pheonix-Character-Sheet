@@ -1289,18 +1289,19 @@ function computeRes(d){const L=d.lvl,P=d.prof,m=d.m,r=[];
  const add=(key,name,max,reset,src,desc)=>r.push({key,name,max:Math.max(0,max),reset,src,desc});
  const cf=n=>{for(const k of [C.cls,...Object.keys(CLASSES)]){const f=(CLASSES[k]?.f||[]).find(x=>x[1]===n);if(f)return f[3]}return ''};
  if(C.cls==='diplomat'||advOf('Diplomat'))add('inspire','Inspire ('+d.inspDie+')',1,'long',C.cls==='diplomat'?'Class':'Feat',cf('Inspire'));
- if(C.cls==='diplomat'&&L>=2)add('peptalk','Pep Talk',1,'mission','Class',cf('Pep Talk'));
+if(C.cls==='diplomat'&&L>=2)add('peptalk','Pep Talk',1,'mission','Class',cf('Pep Talk'));
+ if(C.cls==='diplomat'&&L>=2)add('wiae','Word In An Ear',1,'long','Class',cf('Word In An Ear'));
  if(C.cls==='scientist'&&L>=2)add('apt','Apt Analogy',1,'short','Class',cf('Apt Analogy'));
  if(C.cls==='scout'&&L>=2)add('traps','Trap Parts',P,'long','Class',cf('Trap Rigging'));
 if(C.cls==='soldier'||advOf('Soldier'))add('tflex','Tactical Flexibility',1,'long',C.cls==='soldier'?'Class':'Feat',cf('Tactical Flexibility'));
- if(C.cls==='soldier'&&L>=2){add('surge','Surge',1,'short','Class',cf('Surge'));add('rally','Rally',1,'long','Class',cf('Rally'))}
+ if(C.cls==='soldier'&&L>=2){add('surge','Surge',1,'either','Class',cf('Surge'));add('rally','Rally',1,'long','Class',cf('Rally'))}
  const rt=n=>(d.race?.tr.find(t=>t[0]===n)||[])[1]||'';
  if(C.race==='aturen_pacifist')add('invis','Invisibility',P,'long','Race',rt('Invisibility'));
  if(C.race==='jaffa')add('symb','Symbiote',Math.max(1,P),'long','Race',rt('Symbiote'));
  if(C.race==='tokra')add('ssymb','Synergistic Symbiote',Math.max(1,m.wis),'long','Race',rt('Synergistic Symbiote'));
  if(C.race==='unas'||C.race==='unas_unchained')add('imres','Impressive Resilience',1,'long','Race',rt('Impressive Resilience'));
  d.origins.forEach(o=>{if(o.use)add('o_'+o.n,o.use.n,o.use.max,o.use.r,'Origin',o.t)});
-  C.feats.forEach(f=>{const u=featUse(f);if(u&&!r.some(x=>x.name===f.name))add('f_'+f.id,f.name,1,u,'Feat',f.desc||'')});
+  C.feats.forEach(f=>{const u=featUse(f);if(u&&!r.some(x=>x.name===f.name))add('f_'+f.id,f.name,(rkm('F',f.name)||{}).u==='P'?P:1,u,'Feat',f.desc||'')});
  C.customRes.forEach(x=>add('c_'+x.id,x.name,+x.max||1,x.reset,'Custom',x.desc||''));
  r.forEach(x=>x.used=clamp(+C.res[x.key]||0,0,x.max));return r}
 
@@ -1464,30 +1465,386 @@ function short(t){t=String(t||'').split(/[.(]/)[0].trim();return t.length>48?t.s
 function featRow(f){const i=D.cls.f.indexOf(f);return`<div class="feat" ${on('openPanel','feature',i)}><div class="fn">${esc(f[1])}</div><div class="fs">${D.cls.n} ${f[0]} • ${{action:'Action',bonus:'Bonus action',reaction:'Reaction',other:'Feature'}[f[2]]}</div><div class="fd">${esc(f[3])}</div></div>`}
 function purchFeatRow(f){return`<div class="feat" ${on('openPanel','feat',f.id)}><div class="fn">${esc(f.name)}</div><div class="fs">Feat • ${esc(f.cat)}</div><div class="fd">${esc(f.desc||'')}</div></div>`}
 function traitRow(n){const i=D.race.tr.findIndex(t=>t[0]===n);if(i<0)return'';return`<div class="feat" ${on('openPanel','trait',i)}><div class="fn">${esc(n)}</div><div class="fs">${esc(D.race.n)} trait</div><div class="fd">${esc(D.race.tr[i][1])}</div></div>`}
-const RESET_L={short:'Short rest',long:'Long rest',mission:'Per mission',none:'Manual'};
+const RESET_L={short:'Short rest',long:'Long rest',either:'Short or long rest',enc:'Per encounter',mission:'Per mission',none:'Manual'};
 function resRow(r){return`<div class="res"><div class="rn" ${on('openPanel','res',r.key)}><b>${esc(r.name)}</b><small>${r.src} • ${RESET_L[r.reset]} • ${r.max-r.used} of ${r.max} left</small></div>
  <div class="boxes">${[...Array(r.max)].map((_,i)=>`<button class="ubox ${i<r.used?'used':''}" ${on('toggleUse',r.key,i)} aria-label="Use ${esc(r.name)}"></button>`).join('')}</div></div>`}
 
 const TYPE_L={action:'Main action',bonus:'Bonus action',reaction:'Reaction',pass:'Always on'};
 const ADV_ABIL={Diplomat:'Inspire',Engineer:'Jury Rig',Medic:'First Aid',Scientist:'Eureka',Scout:'Survivalist',Soldier:'Tactical Flexibility'};
-const RK_CLASS={'Inspire':'inspire','Pep Talk':'peptalk','Apt Analogy':'apt','Trap Rigging':'traps','Tactical Flexibility':'tflex','Surge':'surge','Rally':'rally'};
+const RK_CLASS={'Inspire':'inspire','Pep Talk':'peptalk','Apt Analogy':'apt','Trap Rigging':'traps','Word In An Ear':'wiae','Tactical Flexibility':'tflex','Surge':'surge','Rally':'rally'};
 const RK_RACE={'Invisibility':'invis','Symbiote':'symb','Synergistic Symbiote':'ssymb','Impressive Resilience':'imres'};
 function advOf(k){return C.feats.some(f=>f.name==='Advanced Training: '+k)}
 function typeFromText(t){t=String(t||'');return /as an action/i.test(t)?'action':/bonus action/i.test(t)?'bonus':/(use your reaction|as a reaction)/i.test(t)?'reaction':'pass'}
-function featUse(f){const m=String(f.desc||'').match(/once per (short rest|long rest|mission|day|infiltration encounter|diplomatic function)/i);if(!m)return null;const k=m[1].toLowerCase();return k==='short rest'?'short':(k==='long rest'||k==='day')?'long':'mission'}
+function featUse(f){const km=rkm('F',f.name);if(km)return km.u&&km.r?km.r:null;const m=String(f.desc||'').match(/once per (short rest|long rest|mission|day|infiltration encounter|diplomatic function)/i);if(!m)return null;const k=m[1].toLowerCase();return k==='short rest'?'short':(k==='long rest'||k==='day')?'long':'mission'}
 function abilityList(){const L=[],seen={};
  const add=e=>{const k=e.n.toLowerCase();if(seen[k])return;seen[k]=1;L.push(e)};
- if(D.cls)D.cls.f.forEach((f,i)=>{if(f[1]==='Ability Score Improvement'||(f[1]==='Eureka'&&D.hasEureka))return;add({n:f[1],src:D.cls.n+' '+f[0],type:f[2]==='other'?'pass':f[2],d:f[3],locked:f[0]>D.lvl,lvl:f[0],rk:RK_CLASS[f[1]],pk:'feature',pa:i,die:/^(Inspire|Word In An Ear)$/.test(f[1])&&D.inspDie})});
- Object.entries(ADV_ABIL).forEach(([k,ab])=>{if(!advOf(k)||C.cls===k.toLowerCase()||ab==='Eureka')return;const f=CLASSES[k.toLowerCase()].f.find(x=>x[1]===ab);const ft=C.feats.find(x=>x.name==='Advanced Training: '+k);if(!f)return;add({n:ab,src:'Feat',type:f[2]==='other'?'pass':f[2],d:f[3],rk:RK_CLASS[ab],pk:'feat',pa:ft.id,die:ab==='Inspire'&&D.inspDie})});
- if(D.race)D.race.tr.forEach((t,i)=>{if(t[0]==='Claws')return;add({n:t[0],src:D.race.n,type:typeFromText(t[1]),d:t[1],rk:RK_RACE[t[0]],pk:'trait',pa:i})});
- D.origins.forEach(o=>add({n:o.ab,src:o.n+' origin',type:typeFromText(o.t),d:o.t,rk:o.use?'o_'+o.n:undefined,pk:'origin',pa:o.n}));
+ if(D.cls)D.cls.f.forEach((f,i)=>{if(f[1]==='Ability Score Improvement'||mw('C',f[1])==='na'||(f[1]==='Eureka'&&D.hasEureka))return;add({n:f[1],src:D.cls.n+' '+f[0],type:mt('C',f[1],f[2]==='other'?'pass':f[2]),d:f[3],locked:f[0]>D.lvl,lvl:f[0],rk:RK_CLASS[f[1]],pk:'feature',pa:i,die:/^(Inspire|Word In An Ear)$/.test(f[1])&&D.inspDie})});
+ Object.entries(ADV_ABIL).forEach(([k,ab])=>{if(!advOf(k)||C.cls===k.toLowerCase()||ab==='Eureka')return;const f=CLASSES[k.toLowerCase()].f.find(x=>x[1]===ab);const ft=C.feats.find(x=>x.name==='Advanced Training: '+k);if(!f)return;add({n:ab,src:'Feat',type:mt('C',ab,f[2]==='other'?'pass':f[2]),d:f[3],rk:RK_CLASS[ab],pk:'feat',pa:ft.id,die:ab==='Inspire'&&D.inspDie})});
+ if(D.race)D.race.tr.forEach((t,i)=>{if(t[0]==='Claws'||mw('R',t[0])==='na')return;add({n:t[0],src:D.race.n,type:mt('R',t[0],typeFromText(t[1])),d:t[1],rk:RK_RACE[t[0]],pk:'trait',pa:i})});
+ D.origins.forEach(o=>mw('O',o.ab)==='na'||add({n:o.ab,src:o.n+' origin',type:mt('O',o.ab,typeFromText(o.t)),d:o.t,rk:o.use?'o_'+o.n:undefined,pk:'origin',pa:o.n}));
+ C.feats.forEach(f=>{if(/^Advanced Training/.test(f.name))return;const t=mt('F',f.name,'');if(['class','action','bonus','reaction','rest'].includes(t))add({n:f.name,src:'Feat \u2022 '+f.cat,type:t,d:f.desc||'',rk:'f_'+f.id,pk:'feat',pa:f.id})});
  return L}
+
 
 // ---------- shared: sort, favourites and "my order" for the Abilities and Feats tabs ----------
 const TYI={action:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="currentColor"/></svg>',bonus:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 10.5H1Z" fill="currentColor"/></svg>',reaction:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 6 6 11 1 6Z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',pass:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'};
 const TYC={action:'var(--amber2)',bonus:'var(--acc2)',reaction:'var(--grn2)',pass:'var(--text3)'};
 const TYL={action:'Main action',bonus:'Bonus action',reaction:'Reaction',pass:'Always on'};
-const TYR={action:0,bonus:1,reaction:2,pass:3};
+const TYR={class:0,action:1,bonus:2,reaction:3,rest:4,pass:5,up:6};
+Object.assign(TYI,{class:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="currentColor"/></svg>',action:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="6" cy="6" r="1.6" fill="currentColor"/></svg>',rest:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M8.5 1.5A4.8 4.8 0 1 0 10.5 8 3.8 3.8 0 0 1 8.5 1.5Z" fill="currentColor"/></svg>',up:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 10.5 6H7.6V11H4.4V6H1.5Z" fill="currentColor"/></svg>'});
+Object.assign(TYC,{class:'var(--amber2)',action:'var(--amber2)',rest:'var(--acc2)',up:'var(--grn2)'});
+Object.assign(TYL,{class:'Class action',action:'Action',rest:'During a rest',pass:'Passive',up:'Upgrade'});
+// ---------- your reviewed answers: what each ability or feat is, uses, resets, rest timing, requirement ----------
+// each line: 'Kind:Name':'when|uses|resets|rest timing|choice|requirement'
+// Kinds: C class feature, R race trait, O origin ability, B origin bonus, F feat.
+// when: cl class action, ac action, bo bonus action, re reaction, rs during a rest, pa passive, up upgrade, na not listed.
+const RKM={
+'C:Inspire':'cl|1|long|||',
+'C:Inspirations':'na||||one|',
+'C:Pep Talk':'cl|1|mission|||',
+'C:Word In An Ear':'cl|1|long|||',
+'C:Force of Will':'na|||||',
+'C:Diplomatic Expertise':'na||||one|',
+'C:Strong Personality':'na|||||',
+'C:Jury Rig':'cl|||||',
+'C:Modifications':'na||||one|',
+'C:Hold Together':'pa|||||',
+'C:Whack-It':'bo|||||',
+'C:Tune-Up':'pa|||||',
+'C:Broad Spectrum Scanners':'pa|||||',
+'C:Ability Score Improvement':'na|||||',
+'C:Xeno-Tech Specialist':'cl|||||',
+'C:First Aid':'cl|||||',
+'C:Procedures':'na||||one|',
+'C:Triage':'bo|||||',
+'C:Unnoticed Field Medic':'pa|||||',
+'C:Man Down':'pa|||||',
+'C:Physician Heal Thyself':'bo|||||',
+'C:First Response':'pa|||||',
+'C:Eureka':'cl||mission|||',
+'C:Discoveries':'na||||one|',
+'C:Apt Analogy':'cl|1|short|||',
+'C:Great Mind':'pa|||||',
+'C:Cross-Discipline Studies':'pa|||||',
+'C:Resilient Mind':'pa|||||',
+'C:Casual Genius':'pa|||||',
+'C:For Science!':'pa|||||',
+'C:Survivalist':'pa|||||',
+'C:Field Hacks':'na||||one|',
+'C:Vanguard':'pa|||||',
+'C:Trap Rigging':'cl|P|long|||',
+'C:Uncanny Dodge':'re|||||',
+'C:Scout\'s Cunning':'bo|||||',
+'C:Evasion':'cl|||||',
+'C:Tactical Flexibility':'cl|1|long|||',
+'C:Tactics':'na||||one|',
+'C:Surge':'bo|1|either|||',
+'C:Rally':'cl|1|long|||',
+'C:Martial Training':'pa|||||',
+'C:Improved Critical':'pa|||||',
+'C:Tactical Superiority':'pa|||||',
+'R:Recovery':'rs|1|short|During short rest||',
+'R:Galactic Seeds':'pa|||||',
+'R:Free From Ra':'pa|||||',
+'R:Phase-Shift':'na|||||',
+'R:Advanced Technology':'pa|||||',
+'R:Natural Resilience':'pa|||||',
+'R:Naturalist':'pa|||||',
+'R:Invisibility':'ac|||||',
+'R:Pacifist':'pa|||||',
+'R:Symbiote':'rs|||During long rest||',
+'R:Kelno\'reem':'rs|||During either rest||',
+'R:Tretonin Prescription':'pa|||||',
+'R:Resistance Training':'up|||||',
+'R:Synergistic Symbiote':'pa|||During long rest||',
+'R:Regeneration':'rs|||During long rest||',
+'R:Shrewd Diplomats':'pa|||||',
+'R:Impressive Resilience':'re|1|long|||',
+'R:Robust':'pa|||||',
+'R:Claws':'pa|||||',
+'R:Underestimated':'pa|||||',
+'O:Natural Climber':'pa|||||',
+'B:Arboreal':'up|||||',
+'O:Life or Death Repairs':'pa|||||',
+'B:Artificial':'up|||||',
+'O:Heat Acclimated':'pa|||||',
+'B:Desert':'up|||||',
+'O:Natural Sprinter':'up|||||',
+'B:Grasslands':'up|||||',
+'O:Eager Astronomer':'pa|||||',
+'B:Lunar':'up|||||',
+'O:Vertical Drop':'pa|||||',
+'B:Mountainous':'up|||||',
+'O:Gifted Swimmer':'pa|||||',
+'B:Oceanic':'up|||||',
+'O:Tropics Adept':'pa|||||',
+'B:Rainforest':'up|||||',
+'O:Void Adept':'pa|||||',
+'B:Starship':'up|||||',
+'O:Improved Vision':'pa|||||',
+'B:Subterranean':'up|||||',
+'O:Patient Hunter':'pa|||||',
+'B:Swamp':'up|||||',
+'O:Strange World':'re|1|long|||',
+'B:Terraformed':'up|||||',
+'O:Toxic Resistance':'pa||||one|',
+'B:Toxic':'up|||||',
+'O:Cold Acclimated':'pa|||||',
+'B:Tundra':'up|||||',
+'O:Melting Pot':'pa|||||',
+'B:Urban':'up|||||',
+'B:Volcanic':'up|||||',
+'O:Crash Landing':'pa|||||',
+'B:Aviator':'up|||||',
+'O:Speedster':'pa|||||',
+'B:Driver':'up|||||',
+'O:Air of Authority':'pa|||||',
+'B:Enforcement':'up|||||',
+'O:Friend to Toil':'pa|||||',
+'B:Enslaved':'up||||one|',
+'O:Zeitgeist':'pa|||||',
+'B:Entertainer':'up|||||',
+'O:Naquadah Blooded / Symbiote Familiarity':'pa|||||',
+'B:Former Host':'up|||||',
+'O:Last Resorts':'pa|||||',
+'B:Freedom Fighter':'up|||||',
+'O:Soothe':'rs|||During short rest||',
+'B:Healer':'up|||||',
+'O:Beastfriend':'pa|||||',
+'B:Herdsman':'up|||||',
+'O:Irongut':'pa|||||',
+'B:Hunter/Gatherer':'up|||||',
+'O:Stranger to the Land':'pa|||||',
+'B:Liaison':'up|||||',
+'O:Efficient Logistics':'pa|||||',
+'B:Merchant':'up|||||',
+'O:Drills':'up|||||',
+'B:Military':'up||||one|',
+'O:Two Faces':'pa|||||',
+'B:Politician':'up|||||',
+'O:An Eye for Nature':'pa|||||',
+'B:Preservationist':'up|||||',
+'O:New Environments':'pa|||||',
+'B:Refugee':'up|||||',
+'O:Sea Legs':'pa|||||',
+'B:Sailor':'up|||||',
+'O:Preserve Knowledge':'pa|||||',
+'B:Scholar':'up|||||',
+'O:Long Night':'pa|||||',
+'B:Sentry':'up|||||',
+'O:The Reveal':'pa|||||',
+'B:Sleuth':'up|||||',
+'O:Quick Study':'pa|1|mission|||',
+'B:Student':'up|||||',
+'O:Low Profile':'pa|||||',
+'B:Swindler':'up|||||',
+'O:Patient Approach':'pa|1|mission|||',
+'B:Teacher':'up|||||',
+'O:Black Market':'pa|||||',
+'B:Underworld':'up|||||',
+'O:Measure Twice':'up|||||',
+'B:Wright':'up|||||',
+'O:Ritual of Life':'rs|||During short rest||',
+'B:Aturen Spiritualist':'na|||||',
+'O:Rebel':'pa|||||',
+'B:Jaffa Renegade':'up|||||',
+'O:Ma\'tok Mastery':'pa|||||',
+'B:Student of Bra\'tac':'up|||||',
+'O:Basic Training':'up||||one|',
+'B:Tau\'ri Military':'na|||||',
+'O:Passing':'pa|||||',
+'B:Tok\'ra Spy':'up|||||',
+'O:Clan Leader':'pa|1|mission|||',
+'B:Unas Alpha':'up|||||',
+'F:Ability Score Increase':'up|||||',
+'F:Advanced Training: Diplomat':'ac|||||CHA 13+ & Persuasion skill',
+'F:Advanced Training: Engineer':'ac|||||INT 13+ & Engineering skill',
+'F:Advanced Training: Medic':'ac|||||WIS 13+ & Medicine skill.',
+'F:Advanced Training: Scientist':'ac|||||INT 13+ & Science skill.',
+'F:Advanced Training: Scout':'ac|||||CON 13+ & Survival skill.',
+'F:Advanced Training: Soldier':'ac|||||CON 13+ & Intimidation skill.',
+'F:Airborne School':'pa|||||Athletics skill',
+'F:Apt Analogy':'cl|1|short|||Science skill',
+'F:Battlefield Medicine':'rs|1|long|||Med Kit proficiency',
+'F:Casual Genius':'pa|||||Eureka ability',
+'F:Chaplain School':'pa|||||Insight skill',
+'F:Convincing':'pa|||||Inspire ability',
+'F:Cross-Discipline Study':'pa|||||INT 13+',
+'F:De-Escalate':'ac|1|long|||Persuasion skill',
+'F:Determined':'ac|1|long|||WIS 13+',
+'F:Dive School':'pa|||||Athletics skill',
+'F:Escalate':'ac|1|long|||Intimidation skill',
+'F:Exceptional Expertise':'up||||one|Proficiency with chosen skill',
+'F:Fighter Ace':'pa|||||Pilot skill',
+'F:First Response':'ac|||||First Aid ability',
+'F:For Science!':'ac|||||Eureka ability & Science skill',
+'F:Force of Will':'rs|||After either rest||Inspire ability',
+'F:Great Mind':'pa|||||INT 13+ & WIS 13+',
+'F:Good Cop / Bad Cop':'ac|||||Investigation skill',
+'F:Hardy':'up|||||None',
+'F:Heavy Armor Proficiency':'up|||||Light Armor Proficiency feat',
+'F:Improved Initiative':'pa|||||None',
+'F:Improved Moxie':'pa|||||None',
+'F:Jag School':'pa|||||Persuasion skill',
+'F:Jumpmaster':'ac|1|long|||Airborne School feat',
+'F:Light Armor Proficiency':'up|||||None',
+'F:Linguist':'ac|||||CHA 13+ & Culture skill',
+'F:Man Down':'pa|||||First Aid ability',
+'F:Martial Arts Proficiency':'up|||||None',
+'F:Night Owl':'pa|||||None',
+'F:Pathfinder':'pa|||||Survival skill',
+'F:Pep Talk':'ac|1|mission|||CHA 13+',
+'F:Physician Heal Thyself':'bo|||||First Aid ability',
+'F:Pre-Planned Obsolescence':'ac|||||Engineering skill',
+'F:Rapid Recuperation':'rs|1|long|After long rest||CON 13+',
+'F:Resilient Mind':'pa|||||INT 13+',
+'F:Resonant Words':'pa|||||Level 5 & Word In An Ear ability',
+'F:Rumormonger':'ac|||||Intimidation skill',
+'F:Skill Proficiency':'up|||||None',
+'F:Strong Personality':'up|||||Inspire ability',
+'F:Team Player':'ac|||||Improved Initiative or Improved Moxie',
+'F:Trap Rigging':'cl|P|long|||Survivalist ability',
+'F:Tool Proficiency':'up|||||None',
+'F:Tranquilizer Concoction':'pa|||||First Aid ability',
+'F:Triage':'bo|||||First Aid ability',
+'F:Tune-Up':'pa|||||Engineering skill',
+'F:Unnoticed Field Medic':'pa|||||First Aid ability',
+'F:Unusual Approach':'pa|||||None',
+'F:Unwavering':'up|||||None',
+'F:Weapon Proficiency':'up|||||None',
+'F:Veil Of Distractions':'ac|1|enc|||Stealth skill',
+'F:Whack-It':'bo|||||Engineering skill',
+'F:Wingman':'ac|||||Deception skill',
+'F:Word In An Ear':'cl|1|long|||Inspire ability',
+'F:Attack Specialist':'up||||many|Level 5',
+'F:Attack Veteran':'up||||many|Level 11 & Attack Specialist with chosen Weapon Proficiency',
+'F:Attack Ace':'up||||many|Level 17 & Attack Veteran with chosen Weapon Proficiency',
+'F:Co-ordinated Attack':'pa|||||None',
+'F:Critical Focus':'pa|||||Proficient with the chosen weapon',
+'F:Critical Effect':'pa|||||Critical Focus feat',
+'F:Die Hard':'up|||||CON 13+',
+'F:Dodge':'up|||||DEX 13+, Light or No Armor',
+'F:Evasion':'cl|||||DEX 13+',
+'F:Hold Together':'pa|||||Engineering skill',
+'F:Horse Lord':'ac|||||Animal Handling skill',
+'F:Improved Critical':'pa|||||Proficient with three weapon types other than Common',
+'F:Kip Up':'pa|||||Acrobatics or Athletics skill',
+'F:Look Alive':'ac|||||WIS 13+',
+'F:Organ Targeting':'pa|||||Medicine skill',
+'F:Quick Draw':'pa|||||DEX or WIS 13+',
+'F:Rally':'cl|1|long|||Athletics skill',
+'F:Reactive':'pa|||||DEX or WIS 13+',
+'F:Reinforce Cover':'ac|||||Hold Together feat',
+'F:Saddle Warrior':'pa|||||None',
+'F:Scout\'s Cunning':'bo|||||DEX 13+ & Athletics skill',
+'F:Spook':'ac|||||Intimidation skill',
+'F:Swift':'up|||||Athletics or Acrobatics skill',
+'F:Surge':'bo|1|either|||CON 13+',
+'F:Tactical Superiority':'up|||||Two Tactic feats',
+'F:Takedown':'pa|||||DEX 13+',
+'F:Uncanny Dodge':'re|||||DEX 13+',
+'F:Unyielding':'pa|||||CON 11+',
+'F:Weapons Akimbo':'pa||||many|Proficient with chosen weapon',
+'F:Weapon Specialization':'up||||many|None',
+'F:Blind-Fighter':'pa|||||Perception skill',
+'F:Brawler':'pa|||||Attack Specialist with Common weapons or Martial Arts',
+'F:Defensive Art Master':'pa|||||Dodge feat & Martial Arts Proficiency feat',
+'F:Lok\'nel Master':'pa|||||Ma\'tok proficiency',
+'F:Lunge':'up|||||None',
+'F:Maneuvering Arts Master':'pa||||many|Martial Arts Proficiency feat (can be chosen up to 3 times)',
+'F:Martial Mastery':'up|||||Proficient in 3 weapon types, except Common weapons',
+'F:Martial Training':'pa|||||Proficient in 3 weapon types, except Common weapons',
+'F:Mastaba Master':'pa|||||Martial Arts Proficiency feat',
+'F:Power Attack':'pa|||||Athletics skill',
+'F:Precision Maneuvers':'pa|||||Martial Arts Proficiency feat',
+'F:Precision Strikes':'up|||||Martial Arts Proficiency feat',
+'F:Ballistics Expert':'pa|||||Science skill',
+'F:Deadly Shot':'pa|||||Perception skill',
+'F:Hip Fire':'pa|||||None',
+'F:Iron Grip':'pa|||||STR 13+',
+'F:Precise Shot':'pa|||||None',
+'F:Rapid Shot':'up|||||None',
+'F:Rapid Reload':'pa|||||None',
+'F:Steady Arm':'pa|||||STR 13+ & Iron Grip feat',
+'F:Sniper Techniques':'pa|||||Attack Veteran with Longarms',
+'F:Uncanny Shot':'pa|||||Sniper Techniques feat',
+'F:Vanguard':'pa|||||Stealth and Survival',
+'F:Sniper Trickshots':'pa|||||Sniper Techniques feat',
+'F:Spraying Fire':'pa|||||Longarms Proficiency',
+'F:Armory Hound':'na|||||Proficient in Explosives, Longarms, and Sidearms',
+'F:Artist':'na|||||None',
+'F:Athlete':'na|||||Acrobatics or Athletics skill',
+'F:Bookworm':'na|||||Eureka ability',
+'F:Cinefile':'na|||||Culture skill',
+'F:Cookie':'na|||||None',
+'F:Gamer':'na|||||None',
+'F:Party Animal':'na|||||None',
+'F:Sport Shooter':'na|||||Proficient in Longarms, Shotguns, and Sidearms',
+'F:Sawbones':'na|||||First Aid ability',
+'F:Tread Head':'na|||||Jury Rig ability',
+'F:Virtuoso':'na|||||Proficient in at least two of Culture, Performance or Persuasion',
+'F:Calm and Collected':'rs|1|long|During long rest||Inspire ability',
+'F:Clear Focus':'rs|1|long|During long rest||Inspire ability',
+'F:Coordinated Fire':'bo|||||Inspire ability',
+'F:Defensive Motivation':'pa|||||Inspire ability',
+'F:Enduring Inspirations':'pa|||||Inspire ability',
+'F:Grim Resolve':'pa|||||Inspire ability',
+'F:Hard Day\'s Night':'pa|||||Inspire ability',
+'F:Quippy Comebacks':'pa|||||Inspire ability',
+'F:Skillful Explanations':'pa|1|short|||Inspire ability',
+'F:Armorer':'rs|1|long|During long rest||Jury Rig ability',
+'F:Chem Thrower':'rs|1|long|During long rest||Jury Rig ability',
+'F:Comms Tech':'pa|||||Jury Rig ability',
+'F:Grenadier':'up|||||Jury Rig ability',
+'F:Longarm Calibrations':'rs|1|long|During long rest||Jury Rig ability',
+'F:Minefield Expert':'pa|||||Jury Rig ability & Explosives skill',
+'F:Montage':'pa|||||Jury Rig ability',
+'F:Percussive Maintenance':'ac|||||Jury Rig ability',
+'F:Sidearm Calibrations':'rs|1|long|During long rest||Jury Rig ability',
+'F:Biohazard Disposal':'pa|||||First Aid ability',
+'F:Crash Training':'ac|1|enc|||First Aid ability',
+'F:Controlled Stimulants':'ac|||||First Aid ability',
+'F:Embolism':'ac|||||First Aid ability',
+'F:Improvised Medicine':'pa|||||First Aid ability',
+'F:Pharmaceuticals':'rs|||During short rest||First Aid ability',
+'F:Sedatives':'ac|||||First Aid ability',
+'F:Urgent Care':'pa|||||First Aid ability',
+'F:Vital Organ Trauma':'pa|||||First Aid ability',
+'F:A Moment\'s Thought':'rs|1|either|During either rest||Eureka ability',
+'F:Archaeologist':'ac|||||Eureka ability & Culture skill',
+'F:Astronomer':'bo|||||Eureka ability & Science skill',
+'F:Biologist':'ac|||||Eureka ability & Medicine skill',
+'F:Chemist':'ac|||||Eureka ability & Science skill',
+'F:Geologist':'re|||||Eureka ability & Science skill',
+'F:Hyper-Focus':'pa|||||Eureka ability',
+'F:Physicist':'pa|||||Eureka ability & Science skill',
+'F:Social Sciences':'pa|||||Eureka ability & Culture skill',
+'F:Camp Security':'rs|||During either rest||Survivalist ability & Perception skill',
+'F:Camouflage':'rs|||After either rest||Survivalist ability & Stealth skill',
+'F:Hide Tracks':'pa|||||Survivalist ability & Stealth skill',
+'F:Foraging':'ac|||||Survivalist ability & Stealth skill',
+'F:Ration Optimization':'rs|1|short|During short rest||Survivalist ability',
+'F:Ranger Tricks':'pa|||||Survivalist ability',
+'F:Rope Tricks':'pa|||||Survivalist ability & Stealth skill',
+'F:Tracking':'pa|||||Survivalist ability & Perception skill',
+'F:Xenosurvival':'rs|1|either|After either rest||CON 13+ & Survivalist ability',
+'F:Ambush':'rs|1|either|After either rest||Tactical Flexibility ability',
+'F:Assault Coordination':'pa|||||Tactical Flexibility ability',
+'F:Coordinated Response':'pa|||||Tactical Flexibility ability',
+'F:Defensive Posture':'pa|||||Tactical Flexibility ability',
+'F:Distracting Attacks':'bo|||||Tactical Flexibility ability',
+'F:Hit & Run':'bo|||||Tactical Flexibility ability',
+'F:Overwatchers':'bo|||||Tactical Flexibility ability',
+'F:Response Shot':'re|1|enc|||Tactical Flexibility ability',
+'F:Rush':'bo|||||Tactical Flexibility ability'};
+const RK_W={cl:'class',ac:'action',bo:'bonus',re:'reaction',rs:'rest',pa:'pass',up:'up',na:'na'};
+const RK_RS={short:'short',long:'long',mission:'mission',enc:'enc',either:'either'};
+function rkm(kind,n){const s=RKM[kind+':'+n];if(!s)return null;const a=s.split('|');return{w:RK_W[a[0]],u:a[1],r:a[2],rt:a[3],ch:a[4],req:a[5]}}
+function mt(kind,n,fb){const m=rkm(kind,n);return m&&m.w&&m.w!=='na'?m.w:fb}
+function mw(kind,n){const m=rkm(kind,n);return m?m.w:''}
+function reqOf(f){const m=rkm('F',f.n);return m&&m.req?m.req:f.req}
+function rtOf(n){for(const k of ['F','C','R','O']){const m=rkm(k,n);if(m&&m.rt)return m.rt}return''}
+
 const STAR='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" stroke-width="1.8" stroke-linejoin="round"/></svg>';
 function prefs(){C.pref=C.pref||{};return C.pref}
 function sortGet(t){return prefs()['sort_'+t]||(t==='abil'?'type':'cat')}
@@ -1515,7 +1872,7 @@ function listRow(t,e,i,arr,custom){const fav=favHas(t,e.key);
 function pipsFor(rk,nm,die){const r=rk&&D.res.find(x=>x.key===rk);
  return(die?`<button class="rbtn" ${onS('rollPlain','Inspire die',D.inspDie)}>Roll ${D.inspDie}</button>`:'')+(r?`<span class="boxes">${[...Array(r.max)].map((_,i)=>`<button class="ubox ${i<r.used?'used':''}" ${onS('toggleUse',r.key,i)} aria-label="Use ${esc(nm)}"></button>`).join('')}</span>`:'')}
 function abRow(e,arr,i,custom){const r=e.rk&&D.res.find(x=>x.key===e.rk);
- return listRow('abil',{key:e.n,n:e.n,type:e.type,d:e.d,src:e.src+(r?' • '+RESET_L[r.reset]+' • '+(r.max-r.used)+' of '+r.max+' left':''),pk:e.pk,pa:e.pa,extra:pipsFor(e.rk,e.n,e.die)},i,arr,custom)}
+ return listRow('abil',{key:e.n,n:e.n,type:e.type,d:e.d,src:e.src:e.src+(e.type==='rest'&&rtOf(e.n)?' • '+rtOf(e.n):'')+(r?' • '+RESET_L[r.reset]+' • '+(r.max-r.used)+' of '+r.max+' left':''),pk:e.pk,pa:e.pa,extra:pipsFor(e.rk,e.n,e.die)},i,arr,custom)}
 function eurekaHtml(){if(!D.hasEureka)return'';const mx=D.eurekaMax,cur=Math.min(C.eureka||0,mx);
  const ei=D.cls?D.cls.f.findIndex(f=>f[1]==='Eureka'):-1,eft=C.feats.find(f=>f.name==='Advanced Training: Scientist'),ep=C.cls==='scientist'&&ei>=0?`'feature',${ei}`:eft?`'feat','${eft.id}'`:`'feature',0`;
  return`<div class="sec">Eureka points</div><div class="res"><div class="rn" onclick="openPanel(${ep})"><b>Eureka</b><small>Add one when you fail an INT or WIS check. Spend one for advantage. Lost at the end of the mission.</small></div>
@@ -1560,7 +1917,7 @@ function tabFeats(){const mode=sortGet('feat'),classCat=D.cls?D.cls.feat:'';
  const cats=[...FEAT_CATS,...new Set(C.feats.map(f=>f.cat).filter(c=>!FEAT_CATS.includes(c)))];
  h+=filters([['cat','Category'],['az','A to Z'],['custom','My order']],mode,'setSortFeat');
  h+=`<p class="lhint">${mode==='custom'?'Use the arrows, or drag a row, to put things in your own order. Favourites always stay at the top.':'Tap the star to pin a favourite to the top. Tap a feat to read the full rules in the game log.'}</p>`;
- const items=C.feats.map((f,i)=>{const t=featType(f);return{key:f.id,n:f.name,type:t==='other'?'pass':t,cat:f.cat,pos:i,f}}),{fav,rest}=listSort('feat',items,mode,cats),cust=mode==='custom',grp=mode==='cat';
+ const items=C.feats.map((f,i)=>{const t=featType(f);return{key:f.id,n:f.name,type:mt('F',f.name,t==='other'?'pass':t),cat:f.cat,pos:i,f}}),{fav,rest}=listSort('feat',items,mode,cats),cust=mode==='custom',grp=mode==='cat';
  const row=(x,i,arr)=>listRow('feat',{key:x.key,n:x.n,type:x.type,d:x.f.desc||'',src:grp?'':x.f.cat,pk:'feat',pa:x.f.id,extra:pipsFor('f_'+x.f.id,x.n,false)},i,arr,cust);
  if(fav.length){h+=`<div class="sec">Favourites</div>`+fav.map((x,i)=>row(x,i,fav)).join('');if(!grp&&rest.length)h+=`<div class="sec">Everything else</div>`}
  let last=null;rest.forEach((x,i)=>{if(grp&&x.cat!==last){h+=`<div class="sec">${esc(x.cat)}</div>`;last=x.cat}h+=row(x,i,rest)});
@@ -1831,8 +2188,8 @@ res(key){const r=D.res.find(x=>x.key===key);if(!r)return'';const cust=key.starts
 addres(){return`<h2>Add a tracker</h2><p class="rule">For anything with limited uses the sheet doesn't track yet: a feat, a gadget, grenades, charges.</p>
  <div class="lbl">Name</div><input id="nr-n" style="margin-bottom:8px"><div class="fgrid"><div><div class="lbl">Uses</div><input id="nr-m" type="number" min="1" value="1"></div><div><div class="lbl">Resets on</div><select id="nr-r"><option value="short">Short rest</option><option value="long">Long rest</option><option value="mission">New mission</option><option value="none">Manual only</option></select></div></div>
  <div class="lbl">Description</div><textarea id="nr-d" rows="3"></textarea><div class="panel-actions"><button class="btn pri" onclick="addRes()">Add tracker</button></div>`},
-feat(id){const f=C.feats.find(x=>x.id===id);if(!f)return'';const book=FEATS.find(x=>x.n===f.name);const ty={action:'Action',bonus:'Bonus action',reaction:'Reaction',other:'Passive'}[featType(f)];
- let h=`<h2>${esc(f.name)}</h2><p class="rule">${esc(f.cat)}${+f.mp?' • '+f.mp+' MP':''} • ${ty}${book?' • '+esc(book.req):''}</p><p>${esc(f.desc||'')}</p>`;
+feat(id){const f=C.feats.find(x=>x.id===id);if(!f)return'';const book=FEATS.find(x=>x.n===f.name);const ty={TYL[mt('F',f.name,{action:'action',bonus:'bonus',reaction:'reaction'}[featType(f)]||'pass')];
+ let h=`<h2>${esc(f.name)}</h2><p class="rule">${esc(f.cat)}${+f.mp?' • '+f.mp+' MP':''} • ${ty}${book?' • '+esc(reqOf(book)):''}</p><p>${esc(f.desc||'')}</p>`;
  h+=custBlock('feat-'+id,`<div class="lbl">Name</div><input value="${esc(f.name)}" onchange="setFeat('${id}','name',this.value)" style="margin-bottom:8px">
  <div class="fgrid"><div><div class="lbl">Category</div><select onchange="setFeat('${id}','cat',this.value)">${FEAT_CATS.map(c=>`<option ${f.cat===c?'selected':''}>${c}</option>`).join('')}</select></div><div><div class="lbl">MP cost</div><input type="number" min="0" value="${+f.mp||0}" onchange="setFeat('${id}','mp',+this.value)"></div></div>
  <div class="lbl">Description</div><textarea rows="6" onchange="setFeat('${id}','desc',this.value)">${esc(f.desc||'')}</textarea>
@@ -1841,7 +2198,7 @@ feat(id){const f=C.feats.find(x=>x.id===id);if(!f)return'';const book=FEATS.find
 addfeat(cat){if(!UI.featf)UI.featf=cat||'General';const q=UI.featq.toLowerCase(),fc=UI.featf;
  const known={};C.feats.forEach(f=>{known[f.name]=(known[f.name]||0)+1});
  const list=FEATS.filter(f=>(fc==='All'||f.cat===fc)&&(!q||f.n.toLowerCase().includes(q)||f.d.toLowerCase().includes(q)));
- const row=f=>{const n=known[f.n]||0;return`<div class="res"><div class="rn" ${on('openPanel','featinfo',f.n)}><b>${esc(f.n)}</b><small>${f.mp} MP • ${esc(f.req)}</small></div>${n?`<span class="chip" style="margin-right:8px">Known ×${n}</span>`:''}<button class="btn sm ${n?'':'pri'}" ${onS('learnFeat',f.n)}>${n?'Learn again':'Learn'}</button></div>`};
+ const row=f=>{const n=known[f.n]||0;return`<div class="res"><div class="rn" ${on('openPanel','featinfo',f.n)}><b>${esc(f.n)}</b><small>${f.mp} MP • ${esc(reqOf(f))}</small></div>${n?`<span class="chip" style="margin-right:8px">Known ×${n}</span>`:''}<button class="btn sm ${n?'':'pri'}" ${onS('learnFeat',f.n)}>${n?'Learn again':'Learn'}</button></div>`};
  return`<h2>Feats</h2><p class="rule">${D.cls?`Your class picks from ${D.cls.feat} at certain levels, but any class can spend MP on any feat it qualifies for.`:'Choose a class in Manage to see which category it specializes in.'}</p>
  <input class="adr-search" placeholder="Search feats" value="${esc(UI.featq)}" oninput="UI.featq=this.value;renderFeatList()">
  <div class="filters" style="margin:8px 0">${['All',...FEAT_CATS.slice(0,-1)].map(c=>`<button class="${fc===c?'on':''}" ${on('setFeatFilter',c)}>${c}${D.cls&&c===D.cls.feat?' ★':''}</button>`).join('')}</div>
@@ -1851,12 +2208,12 @@ addfeat(cat){if(!UI.featf)UI.featf=cat||'General';const q=UI.featq.toLowerCase()
  <div class="lbl">Description</div><textarea id="nf-d" rows="4" placeholder="What the feat does."></textarea><div class="panel-actions"><button class="btn" onclick="addFeat()">Add custom feat</button></div>`},
 featinfo(name){const f=FEATS.find(x=>x.n===name);if(!f)return'';const n=C.feats.filter(x=>x.name===name).length;
  return`<h2>${esc(f.n)}</h2><p class="rule">${esc(f.cat)} • ${f.mp} MP • ${{action:'Action',bonus:'Bonus action',reaction:'Reaction',other:'Passive'}[f.t]}</p>
- <div class="kv"><span>Requirement</span><b>${esc(f.req)}</b></div><p style="margin-top:10px">${esc(f.d)}</p>
+ <div class="kv"><span>Requirement</span><b>${esc(reqOf(f))}</b></div><p style="margin-top:10px">${esc(f.d)}</p>
  <div class="panel-actions"><button class="btn sm" ${on('openPanel','addfeat',f.cat)}>← Back to list</button>${n?`<span class="chip">Known ×${n}</span>`:''}<button class="btn pri" ${on('learnFeat',f.n)}>${n?'Learn again':'Learn this feat'}</button></div>`}
 };
 function renderFeatList(){const q=UI.featq.toLowerCase(),fc=UI.featf||'General';const known={};C.feats.forEach(f=>{known[f.name]=(known[f.name]||0)+1});
  const list=FEATS.filter(f=>(fc==='All'||f.cat===fc)&&(!q||f.n.toLowerCase().includes(q)||f.d.toLowerCase().includes(q)));
- const row=f=>{const n=known[f.n]||0;return`<div class="res"><div class="rn" ${on('openPanel','featinfo',f.n)}><b>${esc(f.n)}</b><small>${f.mp} MP • ${esc(f.req)}</small></div>${n?`<span class="chip" style="margin-right:8px">Known ×${n}</span>`:''}<button class="btn sm ${n?'':'pri'}" ${onS('learnFeat',f.n)}>${n?'Learn again':'Learn'}</button></div>`};
+ const row=f=>{const n=known[f.n]||0;return`<div class="res"><div class="rn" ${on('openPanel','featinfo',f.n)}><b>${esc(f.n)}</b><small>${f.mp} MP • ${esc(reqOf(f))}</small></div>${n?`<span class="chip" style="margin-right:8px">Known ×${n}</span>`:''}<button class="btn sm ${n?'':'pri'}" ${onS('learnFeat',f.n)}>${n?'Learn again':'Learn'}</button></div>`};
  $('feat-list').innerHTML=list.length?list.map(row).join(''):'<p class="muted">No matches.</p>'}
 function setFeatFilter(c){UI.featf=c;renderSide()}
 function itemTags(c){const tags=[];
@@ -2216,7 +2573,7 @@ function useRes(key,d){const r=D.res.find(x=>x.key===key);C.res[key]=clamp(r.use
 function adjEureka(d){C.eureka=clamp(Math.min(C.eureka,D.eurekaMax)+d,0,D.eurekaMax);commit()}
 function addRes(){const n=$('nr-n').value.trim();if(!n)return toast('Give the tracker a name');C.customRes.push({id:uid(),name:n,max:Math.max(1,+$('nr-m').value||1),reset:$('nr-r').value,desc:$('nr-d').value});commit(false);openPanel('log');setTab('abilities')}
 function removeRes(id){C.customRes=C.customRes.filter(x=>x.id!==id);delete C.res['c_'+id];UI.panel={k:'log'};commit()}
-function resetRes(types){D.res.forEach(r=>{if(types.includes(r.reset))C.res[r.key]=0})}
+function resetRes(types){D.res.forEach(r=>{if(types.includes(r.reset)||r.reset==='enc'||(r.reset==='either'&&(types.includes('short')||types.includes('long'))))C.res[r.key]=0})}
 
 // rests
 function takeShortRest(){const auto=$('sr-auto')?$('sr-auto').checked:false;let msg=[];
