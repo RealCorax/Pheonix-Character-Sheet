@@ -482,6 +482,24 @@ details.grp[open]>summary::before{content:'▾'}
 .noteed{display:block;width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:3px;padding:8px 10px;line-height:1.5;outline:none;white-space:pre-wrap;word-break:break-word}
 .noteed:empty:before{content:attr(data-ph);color:var(--text3)}
 .noteed ul,.noteed ol{margin:4px 0;padding-left:22px;white-space:normal}
+.lhint{font-size:12.5px;color:var(--text3);margin:0 2px 8px;line-height:1.4}
+.lrow{display:flex;align-items:stretch;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:6px}
+.lrow.drag{cursor:grab}
+.lstar{flex:0 0 46px;display:flex;align-items:center;justify-content:center}
+.lstar svg{width:22px;height:22px;fill:none;stroke:var(--text3)}
+.lstar:hover svg{stroke:var(--amber2)}
+.lstar.on svg{fill:var(--amber2);stroke:var(--amber2)}
+.lmain{flex:1;min-width:0;padding:10px 12px 10px 0;cursor:pointer}
+.lmain:hover .lname{color:var(--acc2)}
+.ltop{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap}
+.lty{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.lname{font-size:16.5px;font-weight:700;line-height:1.25}
+.lx{margin-left:auto;display:inline-flex;align-items:center;gap:8px}
+.ldesc{font-size:14.5px;line-height:1.5;color:var(--text2);margin-top:4px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.lsrc{font-size:12.5px;color:var(--text3);margin-top:4px}
+.lmove{display:flex;flex-direction:column;justify-content:center;gap:4px;padding:6px 8px}
+.lmove button{width:36px;height:30px;border:1px solid var(--border2);border-radius:4px;background:var(--bg);color:var(--text);font-size:12px}
+.lmove button[disabled]{opacity:.3;pointer-events:none}
 
 </style>
 </head>
@@ -1463,12 +1481,41 @@ function abilityList(){const L=[],seen={};
  Object.entries(ADV_ABIL).forEach(([k,ab])=>{if(!advOf(k)||C.cls===k.toLowerCase()||ab==='Eureka')return;const f=CLASSES[k.toLowerCase()].f.find(x=>x[1]===ab);const ft=C.feats.find(x=>x.name==='Advanced Training: '+k);if(!f)return;add({n:ab,src:'Feat',type:f[2]==='other'?'pass':f[2],d:f[3],rk:RK_CLASS[ab],pk:'feat',pa:ft.id,die:ab==='Inspire'&&D.inspDie})});
  if(D.race)D.race.tr.forEach((t,i)=>{if(t[0]==='Claws')return;add({n:t[0],src:D.race.n,type:typeFromText(t[1]),d:t[1],rk:RK_RACE[t[0]],pk:'trait',pa:i})});
  D.origins.forEach(o=>add({n:o.ab,src:o.n+' origin',type:typeFromText(o.t),d:o.t,rk:o.use?'o_'+o.n:undefined,pk:'origin',pa:o.n}));
- C.feats.forEach(f=>{const ty=featType(f),u=featUse(f);if(ty==='other'&&!u)return;add({n:f.name,src:'Feat',type:ty==='other'?'pass':ty,d:f.desc||'',rk:u?'f_'+f.id:undefined,pk:'feat',pa:f.id})});
  return L}
-function abRow(e){const r=e.rk&&D.res.find(x=>x.key===e.rk);
- return`<div class="res"><div class="rn" ${on('openPanel',e.pk,e.pa)}><b>${esc(e.n)}</b><small>${esc(e.src)}${r?' • '+RESET_L[r.reset]+' • '+(r.max-r.used)+' of '+r.max+' left':''}</small><span class="rd">${esc(e.d)}</span></div>
-  ${e.die?`<button class="rbtn" ${onS('rollPlain','Inspire die',D.inspDie)}>Roll ${D.inspDie}</button>`:''}
-  ${r?`<div class="boxes">${[...Array(r.max)].map((_,i)=>`<button class="ubox ${i<r.used?'used':''}" ${onS('toggleUse',r.key,i)} aria-label="Use ${esc(e.n)}"></button>`).join('')}</div>`:''}</div>`}
+
+// ---------- shared: sort, favourites and "my order" for the Abilities and Feats tabs ----------
+const TYI={action:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="currentColor"/></svg>',bonus:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 10.5H1Z" fill="currentColor"/></svg>',reaction:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1 11 6 6 11 1 6Z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',pass:'<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'};
+const TYC={action:'var(--amber2)',bonus:'var(--acc2)',reaction:'var(--grn2)',pass:'var(--text3)'};
+const TYL={action:'Main action',bonus:'Bonus action',reaction:'Reaction',pass:'Always on'};
+const TYR={action:0,bonus:1,reaction:2,pass:3};
+const STAR='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+function prefs(){C.pref=C.pref||{};return C.pref}
+function sortGet(t){return prefs()['sort_'+t]||(t==='abil'?'type':'cat')}
+function setSortAbil(k){prefs().sort_abil=k;scheduleSave();renderTabs()}
+function setSortFeat(k){prefs().sort_feat=k;scheduleSave();renderTabs()}
+function favHas(t,k){return(prefs()['fav_'+t]||[]).indexOf(k)>=0}
+function favToggle(t,k){const p=prefs(),a=p['fav_'+t]=p['fav_'+t]||[],i=a.indexOf(k);if(i>=0)a.splice(i,1);else a.push(k);scheduleSave();renderTabs()}
+function ordIdx(t,k){const i=(prefs()['ord_'+t]||[]).indexOf(k);return i<0?1e6:i}
+function listSort(t,items,mode,cats){const ci=x=>{const i=cats.indexOf(x.cat);return i<0?99:i};
+ const c={type:(a,b)=>TYR[a.type]-TYR[b.type]||a.pos-b.pos,az:(a,b)=>a.n.localeCompare(b.n),cat:(a,b)=>ci(a)-ci(b)||a.n.localeCompare(b.n),custom:(a,b)=>ordIdx(t,a.key)-ordIdx(t,b.key)||a.pos-b.pos}[mode]||((a,b)=>a.pos-b.pos);
+ const r={fav:items.filter(x=>favHas(t,x.key)).sort(c),rest:items.filter(x=>!favHas(t,x.key)).sort(c)};
+ UI.lk=UI.lk||{};UI.lk[t]={fav:r.fav.map(x=>x.key),rest:r.rest.map(x=>x.key)};return r}
+function saveOrder(t){const L=UI.lk[t];prefs()['ord_'+t]=L.fav.concat(L.rest);scheduleSave();renderTabs()}
+function moveItem(t,k,d){const L=(UI.lk||{})[t];if(!L)return;const a=L.fav.indexOf(k)>=0?L.fav:L.rest,i=a.indexOf(k),j=i+d;if(j<0||j>=a.length)return;const x=a[i];a[i]=a[j];a[j]=x;saveOrder(t)}
+function dragStart(t,k,e){UI.drag={t,k};try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',k)}catch(x){}}
+function dropOn(t,k,e){e.preventDefault();const d=UI.drag;UI.drag=null;if(!d||d.t!==t||d.k===k)return;const L=UI.lk[t],a=L.fav.indexOf(k)>=0?L.fav:L.rest;if(a.indexOf(d.k)<0)return;a.splice(a.indexOf(d.k),1);a.splice(a.indexOf(k),0,d.k);saveOrder(t)}
+const evt=(name,fn,...a)=>`${name}="${esc(fn+'('+a.map(x=>JSON.stringify(x)).join(',')+',event)')}"`;
+// one list row: star, type icon, name, what it does (the original wording, up to 3 lines), where it comes from
+function listRow(t,e,i,arr,custom){const fav=favHas(t,e.key);
+ const mv=custom?`<div class="lmove"><button aria-label="Move up" ${i?'':'disabled'} ${onS('moveItem',t,e.key,-1)}>&#9650;</button><button aria-label="Move down" ${i<arr.length-1?'':'disabled'} ${onS('moveItem',t,e.key,1)}>&#9660;</button></div>`:'';
+ const dr=custom?`draggable="true" ${evt('ondragstart','dragStart',t,e.key)} ondragover="event.preventDefault()" ${evt('ondrop','dropOn',t,e.key)}`:'';
+ return`<div class="lrow ${custom?'drag':''}" ${dr}><button class="lstar ${fav?'on':''}" aria-label="${fav?'Remove from favourites':'Add to favourites'}" ${onS('favToggle',t,e.key)}>${STAR}</button>
+ <div class="lmain" ${on('openPanel',e.pk,e.pa)}><div class="ltop"><span class="lty" style="color:${TYC[e.type]}">${TYI[e.type]}${TYL[e.type]}</span><b class="lname">${esc(e.n)}</b><span class="lx">${e.extra||''}</span></div>
+ <div class="ldesc">${esc(e.d)}</div>${e.src?`<div class="lsrc">${esc(e.src)}</div>`:''}</div>${mv}</div>`}
+function pipsFor(rk,nm,die){const r=rk&&D.res.find(x=>x.key===rk);
+ return(die?`<button class="rbtn" ${onS('rollPlain','Inspire die',D.inspDie)}>Roll ${D.inspDie}</button>`:'')+(r?`<span class="boxes">${[...Array(r.max)].map((_,i)=>`<button class="ubox ${i<r.used?'used':''}" ${onS('toggleUse',r.key,i)} aria-label="Use ${esc(nm)}"></button>`).join('')}</span>`:'')}
+function abRow(e,arr,i,custom){const r=e.rk&&D.res.find(x=>x.key===e.rk);
+ return listRow('abil',{key:e.n,n:e.n,type:e.type,d:e.d,src:e.src+(r?' • '+RESET_L[r.reset]+' • '+(r.max-r.used)+' of '+r.max+' left':''),pk:e.pk,pa:e.pa,extra:pipsFor(e.rk,e.n,e.die)},i,arr,custom)}
 function eurekaHtml(){if(!D.hasEureka)return'';const mx=D.eurekaMax,cur=Math.min(C.eureka||0,mx);
  const ei=D.cls?D.cls.f.findIndex(f=>f[1]==='Eureka'):-1,eft=C.feats.find(f=>f.name==='Advanced Training: Scientist'),ep=C.cls==='scientist'&&ei>=0?`'feature',${ei}`:eft?`'feat','${eft.id}'`:`'feature',0`;
  return`<div class="sec">Eureka points</div><div class="res"><div class="rn" onclick="openPanel(${ep})"><b>Eureka</b><small>Add one when you fail an INT or WIS check. Spend one for advantage. Lost at the end of the mission.</small></div>
@@ -1476,26 +1523,17 @@ function eurekaHtml(){if(!D.hasEureka)return'';const mx=D.eurekaMax,cur=Math.min
   ${mx?`<div class="boxes" style="justify-content:flex-start;max-width:none;margin:6px 0">${[...Array(mx)].map((_,i)=>`<button class="ubox ${i<cur?'used':''}" style="width:26px;height:26px" ${onS('setEureka',i+1)} aria-label="Set Eureka to ${i+1}"></button>`).join('')}</div>`:`<div class="empty">Your INT and WIS modifiers are 0 or less, so you can't hold Eureka points yet.</div>`}
   <div class="filters"><button ${on('adjEureka',1)}>+1 Failed an INT or WIS check</button><button ${on('adjEureka',-1)}>Spent 1</button></div>`}
 function setEureka(n){const cur=Math.min(C.eureka||0,D.eurekaMax);C.eureka=clamp(cur===n?n-1:n,0,D.eurekaMax);commit()}
-const SUB_L={all:'All',action:'Actions',bonus:'Bonus actions',reaction:'Reactions',limited:'Limited use',pass:'Always on'};
-function subOf(e){return e.rk&&D.res.some(x=>x.key===e.rk)?'limited':e.type}
-function limitedHtml(live){
- let h=`<div class="sec"><span>Limited use</span><span style="display:flex;gap:6px"><button class="btn sm" ${on('openPanel','addres')}>Add tracker</button><button class="btn sm" ${on('openPanel','newmission')}>New mission</button></span></div>`+eurekaHtml();
- const g=live.filter(e=>subOf(e)==='limited'),cu=D.res.filter(r=>r.src==='Custom');
- h+=g.map(abRow).join('');
- if(cu.length)h+=`<div class="sec">Your trackers</div>`+cu.map(resRow).join('');
- if(!g.length&&!cu.length&&!D.hasEureka)h+=`<div class="empty">Nothing with limited uses yet. Add your own with Add tracker.</div>`;
+function tabAbilities(){const mode=sortGet('abil'),list=abilityList(),live=list.filter(e=>!e.locked);let h=eurekaHtml();
+ h+=`<div class="sec"><span>Abilities</span><span style="display:flex;gap:6px"><button class="btn sm" ${on('openPanel','addres')}>Add tracker</button><button class="btn sm" ${on('openPanel','newmission')}>New mission</button></span></div>`;
+ if(!list.length&&!C.customRes.length)return h+`<div class="empty">No abilities yet. Choose a class and race in Manage.</div>`;
+ h+=filters([['type','When you use it'],['az','A to Z'],['custom','My order']],mode,'setSortAbil');
+ h+=`<p class="lhint">${mode==='custom'?'Use the arrows, or drag a row, to put things in your own order. Favourites always stay at the top.':'Tap the star to pin a favourite to the top. Tap an ability to read the full rules in the game log.'}</p>`;
+ const items=live.map((e,i)=>({key:e.n,n:e.n,type:e.type,pos:i,e})),{fav,rest}=listSort('abil',items,mode,[]),cust=mode==='custom',grp=mode==='type';
+ if(fav.length){h+=`<div class="sec">Favourites</div>`+fav.map((x,i)=>abRow(x.e,fav,i,cust)).join('');if(!grp&&rest.length)h+=`<div class="sec">Everything else</div>`}
+ let last=null;rest.forEach((x,i)=>{if(grp&&x.type!==last){h+=`<div class="sec">${TYL[x.type]}</div>`;last=x.type}h+=abRow(x.e,rest,i,cust)});
+ const cu=D.res.filter(r=>r.src==='Custom');if(cu.length)h+=`<div class="sec">Your trackers</div>`+cu.map(resRow).join('');
+ const lk=list.filter(e=>e.locked);if(lk.length)h+=`<div class="sec">Unlocks later</div>`+lk.map(e=>`<div class="feat" style="opacity:.55" ${on('openPanel',e.pk,e.pa)}><div class="fn">${esc(e.n)}</div><div class="fs">Level ${e.lvl}</div></div>`).join('');
  return h}
-function tabAbilities(){const list=abilityList(),F=UI.filter&&SUB_L[UI.filter]?UI.filter:'all';
- const live=list.filter(e=>!e.locked),cnt=k=>k==='all'?0:live.filter(e=>subOf(e)===k).length+(k==='limited'?(D.hasEureka?1:0)+D.res.filter(r=>r.src==='Custom').length:0);
- let h=filters(Object.keys(SUB_L).map(k=>[k,SUB_L[k]+(cnt(k)?' ('+cnt(k)+')':'')]),F,'setFilter');
- if(!list.length&&!C.customRes.length&&!D.hasEureka)return h+`<div class="empty">No abilities yet. Choose a class and race in Manage.</div>`;
- const lockedOf=k=>{const lk=list.filter(e=>e.locked&&(k==='all'||subOf(e)===k));return lk.length?`<div class="sec">Unlocks later</div>`+lk.map(e=>`<div class="feat" style="opacity:.55" ${on('openPanel',e.pk,e.pa)}><div class="fn">${esc(e.n)}</div><div class="fs">Level ${e.lvl}</div></div>`).join(''):''};
- if(F==='limited')return h+limitedHtml(live);
- if(F==='all'){h+=limitedHtml(live);
-  ['action','bonus','reaction','pass'].forEach(t=>{const g=live.filter(e=>subOf(e)===t);if(g.length)h+=`<div class="sec">${SUB_L[t]}</div>`+g.map(abRow).join('')});
-  return h+lockedOf('all')}
- const g=live.filter(e=>subOf(e)===F);
- return h+(g.length?g.map(abRow).join(''):`<div class="empty">Nothing here yet.</div>`)+lockedOf(F)}
 
 
 
@@ -1516,15 +1554,18 @@ function tabInventory(){const cap=D.loadCap,b=D.bulk,pct=cap?Math.min(100,b/cap*
  h+=`<div class="kitl" style="margin-top:8px">${extra.map(k=>`<label><input type="checkbox" ${C.kit[k]!==false?'checked':''} ${on('toggleKit',k)}> ${esc(k)}</label>`).join('')}</div>`;
  return h}
 
-function grpToggle(k,o){UI.go=UI.go||{};UI.go[k]=o}
-function grp(k,title,count,body,def){const o=UI.go&&UI.go[k]!==undefined?UI.go[k]:def;
- return`<details class="grp" ${o?'open':''} ontoggle="grpToggle('${k}',this.open)"><summary class="sec"><span>${title}</span><span class="muted">${count}</span></summary>${body}</details>`}
-function tabFeats(){const classCat=D.cls?D.cls.feat:'';
+function tabFeats(){const mode=sortGet('feat'),classCat=D.cls?D.cls.feat:'';
  let h=`<div class="sec"><span>My feats</span><button class="btn sm pri" ${on('openPanel','addfeat',classCat||'General')}>Add feat</button></div>`+atkFeatsHtml();
- if(!C.feats.length&&D.lvl<5)h+=`<div class="empty">No feats yet. Use Add feat to browse the list and pick one.</div>`;
+ if(!C.feats.length)return h+`<div class="empty">${D.lvl>=5?'No bought feats yet. Use Add feat to browse the list.':'No feats yet. Use Add feat to browse the list and pick one.'}</div>`;
  const cats=[...FEAT_CATS,...new Set(C.feats.map(f=>f.cat).filter(c=>!FEAT_CATS.includes(c)))];
- cats.forEach(c=>{const v=C.feats.filter(f=>f.cat===c);if(v.length)h+=grp('m-'+c,esc(c),v.length,v.map(featItem).join(''),C.feats.length<=10)});
+ h+=filters([['cat','Category'],['az','A to Z'],['custom','My order']],mode,'setSortFeat');
+ h+=`<p class="lhint">${mode==='custom'?'Use the arrows, or drag a row, to put things in your own order. Favourites always stay at the top.':'Tap the star to pin a favourite to the top. Tap a feat to read the full rules in the game log.'}</p>`;
+ const items=C.feats.map((f,i)=>{const t=featType(f);return{key:f.id,n:f.name,type:t==='other'?'pass':t,cat:f.cat,pos:i,f}}),{fav,rest}=listSort('feat',items,mode,cats),cust=mode==='custom',grp=mode==='cat';
+ const row=(x,i,arr)=>listRow('feat',{key:x.key,n:x.n,type:x.type,d:x.f.desc||'',src:grp?'':x.f.cat,pk:'feat',pa:x.f.id,extra:pipsFor('f_'+x.f.id,x.n,false)},i,arr,cust);
+ if(fav.length){h+=`<div class="sec">Favourites</div>`+fav.map((x,i)=>row(x,i,fav)).join('');if(!grp&&rest.length)h+=`<div class="sec">Everything else</div>`}
+ let last=null;rest.forEach((x,i)=>{if(grp&&x.cat!==last){h+=`<div class="sec">${esc(x.cat)}</div>`;last=x.cat}h+=row(x,i,rest)});
  return h}
+
 
 function ta(path,label,ph,rows=5){const v=path.split('.').reduce((o,k)=>o?.[k],C)||'';return`<div class="sec">${label}</div><textarea rows="${rows}" placeholder="${esc(ph)}" oninput="setField('${path}',this.value)">${esc(v)}</textarea>`}
 function tabBackground(){return ta('bg.traits','Personality traits','How do they act? What do people notice first?',3)+ta('bg.ideals','Ideals','What do they believe in?',2)+ta('bg.bonds','Bonds','Who or what do they care about?',2)+ta('bg.flaws','Flaws','Weaknesses, vices, blind spots.',2)+ta('bg.appearance','Appearance','Physical description and distinguishing features.',3)+ta('bg.allies','Allies & organisations','Contacts, factions, standing.',3)+ta('bg.story','Backstory','Where did they come from? Why the Phoenix Site?',6)}
