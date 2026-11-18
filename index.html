@@ -1872,7 +1872,7 @@ function listRow(t,e,i,arr,custom){const fav=favHas(t,e.key);
 function pipsFor(rk,nm,die){const r=rk&&D.res.find(x=>x.key===rk);
  return(die?`<button class="rbtn" ${onS('rollPlain','Inspire die',D.inspDie)}>Roll ${D.inspDie}</button>`:'')+(r?`<span class="boxes">${[...Array(r.max)].map((_,i)=>`<button class="ubox ${i<r.used?'used':''}" ${onS('toggleUse',r.key,i)} aria-label="Use ${esc(nm)}"></button>`).join('')}</span>`:'')}
 function abRow(e,arr,i,custom){const r=e.rk&&D.res.find(x=>x.key===e.rk);
- return listRow('abil',{key:e.n,n:e.n,type:e.type,d:e.d,src:e.src:e.src+(e.type==='rest'&&rtOf(e.n)?' • '+rtOf(e.n):'')+(r?' • '+RESET_L[r.reset]+' • '+(r.max-r.used)+' of '+r.max+' left':''),pk:e.pk,pa:e.pa,extra:pipsFor(e.rk,e.n,e.die)},i,arr,custom)}
+ return listRow('abil',{key:e.n,n:e.n,type:e.type,d:e.d,src:e.src+(e.type==='rest'&&rtOf(e.n)?' • '+rtOf(e.n):'')+(r?' • '+RESET_L[r.reset]+' • '+(r.max-r.used)+' of '+r.max+' left':''),pk:e.pk,pa:e.pa,extra:pipsFor(e.rk,e.n,e.die)},i,arr,custom)}
 function eurekaHtml(){if(!D.hasEureka)return'';const mx=D.eurekaMax,cur=Math.min(C.eureka||0,mx);
  const ei=D.cls?D.cls.f.findIndex(f=>f[1]==='Eureka'):-1,eft=C.feats.find(f=>f.name==='Advanced Training: Scientist'),ep=C.cls==='scientist'&&ei>=0?`'feature',${ei}`:eft?`'feat','${eft.id}'`:`'feature',0`;
  return`<div class="sec">Eureka points</div><div class="res"><div class="rn" onclick="openPanel(${ep})"><b>Eureka</b><small>Add one when you fail an INT or WIS check. Spend one for advantage. Lost at the end of the mission.</small></div>
