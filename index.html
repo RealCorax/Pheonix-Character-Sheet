@@ -545,8 +545,26 @@ display:flex;align-items:center;gap:8px;width:100%;text-align:left;font-weight:6
 .addsec .chip{margin:0 0 0 auto}
 .totop svg{
 width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.lpin,.lrow.lmin .lpin{width:24px;height:24px}
-.lpin svg{width:10px;height:10px}
+.lpin,.lchev,.lrow.lmin .lpin,.lrow.lmin .lchev{width:36px;height:36px}
+.lpin svg,.lchev svg{width:20px;height:20px}
+.lrail{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:12px;align-self:stretch;min-width:120px;padding:10px 12px 10px 6px}
+.lrail .rt{display:flex;gap:6px}
+.lrail .ra{display:flex;flex-direction:column;gap:6px;align-self:stretch}
+.abtn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:36px;padding:0 12px;border:1px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text);font:inherit;font-size:14px;font-weight:600;white-space:nowrap}
+.abtn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.abtn.roll svg circle{fill:currentColor;stroke:none}
+.abtn.roll:hover{border-color:var(--acc2);color:var(--acc2)}
+.abtn.use{background:color-mix(in srgb,var(--acc) 16%,transparent);border-color:var(--acc2);color:var(--acc2)}
+.abtn.use:hover{background:color-mix(in srgb,var(--acc) 28%,transparent)}
+.abtn.use.spent{background:transparent;border-color:var(--border);color:var(--text3);font-weight:500}
+.abtn .pp{display:inline-flex;gap:3px}
+.abtn .pp i{width:7px;height:7px;border-radius:50%;border:1.5px solid currentColor;display:block}
+.abtn .pp i.on{background:currentColor}
+.abtn .pn{font-size:12.5px;font-weight:500;opacity:.85}
+.lrow.lmin .lrail{flex-direction:row;align-items:center;justify-content:flex-end;gap:10px;align-self:center;min-width:0;padding:4px 8px 4px 0}
+.lrow.lmin .lrail .ra{flex-direction:row;order:-1}
+.lrow.lmin .abtn{height:32px;padding:0 10px;font-size:13.5px}
+
 .lmain select{max-width:100%}
 
 
@@ -1986,7 +2004,18 @@ const PIN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 9V4h1c.55 0 
 const CHV='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
 function topBtn(){return`<button class="totop" ${on('toTop')}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Back to top</button>`}
 function toTop(){window.scrollTo({top:0,behavior:'smooth'})}
-function itemRow(e,i,arr,custom,board){const fav=favHas('abil',e.key),col=board&&(prefs().col||{})[e.key],pinned=isPinned(e);
+const DICE='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="15" cy="15" r="1.2"/></svg>';
+const BOLT='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg>';
+const TICK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+function actBtns(e,r){
+ const roll=e.die?`<button class="abtn roll" ${onS('rollPlain','Inspire die',D.inspDie)}>${DICE}Roll ${D.inspDie}</button>`:'';
+ let use='';
+ if(r){const left=r.max-r.used,spent=left<=0,idx=spent?r.max-1:r.used;
+  const pips=r.max>1&&r.max<=4?`<span class="pp">${[...Array(r.max)].map((_,i)=>`<i class="${i<left?'on':''}"></i>`).join('')}</span>`:(r.max>4?`<span class="pn">${left}/${r.max}</span>`:'');
+  use=`<button class="abtn use ${spent?'spent':''}" aria-label="${spent?'Used. Tap to undo':'Mark as used'}: ${esc(e.n)}, ${left} of ${r.max} left" title="${spent?'Used. Tap to undo':'Mark as used'}" ${onS('toggleUse',r.key,idx)}>${spent?TICK:BOLT}${spent?'Used':'Use'}${pips}</button>`}
+ return roll||use?`<div class="ra">${roll}${use}</div>`:''}
+function itemRow(e,i,arr,custom,board){
+const fav=favHas('abil',e.key),col=board&&(prefs().col||{})[e.key],pinned=isPinned(e);
  const r=e.rk&&D.res.find(x=>x.key===e.rk);
  const src=e.src+(e.type==='rest'&&rtOf(e.n)?' \u2022 '+rtOf(e.n):'')+(r?' \u2022 '+RESET_L[r.reset]+' \u2022 '+(r.max-r.used)+' of '+r.max+' left':'');
  const mv=custom?`<div class="lmove"><button aria-label="Move up" ${i?'':'disabled'} ${onS('moveItem','abil',e.key,-1)}>&#9650;</button><button aria-label="Move down" ${i<arr.length-1?'':'disabled'} ${onS('moveItem','abil',e.key,1)}>&#9660;</button></div>`:'';
@@ -1994,8 +2023,9 @@ function itemRow(e,i,arr,custom,board){const fav=favHas('abil',e.key),col=board&
  const pin=e.locked?'':`<button class="lpin ${pinned?'on':''}" aria-label="${pinned?'Pinned to Actions. Tap to unpin':'Pin to Actions'}" title="${pinned?'Pinned to Actions. Tap to unpin':'Pin to Actions'}" ${onS('pinToggle',e.key)}>${PIN}</button>`;
  const chev=board?`<button class="lchev ${col?'':'up'}" aria-label="${col?'Show details':'Show only the name'}" title="${col?'Show details':'Show only the name'}" ${onS('colToggle',e.key)}>${CHV}</button>`:'';
  return`<div class="lrow ${col?'lmin':''} ${custom?'drag':''}" ${dr}><button class="lstar ${fav?'on':''}" aria-label="${fav?'Remove from favourites':'Add to favourites'}" ${onS('favToggle','abil',e.key)}>${STAR}</button>
- <div class="lmain" ${e.pk?on('openPanel',e.pk,e.pa):'style="cursor:default"'}><div class="ltop"><span class="lty" style="color:${TYC[e.type]}">${TYI[e.type]}${TYL[e.type]}</span><b class="lname">${esc(e.n)}</b>${col?'':`<span class="lx">${pipsFor(e.rk,e.n,e.die)}</span>`}</div>
- ${col?'':`<div class="ldesc">${esc(e.d)}</div>${e.body||''}<div class="lsrc">${esc(src)}</div>`}</div><div class="lside">${pin}${chev}</div>${mv}</div>`}
+ <div class="lmain" ${e.pk?on('openPanel',e.pk,e.pa):'style="cursor:default"'}><div class="ltop"><span class="lty" style="color:${TYC[e.type]}">${TYI[e.type]}${TYL[e.type]}</span><b class="lname">${esc(e.n)}</b></div>
+ ${col?'':`<div class="ldesc">${esc(e.d)}</div>${e.body||''}<div class="lsrc">${esc(src)}</div>`}</div><div class="lrail"><div class="rt">${pin}${chev}</div>${actBtns(e,r)}</div>${mv}</div>`}
+
 function itemRowOld(e,i,arr,custom,board){
 const fav=favHas('abil',e.key),col=board&&(prefs().col||{})[e.key],pinned=isPinned(e);
  const r=e.rk&&D.res.find(x=>x.key===e.rk);
