@@ -177,6 +177,17 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 .dot.p{background:var(--acc2);border-color:var(--acc2)}
 .dot.e{background:var(--amber2);border-color:var(--amber2);box-shadow:0 0 0 2px var(--bg2),0 0 0 3.5px var(--amber2)}
 .dot.h{border-style:dashed;border-color:var(--acc2)}
+.pd{display:inline-flex;align-items:center;gap:4px}
+.pd .dot.e{box-shadow:none}
+.sk .dotb{align-self:stretch;width:100%}
+.pcyc{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:7px 0;font-size:13.5px}
+.pcyc small{margin-left:auto;color:var(--text3);font-size:12px}
+.pcyc:hover span:not(.pd){color:var(--acc2)}
+.lvlbox{display:flex;align-items:center;gap:6px}
+.lvlbox input{width:54px;text-align:center}
+.lvlbox input::-webkit-inner-spin-button,.lvlbox input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.lvlbox .rbtn{padding:7px 12px}
+
 .note{font-size:11.5px;color:var(--text3);text-align:center;padding:6px 8px 0}
 .sense{display:flex;align-items:center;gap:8px;margin:6px 10px 0;border:1px solid var(--border);border-radius:3px;background:var(--bg);cursor:pointer}
 .sense:hover{border-color:var(--acc2)}
@@ -1431,7 +1442,7 @@ function renderColA(){let h=`<div class="box"><div class="saves">${ABILS.map(a=>
    <div class="boxtitle" ${on('openPanel','profs')}>Proficiencies &amp; training</div></div>`;$('col-a').innerHTML=h}
 
 function renderColB(){$('col-b').innerHTML=`<div class="box"><div class="skills"><div class="sk-head"><span>PROF</span><span>MOD</span><span>SKILL</span><span style="text-align:center">BONUS</span></div>
- ${SKILLS.map(s=>{const k=D.skills[s.n];return`<div class="sk"><button class="dotb" ${on('cycleSkill',s.n)} title="Toggle proficiency (none, proficient, expertise)">${k.half&&!k.pl?'<span class="dot h"></span>':profDot(k.pl)}</button>
+ ${SKILLS.map(s=>{const k=D.skills[s.n];return`<div class="sk"><button class="dotb" ${on('cycleSkill',s.n)} title="Toggle proficiency (none, proficient, expertise)">${profDots(k.pl,k.half)}</button>
   <span class="ab">${AB(k.ab)}</span><span class="nm" ${on('openPanel','skill',s.n)}>${s.n}</span><button class="rollv" ${on('rollSkill',s.n)} title="Roll ${s.n}">${sgn(k.v)}</button></div>`}).join('')}</div>
  <div class="boxtitle" ${on('openPanel','skillinfo')}>Skills</div></div>`}
 
@@ -2211,7 +2222,7 @@ ac(){const b=D.body;return`<h2>Armour class: ${D.ac}</h2><p>How hard you are to 
 
 profs(){const P=C.profs;return`<h2>Proficiencies &amp; training</h2><p class="rule">Filled in from your class when you choose it (Manage character). Tick anything extra from your race, origins or feats.</p>
  <h3>Armour</h3><div class="kitl">${[['light','Light'],['heavy','Heavy']].map(([k,l])=>`<label><input type="checkbox" ${P['armor'+(k==='light'?'Light':'Heavy')]?'checked':''} ${on('toggleArmorProf',k)}> ${l}</label>`).join('')}</div>
- <h3>Weapons</h3><div class="kitl">${Object.entries(WEAPON_GROUPS).map(([k,l])=>`<label><input type="checkbox" ${P.weapons[k]?'checked':''} ${on('toggleWeaponProf',k)}> ${l}</label>`).join('')}</div>
+ <h3>Weapons</h3><div class="kitl">${Object.entries(WEAPON_GROUPS).map(([k,l])=>`<button class="pcyc" ${on('cycleWeaponProf',k)} title="Tap to change: not proficient, proficient, expertise">${profDots(wpl(k),0)}<span>${l}</span><small>${['','Proficient','Expertise'][wpl(k)]}</small></button>`).join('')}</div>
  <h3>Tools</h3><div class="kitl">${TOOLS.map(t=>`<label><input type="checkbox" ${P.tools.includes(t)?'checked':''} ${on('toggleTool',t)}> ${t}</label>`).join('')}</div>
  <h3>Languages</h3>${['Milky Way','Kigal Galaxy'].map(g=>`<div class="lbl" style="margin:8px 0 4px">${g}</div><div class="kitl">${LANGUAGES.filter(l=>l.g===g).map(l=>`<label><input type="checkbox" ${P.languages.includes(l.n)?'checked':''} ${on('toggleLanguage',l.n)}> ${esc(l.n)}${l.note?` <span class="muted" style="font-size:11px">(${esc(l.note)})</span>`:''}</label>`).join('')}</div>`).join('')}
  <h3>Other</h3><textarea rows="2" placeholder="Anything unusual: a specific alien weapon, a local dialect..." oninput="setField('profs.other',this.value)" onchange="commit(false)">${esc(P.other||'')}</textarea>
@@ -2276,7 +2287,7 @@ manage(){const oo=(slot)=>{const cur=C.origins[slot];const other=C.origins[1-slo
  <div class="lbl">Portrait</div><div class="frow"><div class="portrait" style="background-image:${C.portrait?'url('+C.portrait+')':'none'}"></div><button class="btn" onclick="$('portraitUp').click()">Upload</button>${C.portrait?btn('Remove','setVal',['portrait',''],'btn sm'):''}<input type="file" id="portraitUp" class="hidden" accept="image/*" onchange="loadPortrait(event)"></div>
  <div class="fgrid"><div><div class="lbl">Race</div><select onchange="setRace(this.value)"><option value="">Choose race</option>${Object.entries(RACES).map(([k,r])=>`<option value="${k}" ${C.race===k?'selected':''}>${esc(r.n)}</option>`).join('')}</select></div>
  <div><div class="lbl">Class</div><select onchange="setClass(this.value)"><option value="">Choose class</option>${Object.entries(CLASSES).map(([k,c])=>`<option value="${k}" ${C.cls===k?'selected':''}>${c.n}</option>`).join('')}</select></div></div>
- <div class="fgrid"><div><div class="lbl">Level</div><input type="number" min="1" max="20" value="${D.lvl}" onchange="setLevel(this.value)"></div><div><div class="lbl">Hit die</div><input disabled value="d${D.hdie}"></div></div>
+ <div class="fgrid"><div><div class="lbl">Level</div><div class="lvlbox"><button class="rbtn" aria-label="Level down" ${on('lvlAdj',-1)}>\u2212</button><input type="number" min="1" max="20" value="${D.lvl}" onchange="setLevel(this.value)"><button class="rbtn" aria-label="Level up" ${on('lvlAdj',1)}>+</button></div></div><div><div class="lbl">Hit die</div><input disabled value="d${D.hdie}"></div></div>
  <h3>Origins (two, different categories)</h3><div class="fgrid"><div>${oo(0)}</div><div>${oo(1)}</div></div>
  ${D.origins.map(o=>`<p class="rule" style="margin-bottom:4px"><b>${esc(o.n)}</b>: ${esc(o.a)}. ${esc(o.ab)}.</p>`).join('')}
  <h3>Ability scores</h3><div class="fgrid" style="grid-template-columns:repeat(3,1fr)">${ABILS.map(a=>`<div><div class="lbl">${AB(a.k)}</div><input type="number" min="1" max="30" value="${C.scores[a.k]}" onchange="setScore('${a.k}',this.value)"></div>`).join('')}</div>
@@ -2672,6 +2683,7 @@ function setSkillProf(n,v){C.skillProf[n]=v;commit()}
 function setSkillAbil(n,v){if(v)C.skillAbil[n]=v;else delete C.skillAbil[n];commit()}
 function toggleFlag(k){C[k]=!C[k];commit()}
 function setLevel(v){C.level=clamp(parseInt(v)||1,1,20);commit()}
+function lvlAdj(d){setLevel((+C.level||1)+d)}
 function setRace(v){C.race=v;C.origins=C.origins.map(o=>ORIGINS[o]?.req&&!ORIGINS[o].req.includes(v)?'':o);commit()}
 function setClass(v){const first=!C.cls;C.cls=v;if(v)applyClassDefaults(true);else commit()}
 function applyClassDefaults(quiet){const c=CLASSES[C.cls];if(!c)return;C.saveProf={};c.saves.forEach(k=>C.saveProf[k]=true);
@@ -2722,6 +2734,10 @@ function removeDefense(i){C.defenses.splice(i,1);commit(false);renderSide()}
 // proficiencies
 function toggleArmorProf(kind){const k='armor'+(kind==='light'?'Light':'Heavy');C.profs[k]=!C.profs[k];commit()}
 function toggleWeaponProf(k){C.profs.weapons[k]=!C.profs.weapons[k];commit()}
+function wpl(k){const v=C.profs.weapons[k];return v===2?2:v?1:0}
+function cycleWeaponProf(k){C.profs.weapons[k]=[true,2,false][wpl(k)];commit()}
+function profDots(pl,half){return`<span class="pd"><span class="dot ${half&&!pl?'h':pl===2?'e':pl===1?'p':''}"></span><span class="dot ${pl===2?'e':''}"></span></span>`}
+
 function toggleTool(n){const t=C.profs.tools;C.profs.tools=t.includes(n)?t.filter(x=>x!==n):[...t,n];commit()}
 function toggleLanguage(n){const l=C.profs.languages;C.profs.languages=l.includes(n)?l.filter(x=>x!==n):[...l,n];commit()}
 
