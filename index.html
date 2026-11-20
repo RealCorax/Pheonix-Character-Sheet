@@ -519,6 +519,18 @@ details.grp[open]>summary::before{content:'▾'}
 .lpin{border:1px solid var(--border2);border-radius:4px;background:var(--bg);color:var(--text2);font-size:12.5px;padding:7px 10px;min-height:36px;white-space:nowrap}
 .lpin.on{border-color:var(--grn2);color:var(--grn2)}
 .lrow.lmin .lmain{padding:6px 8px 6px 0}
+/* Action type colours: the same five in every theme. Each card is a light tint of its colour over the theme's own panel colour. */
+:root{--tc-action:#E6B422;--tc-bonus:#46C46B;--tc-reaction:#D6459D;--tc-rest:#28B6D6;--tc-pass:#8D95A3;--tc-tint:14%;--tc-label:72%}
+body.lighttheme{--tc-label:42%}
+.lrow.ty-class,.lrow.ty-action{--tc:var(--tc-action)}
+.lrow.ty-bonus{--tc:var(--tc-bonus)}
+.lrow.ty-reaction{--tc:var(--tc-reaction)}
+.lrow.ty-rest{--tc:var(--tc-rest)}
+.lrow.ty-pass,.lrow.ty-up{--tc:var(--tc-pass)}
+.lrow[class*="ty-"]{background:color-mix(in srgb,var(--tc) var(--tc-tint),var(--bg2));border-color:color-mix(in srgb,var(--tc) 38%,var(--border))}
+.lrow[class*="ty-"] .lty{color:color-mix(in srgb,var(--tc) var(--tc-label),var(--text))!important}
+.lrow[class*="ty-"] .lsrc{color:color-mix(in srgb,var(--text3) 45%,var(--text2))}
+
 .lrow{align-items:center}
 .lrow:not(.lmin) .lstar{align-self:stretch}
 .lrow:not(.lmin) .lmain{align-self:stretch}
@@ -2029,7 +2041,7 @@ const fav=favHas('abil',e.key),col=board&&(prefs().col||{})[e.key],pinned=isPinn
  const dr=custom?`draggable="true" ${evt('ondragstart','dragStart','abil',e.key)} ondragover="event.preventDefault()" ${evt('ondrop','dropOn','abil',e.key)}`:'';
  const pin=e.locked?'':`<button class="lpin ${pinned?'on':''}" aria-label="${pinned?'Pinned to Actions. Tap to unpin':'Pin to Actions'}" title="${pinned?'Pinned to Actions. Tap to unpin':'Pin to Actions'}" ${onS('pinToggle',e.key)}>${PIN}</button>`;
  const chev=board?`<button class="lchev ${col?'':'up'}" aria-label="${col?'Show details':'Show only the name'}" title="${col?'Show details':'Show only the name'}" ${onS('colToggle',e.key)}>${CHV}</button>`:'';
- return`<div class="lrow ${col?'lmin':''} ${custom?'drag':''}" ${dr}><button class="lstar ${fav?'on':''}" aria-label="${fav?'Remove from favourites':'Add to favourites'}" ${onS('favToggle','abil',e.key)}>${STAR}</button>
+ return`<div class="lrow ty-${e.type} ${col?'lmin':''} ${custom?'drag':''}" ${dr}><button class="lstar ${fav?'on':''}" aria-label="${fav?'Remove from favourites':'Add to favourites'}" ${onS('favToggle','abil',e.key)}>${STAR}</button>
  <div class="lmain" ${e.pk?on('openPanel',e.pk,e.pa):'style="cursor:default"'}><div class="ltop"><span class="lty" style="color:${TYC[e.type]}">${TYI[e.type]}${TYL[e.type]}</span><b class="lname">${esc(e.n)}</b></div>
  ${col?'':`<div class="ldesc">${esc(e.d)}</div>${e.body||''}<div class="lsrc">${esc(src)}</div>`}</div><div class="lrail"><div class="rt">${pin}${chev}</div>${actBtns(e,r)}</div>${mv}</div>`}
 
