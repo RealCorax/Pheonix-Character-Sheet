@@ -2278,14 +2278,14 @@ item(id){const it=C.inv.find(i=>i.id===id);if(!it)return'<p class="muted">Item n
  return h},
 
 additem(){const q=UI.addq.toLowerCase(),t=UI.addt;const list=allCatalog().filter(c=>(t==='all'||c.t===t)&&(!q||c.n.toLowerCase().includes(q)||(c.d||'').toLowerCase().includes(q)));
- return`<h2>Add items</h2><h3 style="margin-top:4px">Custom item (just for you)</h3><p class="rule">Something you found or were given on a mission. Only you can see it.</p>
+ return`<h2>Add items</h2><button class="addsec" style="margin-top:0" ${on('toggleCust')}><span>${UI.custOpen?'&#9662;':'&#9656;'}</span>Add a custom item<span style="margin-left:auto;font-weight:400;font-size:12.5px;color:var(--text3)">just for you</span></button><div class="${UI.custOpen?'':'hidden'}"><p class="rule">Something you found or were given that you would like to add to your inventory</p>
  <div class="fgrid"><div><div class="lbl">Name</div><input id="ci-n"></div><div><div class="lbl">Type</div><select id="ci-t" onchange="ciType()"><option value="gear">Gear</option><option value="weapon">Weapon</option><option value="armor">Armour</option><option value="trinket">Trinket</option><option value="other">Other</option></select></div>
  <div><div class="lbl">Bulk</div><input id="ci-b" type="number" value="1"></div>
  <div id="ci-w" class="hidden"><div class="lbl">Damage</div><input id="ci-d" placeholder="1d8"></div>
  <div id="ci-a" class="hidden"><div class="lbl">AC</div><input id="ci-ac" type="number" value="11"></div>
  <div id="ci-k" class="hidden"><div class="lbl">Armour type</div><select id="ci-ak"><option value="light">Light</option><option value="heavy">Heavy</option><option value="addon">Add-on (adds to AC)</option></select></div></div>
  <div class="lbl">Description</div><textarea id="ci-desc" rows="2"></textarea><div class="panel-actions"><button class="btn pri" onclick="addCustomItem()">Add custom item</button></div>
- <h3>Items list</h3><p class="rule">Everything from the rulebook${CAMPAIGN_ITEMS.length?', plus items your GM has added':''}. Items you are not proficient with, and items not available in this galaxy, are grouped lower down. You can still add any of them. Items already in your inventory show a quantity stepper instead of Add.</p>
+ </div><h3>Items list</h3><p class="rule">Everything from the rulebook${CAMPAIGN_ITEMS.length?', plus items your GM has added':''}. Items you are not proficient with, and items not available in this galaxy, are grouped lower down. You can still add any of them. Items already in your inventory show a quantity stepper instead of Add.</p>
  <input id="addq" placeholder="Search: sidearm, med kit, staff..." value="${esc(UI.addq)}" oninput="UI.addq=this.value;renderAddList()">
  <div class="filters" style="margin-top:8px">${[['all','All'],['weapon','Weapons'],['armor','Armour'],['gear','Gear']].map(([k,l])=>`<button class="${t===k?'on':''}" ${on('setAddType',k)}>${l}</button>`).join('')}</div>
  <div id="addlist">${addListHtml(list)}</div>`},
@@ -2350,7 +2350,7 @@ function itemTags(c){const tags=[];
  if(c.t==='armor'&&c.a.str&&C.scores.str<c.a.str)tags.push('Needs STR '+c.a.str);
  if(c.src==='Alien')tags.push('GM approval');
  return tags}
-const UNAVAIL=[]; // names of catalogue items not available in this galaxy
+const UNAVAIL=["Clak Blade", "Blade", "Bludgeon", "Crossbow", "Greatblade", "Greathammer", "Javelin / Spear", "Polearm", "Whip", "Chain Gun", "Flamethrower", "Grenade Launcher", "H&K SR9TC", "MP7A1", "RPG (AT4)", "Chainmail", "Platemail", "Shield", "Blast Shield", "Claymore Mine", "Emergency Viral Response", "Galactic Positioning System", "Guidance Flares", "Monitoring Implant", "Naquadah Generator", "Phase Device", "Restraints", "S.I.C.P.", "SCUBA", "Signal Beacon", "Solar Recharging Station", "Space Suit", "Translator", "Tunnel Crystals", "Za'tarc Detector", "Flash-Bang Grenade", "Smoke Grenade"]; // names of items not currently available in this galaxy
 function addState(c){return UNAVAIL.includes(c.n)?'un':itemTags(c).includes('Not proficient')?'np':'ok'}
 function secOpen(k){const s=UI.addsec||{};return k in s?s[k]:k==='ok'}
 function addSecToggle(k){UI.addsec=UI.addsec||{};UI.addsec[k]=!secOpen(k);renderAddList()}
@@ -2727,7 +2727,9 @@ function newMission(){resetRes(['mission']);if(C.cls==='scientist')C.eureka=D.lv
 // inventory
 function addCatItem(n){const ex=invByCat(n);if(ex){ex.qty=(ex.qty||1)+1;commit(false);renderSide();return}
  const it=itemFromCat(n);if(!it)return;if(it.a&&!C.inv.some(i=>i.eq&&i.a&&i.a.kind!=='addon'&&it.a.kind!=='addon'))it.eq=true;if(it.w)it.eq=true;C.inv.push(it);commit(false);renderSide();toast(n+' added');}
-function ciType(){const t=$('ci-t').value;$('ci-w').classList.toggle('hidden',t!=='weapon');$('ci-a').classList.toggle('hidden',t!=='armor');$('ci-k').classList.toggle('hidden',t!=='armor')}
+function toggleCust(){UI.custOpen=!UI.custOpen;renderSide()}
+function ciType(){
+const t=$('ci-t').value;$('ci-w').classList.toggle('hidden',t!=='weapon');$('ci-a').classList.toggle('hidden',t!=='armor');$('ci-k').classList.toggle('hidden',t!=='armor')}
 function addCustomItem(){const n=$('ci-n').value.trim();if(!n)return toast('Give the item a name');const t=$('ci-t').value,dmg=($('ci-d').value||'').trim()||'1d6';
  const a=t==='armor'?{kind:$('ci-ak').value,ac:+$('ci-ac').value||0,load:0}:null;
  const it={id:uid(),n,t,src:'Custom',tl:2,b:+$('ci-b').value||0,qty:1,kit:false,eq:t==='weapon',notes:'',d:$('ci-desc').value,w:t==='weapon'?{modes:[['Attack','ranged',dmg,'Piercing','',0]],pc:'common'}:null,a,prof:'auto',ammo:null};
