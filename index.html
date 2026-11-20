@@ -523,7 +523,13 @@ details.grp[open]>summary::before{content:'▾'}
 .lrow.lmin .lmove{flex-direction:row;padding:2px 6px}
 .lrow.lmin .lmove button{height:30px}
 .totop{display:flex;align-items:center;gap:8px;margin:16px auto 8px;padding:10px 18px;border:1px solid var(--border2);border-radius:22px;background:var(--bg2);color:var(--text2);font-size:13.5px}
-.addsec{display:flex;align-items:center;gap:8px;width:100%;text-align:left;font-weight:600;font-size:14px;padding:10px 4px;margin-top:8px;border-bottom:1px solid var(--border);color:var(--text)}
+.pickbox{border:1px solid var(--amber2);border-radius:12px;padding:12px 14px;margin-bottom:12px;background:color-mix(in srgb,var(--amber2) 8%,transparent)}
+.pickbox>b{display:block;margin-bottom:6px}
+.pickrow2{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:6px}
+.pickrow2>span{min-width:120px;font-weight:600}
+.pickrow2 select{max-width:320px}
+.addsec{
+display:flex;align-items:center;gap:8px;width:100%;text-align:left;font-weight:600;font-size:14px;padding:10px 4px;margin-top:8px;border-bottom:1px solid var(--border);color:var(--text)}
 .addsec:hover{color:var(--acc2)}
 .addsec .chip{margin:0 0 0 auto}
 .totop svg{
@@ -1932,16 +1938,34 @@ function setEureka(n){const cur=Math.min(C.eureka||0,D.eurekaMax);C.eureka=clamp
 // ---------- Actions board and Feats & abilities ----------
 // allItems(): everything the character has (class, race, origin, feats). The Actions board shows the pinned ones.
 // Class, race and origin things are pinned by default. Feats are pinned only when the player chooses.
-function allItems(){const L=[],seen={};
+function allItems(){const L=allItems0();addPicks(L);return L}
+function allItems0(){const L=[],seen={};
+
  const add=e=>{if(e.kind!=='Feat'){const k=e.n.toLowerCase();if(seen[k])return;seen[k]=1}L.push(e)};
  if(D.cls)D.cls.f.forEach((f,i)=>{if(f[1]==='Ability Score Improvement'||mw('C',f[1])==='na'||(f[1]==='Eureka'&&D.hasEureka))return;add({key:'C:'+f[1],kind:'Class',n:f[1],src:D.cls.n+' '+f[0],type:mt('C',f[1],f[2]==='other'?'pass':f[2]),d:f[3],locked:f[0]>D.lvl,lvl:f[0],rk:RK_CLASS[f[1]],pk:'feature',pa:i,die:/^(Inspire|Word In An Ear)$/.test(f[1])&&D.inspDie})});
  Object.entries(ADV_ABIL).forEach(([k,ab])=>{if(!advOf(k)||C.cls===k.toLowerCase()||ab==='Eureka')return;const f=CLASSES[k.toLowerCase()].f.find(x=>x[1]===ab);const ft=C.feats.find(x=>x.name==='Advanced Training: '+k);if(!f)return;add({key:'C:'+ab,kind:'Class',n:ab,src:'Advanced Training',type:mt('C',ab,f[2]==='other'?'pass':f[2]),d:f[3],rk:RK_CLASS[ab],pk:'feat',pa:ft.id,die:ab==='Inspire'&&D.inspDie})});
  if(D.race)D.race.tr.forEach((t,i)=>{if(t[0]==='Claws'||mw('R',t[0])==='na')return;add({key:'R:'+t[0],kind:'Race',n:t[0],src:D.race.n,type:mt('R',t[0],typeFromText(t[1])),d:t[1],rk:RK_RACE[t[0]],pk:'trait',pa:i})});
  D.origins.forEach(o=>{if(mw('O',o.ab)==='na')return;add({key:'O:'+o.ab,kind:'Origin',n:o.ab,src:o.n+' origin',type:mt('O',o.ab,typeFromText(o.t)),d:o.t,rk:o.use?'o_'+o.n:undefined,pk:'origin',pa:o.n})});
- C.feats.forEach(f=>{const t=featType(f);add({key:'F:'+f.id,kind:'Feat',n:f.name,src:'Feat • '+f.cat,type:mt('F',f.name,t==='other'?'pass':t),d:f.desc||'',rk:'f_'+f.id,pk:'feat',pa:f.id})});
+ C.feats.forEach(f=>{if(f.slot)return;const t=featType(f);add({key:'F:'+f.id,kind:'Feat',n:f.name,src:'Feat • '+f.cat,type:mt('F',f.name,t==='other'?'pass':t),d:f.desc||'',rk:'f_'+f.id,pk:'feat',pa:f.id})});
  [[5,'Attack Specialist','twice'],[11,'Attack Veteran','three times'],[17,'Attack Ace','four times']].forEach(([lv,n,w])=>{if(D.lvl>=lv){const g=WEAPON_GROUPS[atkSel(lv)]||'';add({key:'A:'+lv,kind:'Feat',n:n+(g?': '+g:''),src:'Free bonus feat • level '+lv,type:'pass',d:'You roll '+w+' as many weapon damage dice with the chosen weapon type. Static modifiers and bonus dice from other sources are not multiplied.',body:atkBody(lv)})}});
  return L}
-function isPinned(e){const p=prefs().pin||{};return e.key in p?!!p[e.key]:e.kind!=='Feat'}
+// ---------- Class feat picks (Inspiration, Modification, Procedure, Discovery, Field Hack, Tactic) ----------
+const ORD=['1st','2nd','3rd'];
+function pickCfg(){if(!D.cls)return null;return{cat:D.cls.feat,lv:(C.cls==='scout'||C.cls==='soldier')?[1,4]:[1,3,5]}}
+function pickFeat(n){return C.feats.find(f=>f.slot===n)}
+function pickSel(n){const cur=pickFeat(n),own=C.feats.map(f=>f.name);const o=FEATS.filter(f=>f.cat===D.cls.feat&&(!own.includes(f.n)||(cur&&cur.name===f.n)));
+ return`<div style="margin-top:8px"><select onclick="event.stopPropagation()" onchange="setPick(${n},this.value)"><option value="">Choose a feat</option>${o.map(f=>`<option ${cur&&cur.name===f.n?'selected':''}>${esc(f.n)}</option>`).join('')}</select></div>`}
+function setPick(n,name){const old=pickFeat(n);if(old)C.feats=C.feats.filter(x=>x!==old);
+ if(name){const b=FEATS.find(x=>x.n===name);if(b){C.feats.push({id:uid(),name:b.n,cat:b.cat,mp:0,desc:b.d,t:b.t,slot:n});toast(b.n+' chosen')}}commit()}
+function addPicks(L){const c=pickCfg();if(!c)return;const pi=D.cls.f.findIndex(x=>/^(Inspirations|Modifications|Procedures|Discoveries|Field Hacks|Tactics)$/.test(x[1]));
+ c.lv.forEach((lv,i)=>{const n=i+1,t=ORD[i]+' '+c.cat,f=pickFeat(n),base={key:'P:'+n,kind:'Class',src:D.cls.n+' '+lv,pk:'feature',pa:Math.max(pi,0)};
+  if(lv>D.lvl){L.push({...base,n:t,type:'pass',d:'Choose a '+c.cat+' feat at level '+lv+'.',locked:true,lvl:lv});return}
+  if(!f){L.push({...base,n:t,type:'pass',d:'Choose a feat from your '+c.cat+' list.',need:true,body:pickSel(n),pick:n});return}
+  const ty=featType(f);L.push({...base,n:t+': '+f.name,src:D.cls.n+' '+lv+' • class feat',type:mt('F',f.name,ty==='other'?'pass':ty),d:f.desc||'',rk:'f_'+f.id,pk:'feat',pa:f.id,body:pickSel(n)})})}
+function pickBanner(){const need=allItems().filter(e=>e.need);if(!need.length)return'';
+ return`<div class="pickbox"><b>Choose your class feat${need.length>1?'s':''}</b>${need.map(e=>`<div class="pickrow2"><span>${esc(e.n)}</span>${pickSel(e.pick)}</div>`).join('')}</div>`}
+function isPinned(e){
+const p=prefs().pin||{};return e.key in p?!!p[e.key]:e.kind!=='Feat'}
 function pinToggle(k){const e=allItems().find(x=>x.key===k);if(!e)return;const p=prefs().pin=prefs().pin||{};const was=isPinned(e);p[k]=was?0:1;
  if(was){const a=prefs().fav_abil||[],i=a.indexOf(k);if(i>=0)a.splice(i,1)}scheduleSave();renderTabs()}
 function colToggle(k){const c=prefs().col=prefs().col||{};c[k]=c[k]?0:1;scheduleSave();renderTabs()}
@@ -1972,9 +1996,9 @@ const fav=favHas('abil',e.key),col=board&&(prefs().col||{})[e.key],pinned=isPinn
  return`<div class="lrow ${col?'col':''} ${custom?'drag':''}" ${dr}><button class="lstar ${fav?'on':''}" aria-label="${fav?'Remove from favourites':'Add to favourites'}" ${onS('favToggle','abil',e.key)}>${STAR}</button>
  <div class="lmain" ${e.pk?on('openPanel',e.pk,e.pa):'style="cursor:default"'}><div class="ltop">${chev}<span class="lty" style="color:${TYC[e.type]}">${TYI[e.type]}${TYL[e.type]}</span><b class="lname">${esc(e.n)}</b>${col?'':`<span class="lx">${pipsFor(e.rk,e.n,e.die)}</span>`}</div>
  ${col?'':`<div class="ldesc">${esc(e.d)}</div>${e.body||''}<div class="lsrc">${esc(src)}</div>`}</div>${side}${mv}</div>`}
-function tabActions(){const h=tabActions0();return h.indexOf('class="lrow')>=0?h+topBtn():h}
+function tabActions(){const h=pickBanner()+tabActions0();return h.indexOf('class="lrow')>=0?h+topBtn():h}
 function tabActions0(){
-const mode=sortGet('abil'),all=allItems(),live=all.filter(e=>!e.locked&&isPinned(e));let h=eurekaHtml();
+const mode=sortGet('abil'),all=allItems(),live=all.filter(e=>!e.locked&&!e.need&&isPinned(e));let h=eurekaHtml();
  h+=`<div class="sec"><span>Actions</span></div>`;
  if(!all.length)return h+`<div class="empty">No abilities yet. Choose a class and race in Manage.</div>`;
  h+=filters([['type','Action type'],['az','A to Z'],['custom','My order']],mode,'setSortAbil');
@@ -2028,7 +2052,7 @@ function tabInventory(){const cap=D.loadCap,b=D.bulk,pct=cap?Math.min(100,b/cap*
  h+=`<div class="sec">Loadout items</div>`+(carried.length?tbl(carried):`<div class="empty">Nothing extra carried yet. Use Add items for gear you requisition, find or steal.</div>`);
  h+=`<div class="sec">Base kit (issued, no bulk)</div>`+(kit.length?tbl(kit):'');
  const extra=[...BASE_KIT];if(D.cls)extra.push(D.cls.kit+' (class)');if(C.race==='human_tollan')extra.push('Phase Device (Tollan)');
- h+=`<div class="kitl" style="margin-top:8px">${extra.map(k=>`<label><input type="checkbox" ${C.kit[k]!==false?'checked':''} ${on('toggleKit',k)}> ${esc(k)}</label>`).join('')}</div>`;
+ h+=`<div class="kitl" style="margin-top:8px">${extra.map(k=>`<label><input type="checkbox" ${C.kit[k]!==false?'checked':''} ${on('toggleKit',k)}> ${k==='3 Uniforms'?uniHtml():esc(k)}</label>`).join('')}</div>`;
  return h}
 
 function tabFeats(){const mode=sortGet('feat'),classCat=D.cls?D.cls.feat:'';
@@ -2278,14 +2302,14 @@ item(id){const it=C.inv.find(i=>i.id===id);if(!it)return'<p class="muted">Item n
  return h},
 
 additem(){const q=UI.addq.toLowerCase(),t=UI.addt;const list=allCatalog().filter(c=>(t==='all'||c.t===t)&&(!q||c.n.toLowerCase().includes(q)||(c.d||'').toLowerCase().includes(q)));
- return`<h2>Add items</h2><button class="addsec" style="margin-top:0" ${on('toggleCust')}><span>${UI.custOpen?'&#9662;':'&#9656;'}</span>Add a custom item<span style="margin-left:auto;font-weight:400;font-size:12.5px;color:var(--text3)">just for you</span></button><div class="${UI.custOpen?'':'hidden'}"><p class="rule">Something you found or were given that you would like to add to your inventory</p>
+ return`<h2>Add items</h2><button class="btn ${UI.custOpen?'on':''}" ${on('toggleCust')}>Add a custom item</button><div class="${UI.custOpen?'':'hidden'}" style="margin-top:10px"><p class="rule">Something you found or were given that you would like to add to your inventory</p>
  <div class="fgrid"><div><div class="lbl">Name</div><input id="ci-n"></div><div><div class="lbl">Type</div><select id="ci-t" onchange="ciType()"><option value="gear">Gear</option><option value="weapon">Weapon</option><option value="armor">Armour</option><option value="trinket">Trinket</option><option value="other">Other</option></select></div>
  <div><div class="lbl">Bulk</div><input id="ci-b" type="number" value="1"></div>
  <div id="ci-w" class="hidden"><div class="lbl">Damage</div><input id="ci-d" placeholder="1d8"></div>
  <div id="ci-a" class="hidden"><div class="lbl">AC</div><input id="ci-ac" type="number" value="11"></div>
  <div id="ci-k" class="hidden"><div class="lbl">Armour type</div><select id="ci-ak"><option value="light">Light</option><option value="heavy">Heavy</option><option value="addon">Add-on (adds to AC)</option></select></div></div>
  <div class="lbl">Description</div><textarea id="ci-desc" rows="2"></textarea><div class="panel-actions"><button class="btn pri" onclick="addCustomItem()">Add custom item</button></div>
- </div><h3>Items list</h3><p class="rule">Everything from the rulebook${CAMPAIGN_ITEMS.length?', plus items your GM has added':''}. Items you are not proficient with, and items not available in this galaxy, are grouped lower down. You can still add any of them. Items already in your inventory show a quantity stepper instead of Add.</p>
+ </div><h3>Items list</h3>
  <input id="addq" placeholder="Search: sidearm, med kit, staff..." value="${esc(UI.addq)}" oninput="UI.addq=this.value;renderAddList()">
  <div class="filters" style="margin-top:8px">${[['all','All'],['weapon','Weapons'],['armor','Armour'],['gear','Gear']].map(([k,l])=>`<button class="${t===k?'on':''}" ${on('setAddType',k)}>${l}</button>`).join('')}</div>
  <div id="addlist">${addListHtml(list)}</div>`},
@@ -2745,7 +2769,11 @@ function setItem(id,k,v){const it=C.inv.find(i=>i.id===id);if(it){it[k]=v;commit
 function setItemW(id,k,v){const it=C.inv.find(i=>i.id===id);if(it&&it.w){it.w[k]=v;commit()}}
 function setMode(id,mi,idx,v){const it=C.inv.find(i=>i.id===id);if(it&&it.w){it.w.modes[mi][idx]=v;commit()}}
 function removeItem(id){C.inv=C.inv.filter(i=>i.id!==id);UI.panel={k:'log'};commit()}
-function toggleKit(k){C.kit[k]=C.kit[k]===false;commit(false)}
+function uniN(){return C.uniforms==null?3:C.uniforms}
+function uniHtml(){const n=uniN();return n+(n===1?' Uniform':' Uniforms')+` <span class="mono" style="white-space:nowrap;margin-left:6px"><button class="rbtn" style="padding:0 6px" aria-label="One fewer uniform" ${onS('uniAdj',-1)}>\u2212</button> <button class="rbtn" style="padding:0 6px" aria-label="One more uniform" ${onS('uniAdj',1)}>+</button></span>`}
+function uniAdj(d){const n=Math.max(0,Math.min(3,uniN()+d));C.uniforms=n;C.kit['3 Uniforms']=n>0;commit(false)}
+function toggleKit(k){C.kit[k]=C.kit[k]===false;if(k==='3 Uniforms')C.uniforms=C.kit[k]?3:0;commit(false)}
+
 function ammo(id,d){const it=C.inv.find(i=>i.id===id);if(!it||!it.w.cap)return;const bw=it.w.pc==='bows',cur=it.ammo??it.w.cap;it.ammo=d===0?(bw?Math.max(it.w.cap,cur):it.w.cap):clamp(cur+d,0,bw?9999:it.w.cap);commit(false)}
 
 // feats
