@@ -313,6 +313,9 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 .vtabs button{font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.2px;text-transform:uppercase;padding:11px 16px 9px;color:var(--text2);border-bottom:2px solid transparent;white-space:nowrap}
 .vtabs button.on{color:var(--text);border-bottom-color:var(--acc2)}
 .vtabs button:hover{color:var(--acc2)}
+.vtabs button.gmoff{opacity:.55}
+.vtabs .hid{margin-left:7px;padding:0 6px;border:1px solid currentColor;border-radius:999px;font-size:10px;letter-spacing:.04em}
+
 .view{display:none}
 #app[data-view="archive"] #view-archive{display:flex;flex-direction:column;height:calc(100vh - var(--chrome,110px));height:calc(100dvh - var(--chrome,110px))}
 #app[data-view="images"] #view-images,#app[data-view="addresses"] #view-addresses{display:block}
@@ -2464,7 +2467,9 @@ function renderViewTabs(){const tabs=[['sheet',C.name||'Character']];
   if(deviceOn('shield'))tabs.push(['shield',"Oma'thala"]);
  if(deviceOn('images'))tabs.push(['images','Images']);
  if(!tabs.some(t=>t[0]===UI.view)){UI.view='sheet';applyView()}
-  $('vtabs').innerHTML=tabs.length<2?'':tabs.map(([k,l])=>`<button class="${UI.view===k?'on':''}" ${on('setView',k)}>${esc(l)}</button>`).join('');sizeViews()}
+ const gmOff=k=>isGM&&viewOwner&&viewOwner!==meId&&k!=='sheet'&&!devOn(k);
+  $('vtabs').innerHTML=tabs.length<2?'':tabs.map(([k,l])=>`<button class="${UI.view===k?'on':''} ${gmOff(k)?'gmoff':''}" ${gmOff(k)?'title="Hidden from this player"':''} ${on('setView',k)}>${esc(l)}${gmOff(k)?'<span class="hid">hidden</span>':''}</button>`).join('');sizeViews()}
+
 function setView(v){if((v==='archive'&&!deviceOn('archive'))||(v==='images'&&!deviceOn('images'))||(v==='addresses'&&!deviceOn('addresses'))||(v==='shield'&&!deviceOn('shield')))v='sheet';
  UI.view=v;applyView();renderViewTabs();window.scrollTo(0,0);
  if(v==='archive')loadArchive();if(v==='images')loadImages();if(v==='addresses')loadAddresses();if(v==='shield')renderShield()}
@@ -2484,6 +2489,16 @@ async function toggleDevice(k){if(!isGM||!sb||!charId)return;const nd={...DEVICE
  const r=await sb.from('characters').update({device:nd}).eq('id',charId);
  if(r.error)return toast('Couldn\'t update: '+r.error.message);
  DEVICE=nd;renderViewTabs();renderSide();toast(({archive:'Archive',images:'Images',shield:"Oma'thala",addresses:'Addresses'})[k]+' tab '+(devOn(k)?'on':'off')+' for this character')}
+// players pick up GM changes to their wrist device without reloading
+async function pollDevice(){if(isGM||offline||!started||!sb||!charId)return;
+ const r=await sb.from('characters').select('device').eq('id',charId).single();
+ if(r.error||!r.data)return;
+ const nd=Object.assign({archive:false,images:false,shield:false,addresses:true},r.data.device||{});
+ if(!['archive','images','shield','addresses'].some(k=>!!nd[k]!==!!DEVICE[k]))return;
+ DEVICE=nd;renderViewTabs();toast('Your wrist device was updated')}
+setInterval(pollDevice,20000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pollDevice()});
+
 
 // ---------- data ----------
 async function loadImages(force){
