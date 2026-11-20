@@ -1956,9 +1956,7 @@ function tabFA(){const mode=prefs().sort_all||'src',flt=UI.fa||'All',classCat=D.
  if(!s.length)h+=`<div class="empty">Nothing here yet.</div>`;
  if(lk.length)h+=`<div class="sec">Unlocks later</div>`+lk.map(e=>`<div class="feat" style="opacity:.55" ${on('openPanel',e.pk,e.pa)}><div class="fn">${esc(e.n)}</div><div class="fs">Level ${e.lvl}</div></div>`).join('');
  return h}
-function tabAbilities(){const mode=sortGet('abil')
------
-,list=abilityList(),live=list.filter(e=>!e.locked);let h=eurekaHtml();
+function tabAbilities(){const mode=sortGet('abil'),list=abilityList(),live=list.filter(e=>!e.locked);let h=eurekaHtml();
  h+=`<div class="sec"><span>Abilities</span><span style="display:flex;gap:6px"><button class="btn sm" ${on('openPanel','addres')}>Add tracker</button><button class="btn sm" ${on('openPanel','newmission')}>New mission</button></span></div>`;
  if(!list.length&&!C.customRes.length)return h+`<div class="empty">No abilities yet. Choose a class and race in Manage.</div>`;
  h+=filters([['type','Action type'],['az','A to Z'],['custom','My order']],mode,'setSortAbil');
