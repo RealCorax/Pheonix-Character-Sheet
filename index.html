@@ -951,6 +951,7 @@ body.skin-gilded .tabnav button{font-size:11px;letter-spacing:.03em;padding:9px 
 <div id="app" class="hidden" data-view="sheet">
   <nav class="viewtabs" id="viewtabs"><div class="vtabs" id="vtabs"></div><div class="vright">
       <span class="savestat" id="savestat" onclick="saveNow()" title="Click to save now"></span>
+      <button class="btn sm" onclick="openPanel('log')">Game log</button>
       <button class="btn sm icobtn" onclick="openPanel('settings')" aria-label="Settings" title="Settings"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       <button class="btn sm" onclick="handleLogout()">Log out</button>
   </div></nav>
@@ -971,8 +972,6 @@ body.skin-gilded .tabnav button{font-size:11px;letter-spacing:.03em;padding:9px 
 
             <span class="tbsep" aria-hidden="true"></span>
       <button class="btn withico" onclick="openPanel('newmission')"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 3h2v18H5zM8 4h11l-2.5 4.5L19 13H8z"/></svg>Mission completed</button>
-      <span class="tbsep" aria-hidden="true"></span>
-      <button class="btn" onclick="openPanel('log')">Game log</button>
 
     </div>
   </header>
@@ -1016,23 +1015,6 @@ body.skin-gilded .tabnav button{font-size:11px;letter-spacing:.03em;padding:9px 
 <div class="toast" id="toast"></div>
 <script>
 const THEMES={
-  furling_lumen:{bg:'#060a0c',bg2:'#0b1a1d',bg3:'#10272b',border:'#1d4a50',border2:'#2f7a80',text:'#e9f6f5',text2:'#a5d0d2',text3:'#6f9ea1',acc:'#2f9aa3',acc2:'#7fe8ee',grn:'#2a7a55',grn2:'#6fe0a0',amber2:'#f2b467',red2:'#d2503f',statbg:'#081316',bodyBg:'#060a0c',glass:'rgba(9,20,23,.74)'},
-  sgc_dark:{bg:'#0a0f1e',bg2:'#0d1525',bg3:'#111c30',border:'#1e3a5a',border2:'#2f5378',text:'#dbe6f0',text2:'#93b4d0',text3:'#5c7fa0',acc:'#4a8ab5',acc2:'#7ec1e6',grn:'#2a7a4a',grn2:'#4ab870',amber2:'#d0a040',red2:'#c04030',statbg:'#0b1828',bodyBg:'#0a0f1e'},
-  tokra_dark:{bg:'#0e0818',bg2:'#140a22',bg3:'#1a102e',border:'#3a1a5a',border2:'#5a2a8a',text:'#d4b8f0',text2:'#a070d0',text3:'#6a40a0',acc:'#7a40b0',acc2:'#b070e0',grn:'#3a6a8a',grn2:'#60a8c0',amber2:'#c080e0',red2:'#a030c0',statbg:'#0e0818',bodyBg:'#0a0612'},
-  goauld_dark:{bg:'#120800',bg2:'#1c1000',bg3:'#281800',border:'#5a3000',border2:'#8a5000',text:'#f0d090',text2:'#c0a050',text3:'#806020',acc:'#b07000',acc2:'#e0a030',grn:'#8a2020',grn2:'#c04030',amber2:'#e0c060',red2:'#ff2020',statbg:'#120800',bodyBg:'#0c0600'},
-  nox_dark:{bg:'#081408',bg2:'#0c1c0c',bg3:'#102410',border:'#1a4a1a',border2:'#2a7a2a',text:'#c0e8c0',text2:'#80c080',text3:'#408040',acc:'#3a8a3a',acc2:'#70c870',grn:'#2a6a5a',grn2:'#50b890',amber2:'#a0d080',red2:'#c04040',statbg:'#081408',bodyBg:'#060e06'},
-  ancient_dark:{bg:'#081418',bg2:'#0c1c22',bg3:'#10242e',border:'#1a4a5a',border2:'#2a7a8a',text:'#c8e8e0',text2:'#80c0b8',text3:'#408078',acc:'#2a8090',acc2:'#50b8c8',grn:'#4a8040',grn2:'#80c060',amber2:'#d0c060',red2:'#c06040',statbg:'#081418',bodyBg:'#060e10'},
-  asgard_dark:{bg:'#080c14',bg2:'#0c1020',bg3:'#10182c',border:'#203060',border2:'#304880',text:'#b8d8f8',text2:'#6090d0',text3:'#3060a0',acc:'#4080c0',acc2:'#70b8f0',grn:'#306080',grn2:'#5090c0',amber2:'#80c8f0',red2:'#c04060',statbg:'#080c14',bodyBg:'#060810'},
-  kethalis_dark:{bg:'#0c0808',bg2:'#120a0a',bg3:'#1a1010',border:'#4a1010',border2:'#6a1818',text:'#e0c0b0',text2:'#c08070',text3:'#804040',acc:'#a02020',acc2:'#e04040',grn:'#406020',grn2:'#608030',amber2:'#c04030',red2:'#ff2020',statbg:'#0c0808',bodyBg:'#080606'},
-  furling_dark:{bg:'#100c06',bg2:'#181208',bg3:'#221a0e',border:'#4a3818',border2:'#6a5228',text:'#f0e0c0',text2:'#c0a870',text3:'#806838',acc:'#8a6030',acc2:'#c09050',grn:'#4a6830',grn2:'#78a050',amber2:'#d0a840',red2:'#c06030',statbg:'#100c06',bodyBg:'#0c0a04'},
-  sgc_light:{bg:'#e8f0f8',bg2:'#ffffff',bg3:'#d0e0f0',border:'#90b8d8',border2:'#6090b8',text:'#102030',text2:'#204060',text3:'#508090',acc:'#1a60a0',acc2:'#1a4880',grn:'#1a6a3a',grn2:'#1a8040',amber2:'#806010',red2:'#a02020',statbg:'#c8ddf0',bodyBg:'#d0e4f4'},
-  tokra_light:{bg:'#f0eaf8',bg2:'#ffffff',bg3:'#e0d0f0',border:'#b090d8',border2:'#9060c0',text:'#180828',text2:'#401868',text3:'#704090',acc:'#6030a0',acc2:'#482080',grn:'#306080',grn2:'#2050a0',amber2:'#8040b0',red2:'#a020a0',statbg:'#ddd0f0',bodyBg:'#e8dff5'},
-  goauld_light:{bg:'#fdf5e0',bg2:'#ffffff',bg3:'#f5e8c0',border:'#d0a840',border2:'#b08020',text:'#201000',text2:'#504010',text3:'#806830',acc:'#906010',acc2:'#704800',grn:'#802020',grn2:'#a03030',amber2:'#c09020',red2:'#d02020',statbg:'#f0e0a0',bodyBg:'#f8f0d0'},
-  nox_light:{bg:'#eaf4ea',bg2:'#ffffff',bg3:'#d0ecd0',border:'#80c080',border2:'#50a050',text:'#081808',text2:'#184818',text3:'#407840',acc:'#287828',acc2:'#1a601a',grn:'#207060',grn2:'#309070',amber2:'#608030',red2:'#a04030',statbg:'#c8e8c8',bodyBg:'#d8f0d8'},
-  ancient_light:{bg:'#e8f4f4',bg2:'#ffffff',bg3:'#d0eaec',border:'#70b8c0',border2:'#4090a0',text:'#081820',text2:'#184858',text3:'#407880',acc:'#207888',acc2:'#106070',grn:'#407830',grn2:'#608040',amber2:'#807830',red2:'#a05030',statbg:'#c8e4e8',bodyBg:'#d5ecee'},
-  asgard_light:{bg:'#e8eef8',bg2:'#ffffff',bg3:'#d0dcf0',border:'#8090c8',border2:'#5060a8',text:'#080c20',text2:'#182048',text3:'#405080',acc:'#304898',acc2:'#203080',grn:'#204870',grn2:'#305890',amber2:'#5080c0',red2:'#a03060',statbg:'#c8d4ec',bodyBg:'#d5dff5'},
-  kethalis_light:{bg:'#f4ecea',bg2:'#ffffff',bg3:'#ecddd8',border:'#d09080',border2:'#c06050',text:'#200808',text2:'#501818',text3:'#804040',acc:'#902020',acc2:'#701010',grn:'#506020',grn2:'#708030',amber2:'#c04020',red2:'#e01010',statbg:'#ecd5d0',bodyBg:'#f2e4e0'},
-  furling_light:{bg:'#f8f0e4',bg2:'#ffffff',bg3:'#f0e4c8',border:'#c8a060',border2:'#a87840',text:'#180c00',text2:'#402808',text3:'#705028',acc:'#785020',acc2:'#583810',grn:'#486020',grn2:'#608030',amber2:'#a07820',red2:'#a04820',statbg:'#ecdaaa',bodyBg:'#f5ecd8'},
   gate_ops:{skin:'gate',bg:'#0b0f14',bg2:'#12171d',bg3:'#1d252f',border:'#303c49',border2:'#3f4e5f',text:'#e6ecf2',text2:'#a3b2c1',text3:'#6f8091',acc:'#3b86bf',acc2:'#7cc4f2',grn:'#2f9a63',grn2:'#4fd08a',amber2:'#ff9a3c',red2:'#ff5a48',statbg:'#0b0f14',bodyBg:'#080b0f',glass:'#151b23',sw:'linear-gradient(135deg,#ff8a2b 0 48%,#5ab4ec 52% 100%)'},
   ancient_crystal:{skin:'crystal',bg:'#071326',bg2:'#0a1c36',bg3:'#10294a',border:'#2a5a80',border2:'#3f7fa8',text:'#e8f6ff',text2:'#a6d4ec',text3:'#6f9db8',acc:'#2fb4e0',acc2:'#7fe6ff',grn:'#2aa68a',grn2:'#5de8b4',amber2:'#ffd98a',red2:'#ff6b81',statbg:'#071326',bodyBg:'#071326',glass:'rgba(255,255,255,.05)',sw:'linear-gradient(135deg,#5de0ff,#a99bff)'},
   goauld_gilded:{skin:'gilded',bg:'#0d0905',bg2:'#170f09',bg3:'#241a0e',border:'#6b4d1d',border2:'#8a6522',text:'#f3e6c8',text2:'#cdb27a',text3:'#8f7545',acc:'#b8862b',acc2:'#f0cc7a',grn:'#3f8f6a',grn2:'#5fd1a0',amber2:'#f0cc7a',red2:'#e0533f',statbg:'#0d0905',bodyBg:'#0b0806',glass:'#17110b',sw:'linear-gradient(135deg,#f0cc7a 0 48%,#3cc9b8 52% 100%)'},
@@ -1598,7 +1580,7 @@ function newChar(){return{v:2,name:'',race:'',cls:'',level:1,origins:['',''],por
  profs:{armorLight:false,armorHeavy:false,weapons:{common:false,bows:false,sidearms:false,longarms:false,shotguns:false,martial:false,jaffa:false,gunnery:false},tools:[],languages:['English'],other:''},defenses:[],
  inv:[],kit:{},res:{},customRes:[],feats:[],eureka:0,mp:{earned:0},
  facility:{name:'',rating:1,note:''},
- bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'furling_lumen',borderStyle:'hud',bgImage:'',nightMode:false}}
+ bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'ancient_crystal',borderStyle:'hud',bgImage:'',nightMode:false}}
 
 let C=newChar(), D={};
 const UI={tab:'weapons',filter:'all',ffilter:'all',rollMode:'normal',pinned:true,open:true,panel:{k:'log'},log:[],addq:'',addt:'all',featq:'',featf:'',lastInit:null,lastMoxie:null};
@@ -3060,7 +3042,7 @@ function setVal(path,v){setPath(C,path,v);commit()}
 function setNum(path,v){setPath(C,path,v===''?0:+v);commit()}
 function setRollMode(m){UI.rollMode=UI.rollMode===m?'normal':m;renderRollMode()}
 function setTheme(k){C.theme=k;applyTheme(k);commit(false);if(UI.panel.k==='appearance')renderSide()}
-function applyTheme(k){if(!THEMES[k])k='furling_lumen';const t=THEMES[k];const r=document.documentElement.style;
+function applyTheme(k){if(!THEMES[k])k='ancient_crystal';const t=THEMES[k];const r=document.documentElement.style;
  r.setProperty('--glass',k.endsWith('_light')?'rgba(255,255,255,.72)':'rgba(9,13,24,.72)');
  for(const v in t)r.setProperty('--'+v,t[v]);r.setProperty('--bodyBg',t.bodyBg||t.bg);document.body.classList.toggle('lighttheme',k.endsWith('_light'));
  document.body.className=document.body.className.replace(/\bskin-\S+/g,'').trim();if(t.skin)document.body.classList.add('skin-'+t.skin);
@@ -3291,6 +3273,7 @@ async function addCampaignItem(){const n=$('gi-n').value.trim();if(!n)return toa
 async function removeCampaignItem(id){if(sb&&isGM){const del=await sb.from('campaign_items').delete().eq('id',id);if(del.error)return toast('Couldn\'t remove it: '+del.error.message)}
  CAMPAIGN_ITEMS=CAMPAIGN_ITEMS.filter(x=>x.id!==id);if(!sb)try{localStorage.setItem('sgc-campaign-items',JSON.stringify(CAMPAIGN_ITEMS))}catch(e){}renderSide()}
 
+applyTheme(C.theme);
 if(sb){sb.auth.onAuthStateChange((ev,session)=>{if(session&&session.user)enterSheetFor(session.user);else if(ev==='SIGNED_OUT')location.reload()})}
 else{loginMsg(window.supabase?'The cloud key hasn\'t been added to this file yet.<br><button class="btn" style="margin-top:8px" onclick="offlineStart()">Continue on this device only</button>'
  :'Can\'t reach the server right now.<br><button class="btn" style="margin-top:8px" onclick="offlineStart()">Continue on this device only</button>')}
