@@ -1719,7 +1719,7 @@ function newChar(){return{v:2,name:'',race:'',cls:'',level:1,origins:['',''],por
  hp:{cur:null,temp:0,mod:0,override:null,ds:{s:0,f:0},stable:false,dead:false},
  exh:0,conds:[],dp:null,tension:'d6',speedMod:0,acMod:0,impInit:false,impMoxie:false,
  profs:{armorLight:false,armorHeavy:false,weapons:{common:false,bows:false,sidearms:false,longarms:false,shotguns:false,martial:false,jaffa:false,gunnery:false},tools:[],languages:['English'],other:''},defenses:[],
- inv:[],kit:{},res:{},customRes:[],feats:[],eureka:0,mp:{earned:0},
+ inv:[],kit:{},res:{},customRes:[],descs:{},feats:[],eureka:0,mp:{earned:0},
  facility:{name:'',rating:1,note:''},
  bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'ancient_crystal',font:'',corners:'',borderStyle:'hud',bgImage:'',nightMode:false}}
 
@@ -2046,10 +2046,10 @@ function typeFromText(t){t=String(t||'');return /as an action/i.test(t)?'action'
 function featUse(f){const km=rkm('F',f.name);if(km)return km.u&&km.r?km.r:null;const m=String(f.desc||'').match(/once per (short rest|long rest|mission|day|infiltration encounter|diplomatic function)/i);if(!m)return null;const k=m[1].toLowerCase();return k==='short rest'?'short':(k==='long rest'||k==='day')?'long':'mission'}
 function abilityList(){const L=[],seen={};
  const add=e=>{const k=e.n.toLowerCase();if(seen[k])return;seen[k]=1;L.push(e)};
- if(D.cls)D.cls.f.forEach((f,i)=>{if(f[1]==='Ability Score Improvement'||mw('C',f[1])==='na'||(f[1]==='Eureka'&&D.hasEureka))return;add({n:f[1],src:D.cls.n+' '+f[0],type:mt('C',f[1],f[2]==='other'?'pass':f[2]),d:f[3],locked:f[0]>D.lvl,lvl:f[0],rk:RK_CLASS[f[1]],pk:'feature',pa:i,die:/^(Inspire|Word In An Ear)$/.test(f[1])&&D.inspDie})});
- Object.entries(ADV_ABIL).forEach(([k,ab])=>{if(!advOf(k)||C.cls===k.toLowerCase()||ab==='Eureka')return;const f=CLASSES[k.toLowerCase()].f.find(x=>x[1]===ab);const ft=C.feats.find(x=>x.name==='Advanced Training: '+k);if(!f)return;add({n:ab,src:'Feat',type:mt('C',ab,f[2]==='other'?'pass':f[2]),d:f[3],rk:RK_CLASS[ab],pk:'feat',pa:ft.id,die:ab==='Inspire'&&D.inspDie})});
- if(D.race)D.race.tr.forEach((t,i)=>{if(t[0]==='Claws'||mw('R',t[0])==='na')return;add({n:t[0],src:D.race.n,type:mt('R',t[0],typeFromText(t[1])),d:t[1],rk:RK_RACE[t[0]],pk:'trait',pa:i})});
- D.origins.forEach(o=>mw('O',o.ab)==='na'||add({n:o.ab,src:o.n+' origin',type:mt('O',o.ab,typeFromText(o.t)),d:o.t,rk:o.use?'o_'+o.n:undefined,pk:'origin',pa:o.n}));
+ if(D.cls)D.cls.f.forEach((f,i)=>{if(f[1]==='Ability Score Improvement'||mw('C',f[1])==='na'||(f[1]==='Eureka'&&D.hasEureka))return;add({n:f[1],src:D.cls.n+' '+f[0],type:mt('C',f[1],f[2]==='other'?'pass':f[2]),dd:dd('C:'+f[1],f[3]),locked:f[0]>D.lvl,lvl:f[0],rk:RK_CLASS[f[1]],pk:'feature',pa:i,die:/^(Inspire|Word In An Ear)$/.test(f[1])&&D.inspDie})});
+ Object.entries(ADV_ABIL).forEach(([k,ab])=>{if(!advOf(k)||C.cls===k.toLowerCase()||ab==='Eureka')return;const f=CLASSES[k.toLowerCase()].f.find(x=>x[1]===ab);const ft=C.feats.find(x=>x.name==='Advanced Training: '+k);if(!f)return;add({n:ab,src:'Feat',type:mt('C',ab,f[2]==='other'?'pass':f[2]),d:dd('C:'+f[1],f[3]),rk:RK_CLASS[ab],pk:'feat',pa:ft.id,die:ab==='Inspire'&&D.inspDie})});
+ if(D.race)D.race.tr.forEach((t,i)=>{if(t[0]==='Claws'||mw('R',t[0])==='na')return;add({n:t[0],src:D.race.n,type:mt('R',t[0],typeFromText(t[1])),dd:dd('R:'+t[0],t[1]),rk:RK_RACE[t[0]],pk:'trait',pa:i})});
+ D.origins.forEach(o=>mw('O',o.ab)==='na'||add({n:o.ab,src:o.n+' origin',type:mt('O',o.ab,typeFromText(o.t)),d:dd('O:'+o.ab,o.t),rk:o.use?'o_'+o.n:undefined,pk:'origin',pa:o.n}));
  C.feats.forEach(f=>{if(/^Advanced Training/.test(f.name))return;const t=mt('F',f.name,'');if(['class','action','bonus','reaction','rest'].includes(t))add({n:f.name,src:'Feat \u2022 '+f.cat,type:t,d:f.desc||'',rk:'f_'+f.id,pk:'feat',pa:f.id})});
  return L}
 
@@ -2455,10 +2455,10 @@ function allItems(){const L=allItems0();addPicks(L);return L}
 function allItems0(){const L=[],seen={};
 
  const add=e=>{if(e.kind!=='Feat'){const k=e.n.toLowerCase();if(seen[k])return;seen[k]=1}L.push(e)};
- if(D.cls)D.cls.f.forEach((f,i)=>{if(f[1]==='Ability Score Improvement'||mw('C',f[1])==='na'||(f[1]==='Eureka'&&D.hasEureka))return;add({key:'C:'+f[1],kind:'Class',n:f[1],src:D.cls.n+' '+f[0],type:mt('C',f[1],f[2]==='other'?'pass':f[2]),d:f[3],locked:f[0]>D.lvl,lvl:f[0],rk:RK_CLASS[f[1]],pk:'feature',pa:i,die:/^(Inspire|Word In An Ear)$/.test(f[1])&&D.inspDie})});
- Object.entries(ADV_ABIL).forEach(([k,ab])=>{if(!advOf(k)||C.cls===k.toLowerCase()||ab==='Eureka')return;const f=CLASSES[k.toLowerCase()].f.find(x=>x[1]===ab);const ft=C.feats.find(x=>x.name==='Advanced Training: '+k);if(!f)return;add({key:'C:'+ab,kind:'Class',n:ab,src:'Advanced Training',type:mt('C',ab,f[2]==='other'?'pass':f[2]),d:f[3],rk:RK_CLASS[ab],pk:'feat',pa:ft.id,die:ab==='Inspire'&&D.inspDie})});
- if(D.race)D.race.tr.forEach((t,i)=>{if(t[0]==='Claws'||mw('R',t[0])==='na')return;add({key:'R:'+t[0],kind:'Race',n:t[0],src:D.race.n,type:mt('R',t[0],typeFromText(t[1])),d:t[1],rk:RK_RACE[t[0]],pk:'trait',pa:i})});
- D.origins.forEach(o=>{if(mw('O',o.ab)==='na')return;add({key:'O:'+o.ab,kind:'Origin',n:o.ab,src:o.n+' origin',type:mt('O',o.ab,typeFromText(o.t)),d:o.t,rk:o.use?'o_'+o.n:undefined,pk:'origin',pa:o.n})});
+ if(D.cls)D.cls.f.forEach((f,i)=>{if(f[1]==='Ability Score Improvement'||mw('C',f[1])==='na'||(f[1]==='Eureka'&&D.hasEureka))return;add({key:'C:'+f[1],kind:'Class',n:f[1],src:D.cls.n+' '+f[0],type:mt('C',f[1],f[2]==='other'?'pass':f[2]),d:dd('C:'+f[1],f[3]),locked:f[0]>D.lvl,lvl:f[0],rk:RK_CLASS[f[1]],pk:'feature',pa:i,die:/^(Inspire|Word In An Ear)$/.test(f[1])&&D.inspDie})});
+ Object.entries(ADV_ABIL).forEach(([k,ab])=>{if(!advOf(k)||C.cls===k.toLowerCase()||ab==='Eureka')return;const f=CLASSES[k.toLowerCase()].f.find(x=>x[1]===ab);const ft=C.feats.find(x=>x.name==='Advanced Training: '+k);if(!f)return;add({key:'C:'+ab,kind:'Class',n:ab,src:'Advanced Training',type:mt('C',ab,f[2]==='other'?'pass':f[2]),d:dd('C:'+f[1],f[3]),rk:RK_CLASS[ab],pk:'feat',pa:ft.id,die:ab==='Inspire'&&D.inspDie})});
+ if(D.race)D.race.tr.forEach((t,i)=>{if(t[0]==='Claws'||mw('R',t[0])==='na')return;add({key:'R:'+t[0],kind:'Race',n:t[0],src:D.race.n,type:mt('R',t[0],typeFromText(t[1])),d:dd('R:'+t[0],t[1]),rk:RK_RACE[t[0]],pk:'trait',pa:i})});
+ D.origins.forEach(o=>{if(mw('O',o.ab)==='na')return;add({key:'O:'+o.ab,kind:'Origin',n:o.ab,src:o.n+' origin',type:mt('O',o.ab,typeFromText(o.t)),d:dd('O:'+o.ab,o.t),rk:o.use?'o_'+o.n:undefined,pk:'origin',pa:o.n})});
  C.feats.forEach(f=>{if(f.slot)return;const t=featType(f);add({key:'F:'+f.id,kind:'Feat',n:f.name,src:'Feat • '+f.cat,type:mt('F',f.name,t==='other'?'pass':t),d:f.desc||'',rk:'f_'+f.id,pk:'feat',pa:f.id})});
  [[5,'Attack Specialist','twice'],[11,'Attack Veteran','three times'],[17,'Attack Ace','four times']].forEach(([lv,n,w])=>{if(D.lvl>=lv){const g=WEAPON_GROUPS[atkSel(lv)]||'';add({key:'A:'+lv,kind:'Feat',n:n+(g?': '+g:''),src:'Free bonus feat • level '+lv,type:'pass',d:'You roll '+w+' as many weapon damage dice with the chosen weapon type. Static modifiers and bonus dice from other sources are not multiplied.',body:atkBody(lv)})}});
  return L}
@@ -2654,6 +2654,15 @@ const btn=(label,fn,args=[],cls='btn')=>`<button class="${cls}" ${on(fn,...args)
 const rollBtn=(label,fn,...args)=>`<button class="btn pri" ${on(fn,...args)}>${label}</button>`;
 function custBlock(key,inner){const open=!!(UI.custOpen&&UI.custOpen[key]);
  return`<div class="custwrap"><button class="custtoggle" ${on('toggleCustom',key)}>${open?'︿':'⌄'} Customize</button>${open?`<div class="custbody">${inner}</div>`:''}</div>`}
+// player description edits (stored on this character only)
+function dd(k,def){const v=C.descs&&C.descs[k];return(v!=null&&v!=='')?v:def}
+function descBlock(k,def){const edited=!!(C.descs&&C.descs[k]!=null&&C.descs[k]!==def);
+ return custBlock('desc-'+k,`<div class="lbl">Description</div><textarea rows="6" data-k="${esc(k)}" onchange="setDesc(this.dataset.k,this.value)">${esc(dd(k,def))}</textarea>
+ <p class="rule" style="margin-top:6px">Changes only your own sheet.</p>
+ <div class="panel-actions">${edited?btn('Reset to default','resetDesc',[k]):''}</div>`)}
+function setDesc(k,v){C.descs=C.descs||{};if(v.trim()==='')delete C.descs[k];else C.descs[k]=v;commit()}
+function resetDesc(k){if(C.descs)delete C.descs[k];commit();toast('Description reset')}
+function resetFeatDesc(id){const f=C.feats.find(x=>x.id===id);const b=f&&FEATS.find(x=>x.n===f.name);if(b){f.desc=b.d;commit();toast('Description reset')}}
 function ago(t){const s=Math.round((Date.now()-t)/1000);return s<60?'just now':s<3600?Math.round(s/60)+' min ago':Math.round(s/3600)+' h ago'}
 
 const PANELS={
@@ -2858,10 +2867,10 @@ const list=allCatalog().filter(c=>(t==='all'||c.t===t)&&(!q||c.n.toLowerCase().i
  <div class="panel-actions"><button class="btn pri" onclick="addCampaignItem()">Add to campaign list</button></div>`:''}`},
 
 action(n){if(n==='Unarmed')return`<h2>Unarmed strike</h2><p>A punch, kick or head-butt: 1 + STR bludgeoning damage. Characters proficient in Martial Arts deal 1d6 + STR instead. Improvised weapons deal 1d4. You're always proficient with unarmed strikes and improvised weapons.</p>`;
- const a=ACTIONS.find(x=>x.n===n);return`<h2>${esc(n)}</h2><p class="rule">${a.g==='contest'?'Combat contest':a.g==='reaction'?'Reaction':'Action'}</p><p>${esc(a.d)}</p>`},
-feature(i){const f=D.cls?.f[i];if(!f)return'';return`<h2>${esc(f[1])}</h2><p class="rule">${D.cls.n} level ${f[0]} • ${{action:'Action',bonus:'Bonus action',reaction:'Reaction',other:'Feature'}[f[2]]}</p><p>${esc(f[3])}</p>`},
-trait(i){const t=D.race?.tr[i];if(!t)return'';return`<h2>${esc(t[0])}</h2><p class="rule">${esc(D.race.n)} trait</p><p>${esc(t[1])}</p>`},
-origin(n){const o=ORIGINS[n];return`<h2>${esc(n)}</h2><p class="rule">${o.c} origin • ${esc(o.a)}</p><h3>${esc(o.ab)}</h3><p>${esc(o.t)}</p>`},
+ const a=ACTIONS.find(x=>x.n===n);return`<h2>${esc(n)}</h2><p class="rule">${a.g==='contest'?'Combat contest':a.g==='reaction'?'Reaction':'Action'}</p<p>${esc(dd('A:'+n,a.d))}</p>${descBlock('A:'+n,a.d)}`},
+feature(i){const f=D.cls?.f[i];if(!f)return'';return`<h2>${esc(f[1])}</h2><p class="rule">${D.cls.n} level ${f[0]} • ${{action:'Action',bonus:'Bonus action',reaction:'Reaction',other:'Feature'}[f[2]]}</p><p>${esc(dd('C:'+f[1],f[3]))}</p>${descBlock('C:'+f[1],f[3])}`},
+trait(i){const t=D.race?.tr[i];if(!t)return'';return`<h2>${esc(t[0])}</h2><p class="rule">${esc(D.race.n)} trait</p><p>${esc(dd('R:'+t[0],t[1]))}</p>${descBlock('R:'+t[0],t[1])}`},
+origin(n){const o=ORIGINS[n];return`<h2>${esc(n)}</h2><p class="rule">${o.c} origin • ${esc(o.a)}</p><h3>${esc(o.ab)}</h3><p>${esc(dd('O:'+o.ab,o.t))}</p>${descBlock('O:'+o.ab,o.t)}`},
 res(key){const r=D.res.find(x=>x.key===key);if(!r)return'';const cust=key.startsWith('c_');return`<h2>${esc(r.name)}</h2><p class="rule">${r.src} • ${RESET_L[r.reset]} • ${r.max-r.used} of ${r.max} left</p>${r.desc?`<p>${esc(r.desc)}</p>`:''}
  <div class="panel-actions">${btn('Use one','useRes',[key,1],'btn pri')}${btn('Restore one','useRes',[key,-1])}${cust?btn('Delete tracker','removeRes',[key.slice(2)],'btn danger'):''}</div>`},
 addres(){return`<h2>Add a tracker</h2><p class="rule">For anything with limited uses the sheet doesn't track yet: a feat, a gadget, grenades, charges.</p>
@@ -2869,10 +2878,9 @@ addres(){return`<h2>Add a tracker</h2><p class="rule">For anything with limited 
  <div class="lbl">Description</div><textarea id="nr-d" rows="3"></textarea><div class="panel-actions"><button class="btn pri" onclick="addRes()">Add tracker</button></div>`},
 feat(id){const f=C.feats.find(x=>x.id===id);if(!f)return'';const book=FEATS.find(x=>x.n===f.name);const ty=TYL[mt('F',f.name,{action:'action',bonus:'bonus',reaction:'reaction'}[featType(f)]||'pass')];
  let h=`<h2>${esc(f.name)}</h2><p class="rule">${esc(f.cat)}${+f.mp?' • '+f.mp+' MP':''} • ${ty}${book?' • '+esc(reqOf(book)):''}</p><p>${esc(f.desc||'')}</p>`;
- h+=custBlock('feat-'+id,`<div class="lbl">Name</div><input value="${esc(f.name)}" onchange="setFeat('${id}','name',this.value)" style="margin-bottom:8px">
- <div class="fgrid"><div><div class="lbl">Category</div><select onchange="setFeat('${id}','cat',this.value)">${FEAT_CATS.map(c=>`<option ${f.cat===c?'selected':''}>${c}</option>`).join('')}</select></div><div><div class="lbl">MP cost</div><input type="number" min="0" value="${+f.mp||0}" onchange="setFeat('${id}','mp',+this.value)"></div></div>
- <div class="lbl">Description</div><textarea rows="6" onchange="setFeat('${id}','desc',this.value)">${esc(f.desc||'')}</textarea>
- <div class="panel-actions">${btn('Remove feat','removeFeat',[id],'btn danger')}</div>`);
+ h+=custBlock('feat-'+id,`<div class="lbl">Description</div><textarea rows="6" onchange="setFeat('${id}','desc',this.value)">${esc(f.desc||'')}</textarea>
+ <p class="rule" style="margin-top:6px">Changes only your own sheet.</p>
+ <div class="panel-actions">${book&&f.desc!==book.d?btn('Reset to default','resetFeatDesc',[id]):''}${btn('Remove feat','removeFeat',[id],'btn danger')}</div>`);
  return h},
 addfeat(cat){if(!UI.featf)UI.featf=cat||'General';const q=UI.featq.toLowerCase(),fc=UI.featf;
  const known={};C.feats.forEach(f=>{known[f.name]=(known[f.name]||0)+1});
