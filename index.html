@@ -919,34 +919,72 @@ body[class*="skin-"] select:not(.tdsel){-webkit-appearance:none;appearance:none;
   background-position:calc(100% - 17px) 52%,calc(100% - 12px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
 body[class*="skin-"] option{background:var(--bg2);color:var(--text)}
 body.skin-gilded .tabnav button{font-size:11px;letter-spacing:.03em;padding:9px 6px}
-/* ---------- v51: uniform sizing, font picker, corner picker ---------- */
-/* uniform sizes in every theme */
-body[class*="skin-"][class*="skin-"]{--s-abilsize:38px;--s-statsize:30px}
+/* ---------- v52: type scale, font picker, corner picker ---------- */
+/* One scale for every theme:
+   24 name | 14 main tabs | 13 headings | 14 body | 13 secondary | 12 small | 11 sub-labels | 30 ability numbers | 26 other big numbers */
+body[class*="skin-"][class*="skin-"]{--s-abilsize:30px;--s-statsize:26px;--s-numw:700;--s-headw:700}
 body[class*="skin-"][class*="skin-"] .topbar .cname{font-size:24px}
-body[class*="skin-"][class*="skin-"] .lbl,
+
+/* main tabs (top row and the Weapons / Actions / Feats row) */
+body[class*="skin-"][class*="skin-"] .vtabs button{font-size:14px;font-weight:700;letter-spacing:.01em;text-transform:none;padding:10px 12px}
+body[class*="skin-"][class*="skin-"] .tabnav button{font-size:13.5px;font-weight:700;letter-spacing:0;text-transform:none;padding:10px 5px;flex:1 1 auto;text-align:center}
+body[class*="skin-"][class*="skin-"] .tabnav{flex-wrap:wrap;overflow:visible}
+
+/* headings */
 body[class*="skin-"][class*="skin-"] .boxtitle,
 body[class*="skin-"][class*="skin-"] .sec,
+body[class*="skin-"][class*="skin-"] .side-body h3{font-size:13px}
+/* sub-headings and column labels */
+body[class*="skin-"][class*="skin-"] .lbl,
+body[class*="skin-"][class*="skin-"] .abil .lbl,
 body[class*="skin-"][class*="skin-"] .tbl th,
-body[class*="skin-"][class*="skin-"] .sk-head{font-size:11px}
-body[class*="skin-"][class*="skin-"] .abil .lbl{font-size:10.5px}
-body[class*="skin-"][class*="skin-"] .hp-nums .n{font-size:30px}
-body[class*="skin-"][class*="skin-"] .tabnav button{font-size:11px;letter-spacing:.02em;padding:9px 5px;text-transform:uppercase}
-body[class*="skin-"].font-classic .tabnav button,body.skin-gilded:not([class*="font-"]) .tabnav button{font-family:'Fira Sans',system-ui,sans-serif}
-body[class*="skin-"][class*="skin-"] .vtabs button{font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+body[class*="skin-"][class*="skin-"] .sk-head,
+body[class*="skin-"][class*="skin-"] .hp-status{font-size:11px}
+/* body text */
+body[class*="skin-"][class*="skin-"] .sk .nm,
+body[class*="skin-"][class*="skin-"] .kv,
+body[class*="skin-"][class*="skin-"] .profs .val,
+body[class*="skin-"][class*="skin-"] .plist,
+body[class*="skin-"][class*="skin-"] .feat .fn,
+body[class*="skin-"][class*="skin-"] .tbl td,
+body[class*="skin-"][class*="skin-"] .ldesc,
+body[class*="skin-"][class*="skin-"] .side-body p,
+body[class*="skin-"][class*="skin-"] .rollv{font-size:14px}
+body[class*="skin-"][class*="skin-"] .lname{font-size:15px}
+/* secondary text */
+body[class*="skin-"][class*="skin-"] .feat .fd,
+body[class*="skin-"][class*="skin-"] .csub,
+body[class*="skin-"][class*="skin-"] .defcond .val,
+body[class*="skin-"][class*="skin-"] .empty{font-size:13px}
+/* small text */
+body[class*="skin-"][class*="skin-"] .note,
+body[class*="skin-"][class*="skin-"] .res .rn small,
+body[class*="skin-"][class*="skin-"] .tbl .sub2,
+body[class*="skin-"][class*="skin-"] .feat .fs,
+body[class*="skin-"][class*="skin-"] .lsrc,
+body[class*="skin-"][class*="skin-"] .chip,
+body[class*="skin-"][class*="skin-"] .sk .ab{font-size:12px}
+/* numbers inside controls */
+body[class*="skin-"][class*="skin-"] .hp-nums .n{font-size:26px}
+body[class*="skin-"][class*="skin-"] .save .nm,
+body[class*="skin-"][class*="skin-"] .save .v{font-size:13px}
 body[class*="skin-"][class*="skin-"] .btn,
 body[class*="skin-"][class*="skin-"] .seg button{letter-spacing:.08em;text-transform:uppercase}
 body[class*="skin-"][class*="skin-"] .btn:not(.sm),
 body[class*="skin-"][class*="skin-"] .seg button{font-size:12px}
-/* condensed Anton has taller capitals, so its numbers are set smaller to look the same size */
-body.skin-ember:not([class*="font-"]),body[class*="skin-"].font-bold{--s-abilsize:31px;--s-statsize:24px}
-body.skin-ember:not([class*="font-"]) .hp-nums .n,body.font-bold .hp-nums .n{font-size:24px}
+/* Keth'alis Ember's default tall condensed face has taller capitals, so it is set a little smaller to look the same size */
+body.skin-ember:not([class*="font-"]){--s-abilsize:25px;--s-statsize:21px;--s-numw:400;--s-headw:400}
+body.skin-ember:not([class*="font-"]) .hp-nums .n{font-size:21px}
+body.skin-ember:not([class*="font-"]) .boxtitle,body.skin-ember:not([class*="font-"]) .sec{font-size:12px}
 
-/* font choices */
-body[class*="skin-"].font-fira{--s-body:'Fira Sans',system-ui,sans-serif;--s-mono:'Fira Sans',system-ui,sans-serif;--s-disp:'Fira Sans',system-ui,sans-serif;--s-head:'Fira Sans',system-ui,sans-serif;--s-num:'Fira Sans',system-ui,sans-serif;--s-numw:700;--s-headw:700}
-body[class*="skin-"].font-dm{--s-body:'DM Sans',system-ui,sans-serif;--s-mono:'DM Sans',system-ui,sans-serif;--s-disp:'DM Sans',system-ui,sans-serif;--s-head:'DM Sans',system-ui,sans-serif;--s-num:'DM Sans',system-ui,sans-serif;--s-numw:600;--s-headw:700}
-body[class*="skin-"].font-bitter{--s-body:'Bitter',Georgia,serif;--s-mono:'Bitter',Georgia,serif;--s-disp:'Bitter',Georgia,serif;--s-head:'Bitter',Georgia,serif;--s-num:'Bitter',Georgia,serif;--s-numw:800;--s-headw:800}
-body[class*="skin-"].font-classic{--s-body:'Fira Sans',system-ui,sans-serif;--s-mono:'Fira Sans',system-ui,sans-serif;--s-disp:'Cardo',Georgia,serif;--s-head:'Cardo',Georgia,serif;--s-num:'Cardo',Georgia,serif;--s-numw:700;--s-headw:700}
-body[class*="skin-"].font-bold{--s-body:'Fira Sans',system-ui,sans-serif;--s-mono:'Fira Sans',system-ui,sans-serif;--s-disp:'Fira Sans',system-ui,sans-serif;--s-head:'Anton',Impact,sans-serif;--s-num:'Anton',Impact,sans-serif;--s-numw:400;--s-headw:400}
+/* font choices: plain, readable sans and serif */
+body[class*="skin-"].font-fira{--s-body:'Fira Sans',system-ui,sans-serif;--s-mono:'Fira Sans',system-ui,sans-serif;--s-disp:'Fira Sans',system-ui,sans-serif;--s-head:'Fira Sans',system-ui,sans-serif;--s-num:'Fira Sans',system-ui,sans-serif}
+body[class*="skin-"].font-dm{--s-body:'DM Sans',system-ui,sans-serif;--s-mono:'DM Sans',system-ui,sans-serif;--s-disp:'DM Sans',system-ui,sans-serif;--s-head:'DM Sans',system-ui,sans-serif;--s-num:'DM Sans',system-ui,sans-serif}
+body[class*="skin-"].font-system{--s-body:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;--s-mono:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--s-disp:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--s-head:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--s-num:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+body[class*="skin-"].font-arial{--s-body:Arial,'Helvetica Neue',Helvetica,sans-serif;--s-mono:Arial,'Helvetica Neue',Helvetica,sans-serif;--s-disp:Arial,'Helvetica Neue',Helvetica,sans-serif;--s-head:Arial,'Helvetica Neue',Helvetica,sans-serif;--s-num:Arial,'Helvetica Neue',Helvetica,sans-serif}
+body[class*="skin-"].font-verdana{--s-body:Verdana,Geneva,'DejaVu Sans',sans-serif;--s-mono:Verdana,Geneva,'DejaVu Sans',sans-serif;--s-disp:Verdana,Geneva,'DejaVu Sans',sans-serif;--s-head:Verdana,Geneva,'DejaVu Sans',sans-serif;--s-num:Verdana,Geneva,'DejaVu Sans',sans-serif}
+body[class*="skin-"].font-bitter{--s-body:'Bitter',Georgia,serif;--s-mono:'Bitter',Georgia,serif;--s-disp:'Bitter',Georgia,serif;--s-head:'Bitter',Georgia,serif;--s-num:'Bitter',Georgia,serif}
+body[class*="skin-"].font-georgia{--s-body:Georgia,'Times New Roman',serif;--s-mono:Georgia,'Times New Roman',serif;--s-disp:Georgia,'Times New Roman',serif;--s-head:Georgia,'Times New Roman',serif;--s-num:Georgia,'Times New Roman',serif}
 
 /* corner choices (affects every box, pill and button) */
 body[class*="skin-"].corners-curved{--s-rad:18px;--s-ctl:10px;--s-ctl2:999px;--s-btnrad:999px;--s-pill:999px;--s-cardrad:14px;--s-tabrad:12px 12px 0 0}
@@ -954,7 +992,6 @@ body[class*="skin-"].corners-straight{--s-rad:0;--s-ctl:0;--s-ctl2:0;--s-btnrad:
 body[class*="skin-"] .save .v{border-radius:var(--s-ctl2,999px)}
 body[class*="skin-"] .chip,body[class*="skin-"] .ntabs button,body[class*="skin-"] .nbar .nb{border-radius:var(--s-pill,999px)}
 body[class*="skin-"] .pickbox{border-radius:var(--s-cardrad,12px)}
-
 </style>
 </head>
 <body>
@@ -2562,7 +2599,7 @@ appearance(){const bg=C.bgImage;
  return`<h2>Appearance</h2>
  <h3>Colour theme</h3><div class="swrow">${Object.keys(THEMES).map(k=>`<button class="sw ${C.theme===k?'on':''}" style="background:${THEMES[k].sw||THEMES[k].acc||THEMES[k].acc2}" title="${themeLabel(k)}" ${on('setTheme',k)}></button>`).join('')}</div>
  <div class="muted" style="font-size:12px;margin-top:2px">${themeLabel(C.theme)}</div>
-  <h3>Font</h3><div class="frow" style="flex-wrap:wrap;gap:6px">${[['default','Theme default',''],['fira','Fira Sans',"'Fira Sans'"],['dm','DM Sans',"'DM Sans'"],['bitter','Bitter',"'Bitter'"],['classic','Classic',"'Cardo'"],['bold','Bold',"'Anton'"]].map(([k,l,f])=>`<button class="btn sm ${(C.font||'default')===k?'on':''}" style="${f?'font-family:'+f+',sans-serif;':''}font-size:13px;text-transform:none;letter-spacing:0" ${on('setFont',k)}>${l}</button>`).join('')}</div>
+   <h3>Font</h3><div class="frow" style="flex-wrap:wrap;gap:6px">${[['default','Theme default',''],['fira','Fira Sans',"'Fira Sans',sans-serif"],['dm','DM Sans',"'DM Sans',sans-serif"],['system','System',"system-ui,sans-serif"],['arial','Arial',"Arial,Helvetica,sans-serif"],['verdana','Verdana',"Verdana,'DejaVu Sans',sans-serif"],['bitter','Bitter',"'Bitter',serif"],['georgia','Georgia',"Georgia,serif"]].map(([k,l,f])=>`<button class="btn sm ${(C.font||'default')===k?'on':''}" style="${f?'font-family:'+f+';':''}font-size:13px;text-transform:none;letter-spacing:0" ${on('setFont',k)}>${l}</button>`).join('')}</div>
  <h3>Box corners</h3><div class="frow" style="flex-wrap:wrap;gap:6px">${[['default','Theme default'],['curved','Curved'],['straight','Straight']].map(([k,l])=>`<button class="btn sm ${(C.corners||'default')===k?'on':''}" ${on('setCorners',k)}>${l}</button>`).join('')}</div>
  <h3>Background</h3>
  <div class="frow"><button class="btn sm ${!bg?'on':''}" ${on('clearBg')}>Solid colour</button><button class="btn sm" onclick="$('bgUp').click()">Upload image</button><input type="file" id="bgUp" class="hidden" accept="image/*" onchange="loadBgImage(event)"></div>
