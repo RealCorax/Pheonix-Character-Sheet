@@ -94,7 +94,7 @@ body.nightmode #app{filter:brightness(.84) saturate(.88)}
 /* LAYOUT */
 .layout{display:flex;align-items:flex-start}
 .sheet{flex:1;min-width:0;padding:12px;display:flex;flex-direction:column;gap:12px}
-.side{width:var(--side);flex-shrink:0;position:sticky;top:0;height:100vh;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:50}
+.side{width:var(--side);flex-shrink:0;position:sticky;top:0;height:100vh;height:100dvh;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;z-index:50}
 .side.overlay{position:fixed;right:0;top:0;bottom:0;height:auto;box-shadow:-10px 0 30px rgba(0,0,0,.45);transform:translateX(100%);transition:transform .22s ease}
 .side.overlay.open{transform:none}
 .side-head{display:flex;align-items:center;gap:6px;padding:9px 10px;padding-top:calc(9px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--border)}
@@ -601,6 +601,27 @@ body.lighttheme .tabnav button.on,body.lighttheme .vtabs button.on{text-shadow:n
 /* metallic themes: brushed-steel titles and numerals */
 body.metal .boxtitle,body.metal .sec,body.metal .abil .modbtn,body.metal .stat .big,body.metal .hp-nums .n,body.metal .login-logo{background:linear-gradient(180deg,#fff 0%,var(--acc2) 48%,color-mix(in srgb,var(--acc) 60%,#fff) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none!important}
 body.metal .box{border-image:none;background-image:linear-gradient(135deg,color-mix(in srgb,var(--acc2) 16%,transparent),transparent 28%,transparent 72%,color-mix(in srgb,var(--acc2) 10%,transparent)),linear-gradient(180deg,color-mix(in srgb,var(--acc2) 9%,transparent),transparent 40%);box-shadow:0 0 22px color-mix(in srgb,var(--acc) 22%,transparent),inset 0 1px 0 color-mix(in srgb,#fff 28%,transparent),inset 0 0 30px color-mix(in srgb,var(--acc2) 5%,transparent),0 8px 20px rgba(0,0,0,.4)}
+.hp-nums .n.cur.st-scuffed{color:var(--amber2);-webkit-text-fill-color:currentColor;background:none}
+.hp-nums .n.cur.st-wounded,.hp-nums .n.cur.st-down{color:var(--red2);-webkit-text-fill-color:currentColor;background:none}
+@media (pointer:coarse){
+ .btn.sm{padding:9px 11px}
+ .ctr button{width:34px;height:34px}
+ .ubox{width:24px;height:24px}
+ .pip{width:20px;height:20px}
+ .dot{width:12px;height:12px}
+ .sk .rollv,.rbtn{min-height:34px}
+ .chev{width:36px;height:36px}
+ .tabnav button,.vtabs button,.filters button{min-height:44px}
+}
+.abil .lbl{font-size:11px}
+.tbl th,.sk-head,.sk .ab,.feat .fs,.res .rn small,.tbl .sub2,.note,.imgsub,.logentry .who{font-size:12px}
+.sense .nm,.hp-status,.ds-row,.chip{font-size:12.5px}
+.abil .modbtn,.rbtn,.rollv,.save,.btn,.stat,.sk .nm,.sense,.pickrow,.filters button,.tabnav button,.vtabs button,.clk{transition:transform .08s,opacity .08s}
+.abil .modbtn:active,.rbtn:active,.rollv:active,.save:active,.btn:active,.stat:active,.sk .nm:active,.sense:active,.pickrow:active,.filters button:active,.tabnav button:active,.vtabs button:active,.clk:active{transform:scale(.95);opacity:.75}
+.abil .modbtn{border:1px solid var(--edge2)!important;border-radius:12px;min-width:58px}
+body.th-blood_crimson{--tc-reaction:#c9a0ff}
+body.th-midnight_rose{--tc-reaction:#9ad0ff}
+body.th-ember_forge{--tc-action:#ffd15a;--tc-rest:#5ac8e8}
 </style>
 </head>
 <body>
@@ -706,15 +727,15 @@ const THEMES={
   steel_graphite:{metal:1,bg:'#0b0d10',bg2:'#14181d',bg3:'#1e242b',border:'#3a434d',border2:'#65717e',text:'#eef1f4',text2:'#b3bcc6',text3:'#7d8895',acc:'#6f7f90',acc2:'#cfe0f0',grn:'#3d8a62',grn2:'#7fd6a0',amber2:'#ffb347',red2:'#ff5f52',statbg:'#0f1317',bodyBg:'#07090b',glass:'rgba(18,22,27,.76)'},
   arctic_light:{bg:'#eef3f9',bg2:'#ffffff',bg3:'#dde7f3',border:'#a9bdd6',border2:'#6f8fb8',text:'#0e1b2d',text2:'#2b4466',text3:'#5a7596',acc:'#3a5fc0',acc2:'#2a47a0',grn:'#1a7a52',grn2:'#16804f',amber2:'#8a5a10',red2:'#b02a3a',statbg:'#d3e0f0',bodyBg:'#dfe8f3'},
   linen_light:{bg:'#f6f1e8',bg2:'#fffdf9',bg3:'#ebe2d2',border:'#cdb995',border2:'#a58b5e',text:'#241a0e',text2:'#4d3c24',text3:'#7d6a4c',acc:'#1f7a74',acc2:'#12605b',grn:'#3f6b24',grn2:'#3a6a1e',amber2:'#9a5a12',red2:'#b03a24',statbg:'#e6dac3',bodyBg:'#ece3d3'},
-  furling_lumen:{bg:'#060a0c',bg2:'#0b1a1d',bg3:'#10272b',border:'#1d4a50',border2:'#2f7a80',text:'#e9f6f5',text2:'#a5d0d2',text3:'#6f9ea1',acc:'#2f9aa3',acc2:'#7fe8ee',grn:'#2a7a55',grn2:'#6fe0a0',amber2:'#f2b467',red2:'#d2503f',statbg:'#081316',bodyBg:'#060a0c',glass:'rgba(9,20,23,.74)'},
-  sgc_dark:{bg:'#0a0f1e',bg2:'#0d1525',bg3:'#111c30',border:'#1e3a5a',border2:'#2f5378',text:'#dbe6f0',text2:'#93b4d0',text3:'#5c7fa0',acc:'#4a8ab5',acc2:'#7ec1e6',grn:'#2a7a4a',grn2:'#4ab870',amber2:'#d0a040',red2:'#c04030',statbg:'#0b1828',bodyBg:'#0a0f1e'},
-  tokra_dark:{bg:'#0e0818',bg2:'#140a22',bg3:'#1a102e',border:'#3a1a5a',border2:'#5a2a8a',text:'#d4b8f0',text2:'#a070d0',text3:'#6a40a0',acc:'#7a40b0',acc2:'#b070e0',grn:'#3a6a8a',grn2:'#60a8c0',amber2:'#c080e0',red2:'#a030c0',statbg:'#0e0818',bodyBg:'#0a0612'},
-  goauld_dark:{bg:'#120800',bg2:'#1c1000',bg3:'#281800',border:'#5a3000',border2:'#8a5000',text:'#f0d090',text2:'#c0a050',text3:'#806020',acc:'#b07000',acc2:'#e0a030',grn:'#8a2020',grn2:'#c04030',amber2:'#e0c060',red2:'#ff2020',statbg:'#120800',bodyBg:'#0c0600'},
-  nox_dark:{bg:'#081408',bg2:'#0c1c0c',bg3:'#102410',border:'#1a4a1a',border2:'#2a7a2a',text:'#c0e8c0',text2:'#80c080',text3:'#408040',acc:'#3a8a3a',acc2:'#70c870',grn:'#2a6a5a',grn2:'#50b890',amber2:'#a0d080',red2:'#c04040',statbg:'#081408',bodyBg:'#060e06'},
-  ancient_dark:{bg:'#081418',bg2:'#0c1c22',bg3:'#10242e',border:'#1a4a5a',border2:'#2a7a8a',text:'#c8e8e0',text2:'#80c0b8',text3:'#408078',acc:'#2a8090',acc2:'#50b8c8',grn:'#4a8040',grn2:'#80c060',amber2:'#d0c060',red2:'#c06040',statbg:'#081418',bodyBg:'#060e10'},
-  asgard_dark:{bg:'#080c14',bg2:'#0c1020',bg3:'#10182c',border:'#203060',border2:'#304880',text:'#b8d8f8',text2:'#6090d0',text3:'#3060a0',acc:'#4080c0',acc2:'#70b8f0',grn:'#306080',grn2:'#5090c0',amber2:'#80c8f0',red2:'#c04060',statbg:'#080c14',bodyBg:'#060810'},
-  kethalis_dark:{bg:'#0c0808',bg2:'#120a0a',bg3:'#1a1010',border:'#4a1010',border2:'#6a1818',text:'#e0c0b0',text2:'#c08070',text3:'#804040',acc:'#a02020',acc2:'#e04040',grn:'#406020',grn2:'#608030',amber2:'#c04030',red2:'#ff2020',statbg:'#0c0808',bodyBg:'#080606'},
-  furling_dark:{bg:'#100c06',bg2:'#181208',bg3:'#221a0e',border:'#4a3818',border2:'#6a5228',text:'#f0e0c0',text2:'#c0a870',text3:'#806838',acc:'#8a6030',acc2:'#c09050',grn:'#4a6830',grn2:'#78a050',amber2:'#d0a840',red2:'#c06030',statbg:'#100c06',bodyBg:'#0c0a04'},
+  furling_lumen:{bg:'#060a0c',bg2:'#0b1a1d',bg3:'#10272b',border:'#1d4a50',border2:'#2f7a80',text:'#e9f6f5',text2:'#a5d0d2',text3:'#8cbcbf',acc:'#2f9aa3',acc2:'#7fe8ee',grn:'#2a7a55',grn2:'#6fe0a0',amber2:'#f2b467',red2:'#d2503f',statbg:'#081316',bodyBg:'#060a0c',glass:'rgba(9,20,23,.74)'},
+  sgc_dark:{bg:'#0a0f1e',bg2:'#0d1525',bg3:'#111c30',border:'#1e3a5a',border2:'#2f5378',text:'#dbe6f0',text2:'#93b4d0',text3:'#7f9fbf',acc:'#4a8ab5',acc2:'#7ec1e6',grn:'#2a7a4a',grn2:'#4ab870',amber2:'#d0a040',red2:'#c04030',statbg:'#0b1828',bodyBg:'#0a0f1e'},
+  tokra_dark:{bg:'#0e0818',bg2:'#140a22',bg3:'#1a102e',border:'#3a1a5a',border2:'#5a2a8a',text:'#d4b8f0',text2:'#a070d0',text3:'#9068c8',acc:'#7a40b0',acc2:'#b070e0',grn:'#3a6a8a',grn2:'#60a8c0',amber2:'#c080e0',red2:'#a030c0',statbg:'#0e0818',bodyBg:'#0a0612'},
+  goauld_dark:{bg:'#120800',bg2:'#1c1000',bg3:'#281800',border:'#5a3000',border2:'#8a5000',text:'#f0d090',text2:'#c0a050',text3:'#a88440',acc:'#b07000',acc2:'#e0a030',grn:'#8a2020',grn2:'#c04030',amber2:'#e0c060',red2:'#ff2020',statbg:'#120800',bodyBg:'#0c0600'},
+  nox_dark:{bg:'#081408',bg2:'#0c1c0c',bg3:'#102410',border:'#1a4a1a',border2:'#2a7a2a',text:'#c0e8c0',text2:'#80c080',text3:'#60a860',acc:'#3a8a3a',acc2:'#70c870',grn:'#2a6a5a',grn2:'#50b890',amber2:'#a0d080',red2:'#c04040',statbg:'#081408',bodyBg:'#060e06'},
+  ancient_dark:{bg:'#081418',bg2:'#0c1c22',bg3:'#10242e',border:'#1a4a5a',border2:'#2a7a8a',text:'#c8e8e0',text2:'#80c0b8',text3:'#60a098',acc:'#2a8090',acc2:'#50b8c8',grn:'#4a8040',grn2:'#80c060',amber2:'#d0c060',red2:'#c06040',statbg:'#081418',bodyBg:'#060e10'},
+  asgard_dark:{bg:'#080c14',bg2:'#0c1020',bg3:'#10182c',border:'#203060',border2:'#304880',text:'#b8d8f8',text2:'#6090d0',text3:'#5888c8',acc:'#4080c0',acc2:'#70b8f0',grn:'#306080',grn2:'#5090c0',amber2:'#80c8f0',red2:'#c04060',statbg:'#080c14',bodyBg:'#060810'},
+  kethalis_dark:{bg:'#0c0808',bg2:'#120a0a',bg3:'#1a1010',border:'#4a1010',border2:'#6a1818',text:'#e0c0b0',text2:'#c08070',text3:'#a86060',acc:'#a02020',acc2:'#e04040',grn:'#406020',grn2:'#608030',amber2:'#c04030',red2:'#ff2020',statbg:'#0c0808',bodyBg:'#080606'},
+  furling_dark:{bg:'#100c06',bg2:'#181208',bg3:'#221a0e',border:'#4a3818',border2:'#6a5228',text:'#f0e0c0',text2:'#c0a870',text3:'#a88c58',acc:'#8a6030',acc2:'#c09050',grn:'#4a6830',grn2:'#78a050',amber2:'#d0a840',red2:'#c06030',statbg:'#100c06',bodyBg:'#0c0a04'},
   sgc_light:{bg:'#e8f0f8',bg2:'#ffffff',bg3:'#d0e0f0',border:'#90b8d8',border2:'#6090b8',text:'#102030',text2:'#204060',text3:'#508090',acc:'#1a60a0',acc2:'#1a4880',grn:'#1a6a3a',grn2:'#1a8040',amber2:'#806010',red2:'#a02020',statbg:'#c8ddf0',bodyBg:'#d0e4f4'},
   tokra_light:{bg:'#f0eaf8',bg2:'#ffffff',bg3:'#e0d0f0',border:'#b090d8',border2:'#9060c0',text:'#180828',text2:'#401868',text3:'#704090',acc:'#6030a0',acc2:'#482080',grn:'#306080',grn2:'#2050a0',amber2:'#8040b0',red2:'#a020a0',statbg:'#ddd0f0',bodyBg:'#e8dff5'},
   goauld_light:{bg:'#fdf5e0',bg2:'#ffffff',bg3:'#f5e8c0',border:'#d0a840',border2:'#b08020',text:'#201000',text2:'#504010',text3:'#806830',acc:'#906010',acc2:'#704800',grn:'#802020',grn2:'#a03030',amber2:'#c09020',red2:'#d02020',statbg:'#f0e0a0',bodyBg:'#f8f0d0'},
@@ -1484,7 +1505,7 @@ function hpBox(){const st=D.hpState;
  return`<div class="box hp"><div class="hp-io"><button class="heal" ${on('hpApply',1)}>HEAL</button>
    <input id="hpamt" type="number" inputmode="numeric" placeholder="0" aria-label="Heal or damage amount"><button class="dmg" ${on('hpApply',-1)}>DAMAGE</button></div>
   <div class="hp-nums" ${on('openPanel','hp')} title="Hit point management">
-   <div><div class="lbl">Current</div><div class="n">${D.hp}</div></div><div class="sl">/</div>
+   <div><div class="lbl">Current</div><div class="n cur st-${st}">${D.hp}</div></div><div class="sl">/</div>
    <div><div class="lbl">Max</div><div class="n">${D.maxHP}</div></div>
    <div><div class="lbl">Temp</div><div class="n" style="color:${C.hp.temp?'var(--acc2)':'var(--text3)'}">${C.hp.temp||'--'}</div></div>
    <div class="hp-status st-${st}">${st}</div></div></div>`}
@@ -2226,9 +2247,9 @@ settings(){return`<h2>Settings</h2>
  <div class="res"><div class="rn" ${on('openPanel','profs')}><b>Proficiencies &amp; training</b><small>Armour, weapons, tools, languages</small></div></div>
  <div class="res"><div class="rn" ${on('setTab','extras')}><b>Backup &amp; mission points</b><small>Mission points, theme, download or restore a backup</small></div></div>`},
 
-appearance(){const bg=C.bgImage;
+appearance(){const bg=C.bgImage;const ks=Object.keys(THEMES);const sw=k=>`<button class="sw ${C.theme===k?'on':''}" style="background:linear-gradient(135deg,${THEMES[k].bg2} 0 34%,${THEMES[k].acc} 34% 56%,${THEMES[k].acc2} 56% 78%,${THEMES[k].amber2} 78%)" title="${themeLabel(k)}" ${on('setTheme',k)}></button>`;
  return`<h2>Appearance</h2>
- <h3>Colour theme</h3><div class="swrow">${Object.keys(THEMES).map(k=>`<button class="sw ${C.theme===k?'on':''}" style="background:linear-gradient(135deg,${THEMES[k].bg2} 0 34%,${THEMES[k].acc} 34% 56%,${THEMES[k].acc2} 56% 78%,${THEMES[k].amber2} 78%)" title="${themeLabel(k)}" ${on('setTheme',k)}></button>`).join('')}</div>
+ <h3>Dark themes</h3><div class="swrow">${ks.filter(k=>!k.endsWith('_light')).map(sw).join('')}</div><h3>Light themes</h3><div class="swrow">${ks.filter(k=>k.endsWith('_light')).map(sw).join('')}</div>
  <div class="muted" style="font-size:12px;margin-top:2px">${themeLabel(C.theme)}</div>
  <h3>Background</h3>
  <div class="frow"><button class="btn sm ${!bg?'on':''}" ${on('clearBg')}>Solid colour</button><button class="btn sm" onclick="$('bgUp').click()">Upload image</button><input type="file" id="bgUp" class="hidden" accept="image/*" onchange="loadBgImage(event)"></div>
