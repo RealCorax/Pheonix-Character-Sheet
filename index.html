@@ -583,6 +583,24 @@ width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linec
 .lmain select{max-width:100%}
 
 
+/* v49 polish: visual only, no layout changes */
+body{transition:background-color .3s}
+.sw{width:32px;height:32px;transition:transform .12s}
+.sw:hover{transform:scale(1.12)}
+.box{background-image:linear-gradient(180deg,color-mix(in srgb,var(--acc2) 11%,transparent),transparent 38%)}
+.btn,.rbtn,.filters button,.tabnav button,.vtabs button,.save,.sense,.pickrow{transition:color .15s,border-color .15s,background .15s,box-shadow .15s}
+.btn:hover,.rbtn:hover{box-shadow:0 0 12px color-mix(in srgb,var(--acc2) 30%,transparent)}
+.btn.pri,.btn.on,.seg button.on,.filters button.on{background:linear-gradient(180deg,color-mix(in srgb,var(--acc) 82%,#fff),var(--acc))}
+.tabnav button.on,.vtabs button.on{text-shadow:0 0 12px color-mix(in srgb,var(--acc2) 50%,transparent);border-bottom-width:3px}
+body.lighttheme .tabnav button.on,body.lighttheme .vtabs button.on{text-shadow:none}
+.topbar,.viewtabs{background-image:linear-gradient(180deg,color-mix(in srgb,var(--acc2) 7%,transparent),transparent)}
+.tbl tr.clkrow:hover td{background:color-mix(in srgb,var(--acc2) 9%,transparent)}
+.ubox.used,.pip.on{box-shadow:0 0 8px color-mix(in srgb,var(--acc2) 45%,transparent)}
+::selection{background:color-mix(in srgb,var(--acc2) 40%,transparent)}
+*{scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+/* metallic themes: brushed-steel titles and numerals */
+body.metal .boxtitle,body.metal .sec,body.metal .abil .modbtn,body.metal .stat .big,body.metal .hp-nums .n,body.metal .login-logo{background:linear-gradient(180deg,#fff 0%,var(--acc2) 48%,color-mix(in srgb,var(--acc) 60%,#fff) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none!important}
+body.metal .box{border-image:none;background-image:linear-gradient(135deg,color-mix(in srgb,var(--acc2) 16%,transparent),transparent 28%,transparent 72%,color-mix(in srgb,var(--acc2) 10%,transparent)),linear-gradient(180deg,color-mix(in srgb,var(--acc2) 9%,transparent),transparent 40%);box-shadow:0 0 22px color-mix(in srgb,var(--acc) 22%,transparent),inset 0 1px 0 color-mix(in srgb,#fff 28%,transparent),inset 0 0 30px color-mix(in srgb,var(--acc2) 5%,transparent),0 8px 20px rgba(0,0,0,.4)}
 </style>
 </head>
 <body>
@@ -679,17 +697,15 @@ width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linec
 <div class="toast" id="toast"></div>
 <script>
 const THEMES={
-  iceuv_dark:{bg:'#0b0d22',bg2:'#12152f',bg3:'#1c2048',border:'#262b55',border2:'#3a4278',text:'#eef3ff',text2:'#b4bedf',text3:'#8f9ac0',acc:'#7a4ce0',acc2:'#9fdcff',grn:'#2a7a58',grn2:'#7fe6b0',amber2:'#b591ff',red2:'#ff8fa6',statbg:'#0b0d22',bodyBg:'#080a1a',glass:'rgba(18,21,47,.86)'},
-  iceuv_light:{bg:'#f0f2f9',bg2:'#ffffff',bg3:'#e5e9f6',border:'#d5dbec',border2:'#aab6d8',text:'#141a33',text2:'#465072',text3:'#5f6888',acc:'#6034c4',acc2:'#1f5fa8',grn:'#17724a',grn2:'#17724a',amber2:'#9a6cf0',red2:'#b4233a',statbg:'#f0f2f9',bodyBg:'#eef1f8',glass:'rgba(255,255,255,.9)'},
-  noxgrove_dark:{bg:'#141e18',bg2:'#1f2d26',bg3:'#2a3c32',border:'#2c3e30',border2:'#3c5242',text:'#f1eedf',text2:'#c4c9b2',text3:'#a3aa91',acc:'#3d5a3a',acc2:'#b8d49a',grn:'#4a7a2a',grn2:'#9be08a',amber2:'#e6be5c',red2:'#f08a6c',statbg:'#141e18',bodyBg:'#111b15',glass:'rgba(31,45,38,.88)'},
-  noxgrove_light:{bg:'#f0efe4',bg2:'#fcfbf5',bg3:'#e7e9dc',border:'#dcdfcd',border2:'#c9d0b6',text:'#1d2a1f',text2:'#465243',text3:'#5c6858',acc:'#3d6b2c',acc2:'#3d6b2c',grn:'#2c7a3a',grn2:'#2c7a3a',amber2:'#d9a838',red2:'#b23a1e',statbg:'#f0efe4',bodyBg:'#e7e9dc',glass:'rgba(252,251,245,.92)'},
-  bloodoath_dark:{bg:'#0f0304',bg2:'#210809',bg3:'#2e0d10',border:'#4e171c',border2:'#5c1a20',text:'#f6e9e6',text2:'#d3b8b3',text3:'#b39894',acc:'#a3141f',acc2:'#ef8a8f',grn:'#3f6b30',grn2:'#9fd98a',amber2:'#e8474f',red2:'#ff9a5c',statbg:'#0f0304',bodyBg:'#1a0507',glass:'rgba(33,8,9,.88)'},
-  bloodoath_light:{bg:'#f5ebe8',bg2:'#fdf8f6',bg3:'#efe2de',border:'#e6d2cf',border2:'#dcc0bd',text:'#22100f',text2:'#523a38',text3:'#6b5250',acc:'#94101a',acc2:'#8f1420',grn:'#2c6b34',grn2:'#2c6b34',amber2:'#c4202b',red2:'#b4470c',statbg:'#f5ebe8',bodyBg:'#efe7e4',glass:'rgba(253,248,246,.92)'},
-};
-const THEME_NAMES={iceuv_dark:'Ice & Ultraviolet Dark',iceuv_light:'Ice & Ultraviolet Light',noxgrove_dark:'Nox Grove Dark',noxgrove_light:'Nox Grove Light',bloodoath_dark:'Blood Oath Dark',bloodoath_light:'Blood Oath Light'};
-// The previous themes are kept here, switched off. You can delete this whole block (down to its closing "};") whenever you like.
-const THEMES_OLD={
-
+  aurora_steel:{metal:1,bg:'#0a0a18',bg2:'#11112a',bg3:'#191a3c',border:'#34366e',border2:'#6468b4',text:'#eef1ff',text2:'#b4bde6',text3:'#7f89bd',acc:'#7a5cf0',acc2:'#a9dcff',grn:'#2f8a8a',grn2:'#7fe8d6',amber2:'#d2a8ff',red2:'#ff6f91',statbg:'#0d0d22',bodyBg:'#070713',glass:'rgba(14,14,36,.74)'},
+  blood_crimson:{bg:'#0c0405',bg2:'#170709',bg3:'#250c10',border:'#561319',border2:'#8f2631',text:'#f7e8e4',text2:'#d3a8a2',text3:'#98706d',acc:'#b3202f',acc2:'#ff5c60',grn:'#3f6b4a',grn2:'#86c496',amber2:'#e3b98a',red2:'#ff3d3d',statbg:'#0f0506',bodyBg:'#080203',glass:'rgba(22,6,9,.76)'},
+  verdant_tide:{bg:'#050f0e',bg2:'#0a1c1a',bg3:'#102b27',border:'#1c5a4c',border2:'#2f8b78',text:'#e7f6ef',text2:'#a6cfc0',text3:'#6c9c8d',acc:'#2a9a6e',acc2:'#62e0c2',grn:'#2a8a5a',grn2:'#8be07a',amber2:'#9fd8ff',red2:'#e0674c',statbg:'#071513',bodyBg:'#040c0b',glass:'rgba(8,24,22,.74)'},
+  ember_forge:{bg:'#0f0907',bg2:'#1a0f0a',bg3:'#2a1810',border:'#5c3016',border2:'#94501f',text:'#fbeee0',text2:'#d9b898',text3:'#9a7658',acc:'#d4571c',acc2:'#ffa05a',grn:'#3f7a60',grn2:'#76d3a2',amber2:'#ffd77a',red2:'#ff5040',statbg:'#120b08',bodyBg:'#0a0605',glass:'rgba(26,15,10,.76)'},
+  deep_ocean:{bg:'#040c18',bg2:'#09182b',bg3:'#0f2540',border:'#1b4a7a',border2:'#2f7ab8',text:'#e8f3ff',text2:'#a6c6e6',text3:'#6b8fb5',acc:'#1f78d0',acc2:'#5cc4ff',grn:'#1f8a7a',grn2:'#5fe0c0',amber2:'#ff9f85',red2:'#ff5a6a',statbg:'#06101f',bodyBg:'#030911',glass:'rgba(8,22,40,.74)'},
+  midnight_rose:{bg:'#10070e',bg2:'#1b0c19',bg3:'#2a1328',border:'#5a2253',border2:'#92408a',text:'#fbeaf6',text2:'#d8aacb',text3:'#9c6e92',acc:'#c2418a',acc2:'#ff90c8',grn:'#4a7a70',grn2:'#8ad8c0',amber2:'#f2c6a2',red2:'#ff5c70',statbg:'#120811',bodyBg:'#0a040a',glass:'rgba(28,12,26,.76)'},
+  steel_graphite:{metal:1,bg:'#0b0d10',bg2:'#14181d',bg3:'#1e242b',border:'#3a434d',border2:'#65717e',text:'#eef1f4',text2:'#b3bcc6',text3:'#7d8895',acc:'#6f7f90',acc2:'#cfe0f0',grn:'#3d8a62',grn2:'#7fd6a0',amber2:'#ffb347',red2:'#ff5f52',statbg:'#0f1317',bodyBg:'#07090b',glass:'rgba(18,22,27,.76)'},
+  arctic_light:{bg:'#eef3f9',bg2:'#ffffff',bg3:'#dde7f3',border:'#a9bdd6',border2:'#6f8fb8',text:'#0e1b2d',text2:'#2b4466',text3:'#5a7596',acc:'#3a5fc0',acc2:'#2a47a0',grn:'#1a7a52',grn2:'#16804f',amber2:'#8a5a10',red2:'#b02a3a',statbg:'#d3e0f0',bodyBg:'#dfe8f3'},
+  linen_light:{bg:'#f6f1e8',bg2:'#fffdf9',bg3:'#ebe2d2',border:'#cdb995',border2:'#a58b5e',text:'#241a0e',text2:'#4d3c24',text3:'#7d6a4c',acc:'#1f7a74',acc2:'#12605b',grn:'#3f6b24',grn2:'#3a6a1e',amber2:'#9a5a12',red2:'#b03a24',statbg:'#e6dac3',bodyBg:'#ece3d3'},
   furling_lumen:{bg:'#060a0c',bg2:'#0b1a1d',bg3:'#10272b',border:'#1d4a50',border2:'#2f7a80',text:'#e9f6f5',text2:'#a5d0d2',text3:'#6f9ea1',acc:'#2f9aa3',acc2:'#7fe8ee',grn:'#2a7a55',grn2:'#6fe0a0',amber2:'#f2b467',red2:'#d2503f',statbg:'#081316',bodyBg:'#060a0c',glass:'rgba(9,20,23,.74)'},
   sgc_dark:{bg:'#0a0f1e',bg2:'#0d1525',bg3:'#111c30',border:'#1e3a5a',border2:'#2f5378',text:'#dbe6f0',text2:'#93b4d0',text3:'#5c7fa0',acc:'#4a8ab5',acc2:'#7ec1e6',grn:'#2a7a4a',grn2:'#4ab870',amber2:'#d0a040',red2:'#c04030',statbg:'#0b1828',bodyBg:'#0a0f1e'},
   tokra_dark:{bg:'#0e0818',bg2:'#140a22',bg3:'#1a102e',border:'#3a1a5a',border2:'#5a2a8a',text:'#d4b8f0',text2:'#a070d0',text3:'#6a40a0',acc:'#7a40b0',acc2:'#b070e0',grn:'#3a6a8a',grn2:'#60a8c0',amber2:'#c080e0',red2:'#a030c0',statbg:'#0e0818',bodyBg:'#0a0612'},
@@ -1267,7 +1283,7 @@ function newChar(){return{v:2,name:'',race:'',cls:'',level:1,origins:['',''],por
  profs:{armorLight:false,armorHeavy:false,weapons:{common:false,bows:false,sidearms:false,longarms:false,shotguns:false,martial:false,jaffa:false,gunnery:false},tools:[],languages:['English'],other:''},defenses:[],
  inv:[],kit:{},res:{},customRes:[],feats:[],eureka:0,mp:{earned:0},
  facility:{name:'',rating:1,note:''},
- bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'iceuv_dark',borderStyle:'hud',bgImage:'',nightMode:false}}
+ bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'furling_lumen',borderStyle:'hud',bgImage:'',nightMode:false}}
 
 let C=newChar(), D={};
 const UI={tab:'weapons',filter:'all',ffilter:'all',rollMode:'normal',pinned:true,open:true,panel:{k:'log'},log:[],addq:'',addt:'all',featq:'',featf:'',lastInit:null,lastMoxie:null};
@@ -2178,7 +2194,7 @@ function tabExtras(){const E=+C.mp.earned||0;const fac=C.facility;
   <div class="kv"><span>${E<20?'Levels 1 to 5: every 5 MP earned is a level':'Specialist: every 10 MP spent on feats is a level'}</span><b>Level ${D.mpLevel}</b></div>
   ${E>=20?`<div class="kv"><span>MP available to spend</span><b>${D.mpAvail}</b></div>`:''}
   ${E>0&&D.mpLevel!==D.lvl?`<div class="panel-actions"><button class="btn" ${on('setLevel',D.mpLevel)}>Set level to ${D.mpLevel}</button></div>`:''}`;
- h+=`<div class="sec">Theme</div><select onchange="setTheme(this.value)">${Object.keys(THEMES).map(k=>`<option value="${k}" ${C.theme===k?'selected':''}>${themeLabel(k)}</option>`).join('')}</select>`;
+ h+=`<div class="sec">Theme</div><select onchange="setTheme(this.value)">${Object.keys(THEMES).map(k=>`<option value="${k}" ${C.theme===k?'selected':''}>${k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).replace('Sgc','SGC').replace('Goauld',"Goa'uld").replace('Tokra',"Tok'ra").replace('Kethalis',"Keth'alis")}</option>`).join('')}</select>`;
  h+=`<div class="sec">Backup</div><div class="panel-actions" style="margin-top:0"><button class="btn" onclick="exportData()">Download backup (.json)</button><button class="btn" onclick="$('impF').click()">Restore from backup</button><input type="file" id="impF" accept=".json" class="hidden" onchange="importData(event)"></div>`;
  return h}
 // ============================================================
@@ -2212,7 +2228,7 @@ settings(){return`<h2>Settings</h2>
 
 appearance(){const bg=C.bgImage;
  return`<h2>Appearance</h2>
- <h3>Colour theme</h3><div class="swrow">${Object.keys(THEMES).map(k=>`<button class="sw ${C.theme===k?'on':''}" style="background:linear-gradient(135deg,${THEMES[k].bg2} 0 50%,${THEMES[k].acc} 50% 100%)" title="${themeLabel(k)}" ${on('setTheme',k)}></button>`).join('')}</div>
+ <h3>Colour theme</h3><div class="swrow">${Object.keys(THEMES).map(k=>`<button class="sw ${C.theme===k?'on':''}" style="background:linear-gradient(135deg,${THEMES[k].bg2} 0 34%,${THEMES[k].acc} 34% 56%,${THEMES[k].acc2} 56% 78%,${THEMES[k].amber2} 78%)" title="${themeLabel(k)}" ${on('setTheme',k)}></button>`).join('')}</div>
  <div class="muted" style="font-size:12px;margin-top:2px">${themeLabel(C.theme)}</div>
  <h3>Background</h3>
  <div class="frow"><button class="btn sm ${!bg?'on':''}" ${on('clearBg')}>Solid colour</button><button class="btn sm" onclick="$('bgUp').click()">Upload image</button><input type="file" id="bgUp" class="hidden" accept="image/*" onchange="loadBgImage(event)"></div>
@@ -2729,16 +2745,16 @@ function setVal(path,v){setPath(C,path,v);commit()}
 function setNum(path,v){setPath(C,path,v===''?0:+v);commit()}
 function setRollMode(m){UI.rollMode=UI.rollMode===m?'normal':m;renderRollMode()}
 function setTheme(k){C.theme=k;applyTheme(k);commit(false);if(UI.panel.k==='appearance')renderSide()}
-function applyTheme(k){if(!THEMES[k])k='iceuv_dark';const t=THEMES[k];const r=document.documentElement.style;
+function applyTheme(k){if(!THEMES[k])k='furling_lumen';const t=THEMES[k];const r=document.documentElement.style;
  r.setProperty('--glass',k.endsWith('_light')?'rgba(255,255,255,.72)':'rgba(9,13,24,.72)');
- for(const v in t)r.setProperty('--'+v,t[v]);r.setProperty('--bodyBg',t.bodyBg||t.bg);document.body.classList.toggle('lighttheme',k.endsWith('_light'));
+ for(const v in t)r.setProperty('--'+v,t[v]);r.setProperty('--bodyBg',t.bodyBg||t.bg);document.body.classList.toggle('lighttheme',k.endsWith('_light'));document.body.classList.toggle('metal',!!t.metal);
  r.setProperty('--glass-hi',k.endsWith('_light')?'rgba(0,0,0,.04)':'rgba(255,255,255,.05)');
  applyAppearance()}
 function applyAppearance(){document.body.className=document.body.className.replace(/\bbs-\S+/g,'').trim();
  document.body.classList.add('bs-'+(C.borderStyle||'hud'));document.body.classList.toggle('nightmode',!!C.nightMode);
  document.body.style.backgroundImage=C.bgImage?`linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.7)),url(${C.bgImage})`:'';
  document.body.style.backgroundSize=C.bgImage?'cover':'';document.body.style.backgroundAttachment=C.bgImage?'fixed':''}
-function themeLabel(k){return THEME_NAMES[k]||k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).replace('Sgc','SGC').replace('Goauld',"Goa'uld").replace('Tokra',"Tok'ra").replace('Kethalis',"Keth'alis")}
+function themeLabel(k){return k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).replace('Sgc','SGC').replace('Goauld',"Goa'uld").replace('Tokra',"Tok'ra").replace('Kethalis',"Keth'alis")}
 function setBorderStyle(k){C.borderStyle=k;applyAppearance();commit(false)}
 function toggleNight(){C.nightMode=!C.nightMode;applyAppearance();commit(false)}
 function clearBg(){C.bgImage='';applyAppearance();commit(false);renderSide()}
