@@ -919,6 +919,41 @@ body[class*="skin-"] select:not(.tdsel){-webkit-appearance:none;appearance:none;
   background-position:calc(100% - 17px) 52%,calc(100% - 12px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
 body[class*="skin-"] option{background:var(--bg2);color:var(--text)}
 body.skin-gilded .tabnav button{font-size:11px;letter-spacing:.03em;padding:9px 6px}
+/* ---------- v51: uniform sizing, font picker, corner picker ---------- */
+/* uniform sizes in every theme */
+body[class*="skin-"][class*="skin-"]{--s-abilsize:38px;--s-statsize:30px}
+body[class*="skin-"][class*="skin-"] .topbar .cname{font-size:24px}
+body[class*="skin-"][class*="skin-"] .lbl,
+body[class*="skin-"][class*="skin-"] .boxtitle,
+body[class*="skin-"][class*="skin-"] .sec,
+body[class*="skin-"][class*="skin-"] .tbl th,
+body[class*="skin-"][class*="skin-"] .sk-head{font-size:11px}
+body[class*="skin-"][class*="skin-"] .abil .lbl{font-size:10.5px}
+body[class*="skin-"][class*="skin-"] .hp-nums .n{font-size:30px}
+body[class*="skin-"][class*="skin-"] .tabnav button{font-size:11px;letter-spacing:.02em;padding:9px 5px;text-transform:uppercase}
+body[class*="skin-"].font-classic .tabnav button,body.skin-gilded:not([class*="font-"]) .tabnav button{font-family:'Fira Sans',system-ui,sans-serif}
+body[class*="skin-"][class*="skin-"] .vtabs button{font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+body[class*="skin-"][class*="skin-"] .btn,
+body[class*="skin-"][class*="skin-"] .seg button{letter-spacing:.08em;text-transform:uppercase}
+body[class*="skin-"][class*="skin-"] .btn:not(.sm),
+body[class*="skin-"][class*="skin-"] .seg button{font-size:12px}
+/* condensed Anton has taller capitals, so its numbers are set smaller to look the same size */
+body.skin-ember:not([class*="font-"]),body[class*="skin-"].font-bold{--s-abilsize:31px;--s-statsize:24px}
+body.skin-ember:not([class*="font-"]) .hp-nums .n,body.font-bold .hp-nums .n{font-size:24px}
+
+/* font choices */
+body[class*="skin-"].font-fira{--s-body:'Fira Sans',system-ui,sans-serif;--s-mono:'Fira Sans',system-ui,sans-serif;--s-disp:'Fira Sans',system-ui,sans-serif;--s-head:'Fira Sans',system-ui,sans-serif;--s-num:'Fira Sans',system-ui,sans-serif;--s-numw:700;--s-headw:700}
+body[class*="skin-"].font-dm{--s-body:'DM Sans',system-ui,sans-serif;--s-mono:'DM Sans',system-ui,sans-serif;--s-disp:'DM Sans',system-ui,sans-serif;--s-head:'DM Sans',system-ui,sans-serif;--s-num:'DM Sans',system-ui,sans-serif;--s-numw:600;--s-headw:700}
+body[class*="skin-"].font-bitter{--s-body:'Bitter',Georgia,serif;--s-mono:'Bitter',Georgia,serif;--s-disp:'Bitter',Georgia,serif;--s-head:'Bitter',Georgia,serif;--s-num:'Bitter',Georgia,serif;--s-numw:800;--s-headw:800}
+body[class*="skin-"].font-classic{--s-body:'Fira Sans',system-ui,sans-serif;--s-mono:'Fira Sans',system-ui,sans-serif;--s-disp:'Cardo',Georgia,serif;--s-head:'Cardo',Georgia,serif;--s-num:'Cardo',Georgia,serif;--s-numw:700;--s-headw:700}
+body[class*="skin-"].font-bold{--s-body:'Fira Sans',system-ui,sans-serif;--s-mono:'Fira Sans',system-ui,sans-serif;--s-disp:'Fira Sans',system-ui,sans-serif;--s-head:'Anton',Impact,sans-serif;--s-num:'Anton',Impact,sans-serif;--s-numw:400;--s-headw:400}
+
+/* corner choices (affects every box, pill and button) */
+body[class*="skin-"].corners-curved{--s-rad:18px;--s-ctl:10px;--s-ctl2:999px;--s-btnrad:999px;--s-pill:999px;--s-cardrad:14px;--s-tabrad:12px 12px 0 0}
+body[class*="skin-"].corners-straight{--s-rad:0;--s-ctl:0;--s-ctl2:0;--s-btnrad:0;--s-pill:0;--s-cardrad:0;--s-tabrad:0}
+body[class*="skin-"] .save .v{border-radius:var(--s-ctl2,999px)}
+body[class*="skin-"] .chip,body[class*="skin-"] .ntabs button,body[class*="skin-"] .nbar .nb{border-radius:var(--s-pill,999px)}
+body[class*="skin-"] .pickbox{border-radius:var(--s-cardrad,12px)}
 
 </style>
 </head>
@@ -1580,7 +1615,7 @@ function newChar(){return{v:2,name:'',race:'',cls:'',level:1,origins:['',''],por
  profs:{armorLight:false,armorHeavy:false,weapons:{common:false,bows:false,sidearms:false,longarms:false,shotguns:false,martial:false,jaffa:false,gunnery:false},tools:[],languages:['English'],other:''},defenses:[],
  inv:[],kit:{},res:{},customRes:[],feats:[],eureka:0,mp:{earned:0},
  facility:{name:'',rating:1,note:''},
- bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'ancient_crystal',borderStyle:'hud',bgImage:'',nightMode:false}}
+ bg:{traits:'',ideals:'',bonds:'',flaws:'',appearance:'',allies:'',story:''},notes:{session:'',general:''},theme:'ancient_crystal',font:'',corners:'',borderStyle:'hud',bgImage:'',nightMode:false}}
 
 let C=newChar(), D={};
 const UI={tab:'weapons',filter:'all',ffilter:'all',rollMode:'normal',pinned:true,open:true,panel:{k:'log'},log:[],addq:'',addt:'all',featq:'',featf:'',lastInit:null,lastMoxie:null};
@@ -2527,6 +2562,8 @@ appearance(){const bg=C.bgImage;
  return`<h2>Appearance</h2>
  <h3>Colour theme</h3><div class="swrow">${Object.keys(THEMES).map(k=>`<button class="sw ${C.theme===k?'on':''}" style="background:${THEMES[k].sw||THEMES[k].acc||THEMES[k].acc2}" title="${themeLabel(k)}" ${on('setTheme',k)}></button>`).join('')}</div>
  <div class="muted" style="font-size:12px;margin-top:2px">${themeLabel(C.theme)}</div>
+  <h3>Font</h3><div class="frow" style="flex-wrap:wrap;gap:6px">${[['default','Theme default',''],['fira','Fira Sans',"'Fira Sans'"],['dm','DM Sans',"'DM Sans'"],['bitter','Bitter',"'Bitter'"],['classic','Classic',"'Cardo'"],['bold','Bold',"'Anton'"]].map(([k,l,f])=>`<button class="btn sm ${(C.font||'default')===k?'on':''}" style="${f?'font-family:'+f+',sans-serif;':''}font-size:13px;text-transform:none;letter-spacing:0" ${on('setFont',k)}>${l}</button>`).join('')}</div>
+ <h3>Box corners</h3><div class="frow" style="flex-wrap:wrap;gap:6px">${[['default','Theme default'],['curved','Curved'],['straight','Straight']].map(([k,l])=>`<button class="btn sm ${(C.corners||'default')===k?'on':''}" ${on('setCorners',k)}>${l}</button>`).join('')}</div>
  <h3>Background</h3>
  <div class="frow"><button class="btn sm ${!bg?'on':''}" ${on('clearBg')}>Solid colour</button><button class="btn sm" onclick="$('bgUp').click()">Upload image</button><input type="file" id="bgUp" class="hidden" accept="image/*" onchange="loadBgImage(event)"></div>
  ${bg?`<div class="kv"><span>Custom background set</span><button class="btn sm" ${on('clearBg')}>Remove</button></div>`:'<p class="rule">Panels use frosted glass over any background, so text stays sharp either way.</p>'}
@@ -3049,11 +3086,14 @@ function applyTheme(k){if(!THEMES[k])k='ancient_crystal';const t=THEMES[k];const
  r.setProperty('--glass-hi',k.endsWith('_light')?'rgba(0,0,0,.04)':'rgba(255,255,255,.05)');
  applyAppearance()}
 function applyAppearance(){document.body.className=document.body.className.replace(/\bbs-\S+/g,'').trim();
- document.body.classList.add('bs-'+(C.borderStyle||'hud'));document.body.classList.toggle('nightmode',!!C.nightMode);
+ document.body.classList.add('bs-'+(C.borderStyle||'hud'));
+ document.body.className=document.body.className.replace(/(^|\s)(font|corners)-\S+/g,' ').trim();if(C.font&&C.font!=='default')document.body.classList.add('font-'+C.font);if(C.corners&&C.corners!=='default')document.body.classList.add('corners-'+C.corners);document.body.classList.toggle('nightmode',!!C.nightMode);
  document.body.style.backgroundImage=C.bgImage?`linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.7)),url(${C.bgImage})`:'';
  document.body.style.backgroundSize=C.bgImage?'cover':'';document.body.style.backgroundAttachment=C.bgImage?'fixed':''}
 function themeLabel(k){return k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).replace('Sgc','SGC').replace('Goauld',"Goa'uld").replace('Tokra',"Tok'ra").replace('Kethalis',"Keth'alis")}
 function setBorderStyle(k){C.borderStyle=k;applyAppearance();commit(false)}
+function setFont(k){C.font=k;applyAppearance();commit(false);renderSide()}
+function setCorners(k){C.corners=k;applyAppearance();commit(false);renderSide()}
 function toggleNight(){C.nightMode=!C.nightMode;applyAppearance();commit(false)}
 function clearBg(){C.bgImage='';applyAppearance();commit(false);renderSide()}
 function loadBgImage(ev){const f=ev.target.files[0];if(!f)return;const img=new Image();const url=URL.createObjectURL(f);
